@@ -36,7 +36,7 @@ export default function GenerateEvent() {
 
     const noOfPartcipants = useRef(null);
 
-    const generateEventHandler = (e) => {
+    const generateEventHandler = async(e) => {
         e.preventDefault();
         const formData = new FormData();
         formData.append("ebrochure", data.ebrochure);
@@ -51,34 +51,37 @@ export default function GenerateEvent() {
         formData.append("maxNoOfTeamsPerCollege", data.maxNoOfTeamsPerCollege || 1);
         formData.append("efees", data.efees);
 
-        const newLocal = 'multipart/form-data';
-        axios.post(`${API_URL}/api/events/generateevent`, formData, {
-            headers: {
-                'Content-Type': newLocal,
-            },
-        })
-            .then(({data}) => {
-                console.log(data)
-                if (data.result) {
-                    toast.success(data.message);
-                    setData({
-                        ename: "",
-                        etype: "",
-                        ptype: "",
-                        noOfParticipants: 1,
-                        edate: new Date(),
-                        rcdate: new Date().setDate(new Date().getDate() + 1),
-                        rules: "",
-                        maxNoOfPartcipantsPerCollege: 1,
-                        edetails: "",
-                        ebrochure: null,
-                        efees: ""
-                    })
-                }
-            })
-            .catch((error) => {
-                console.error('Request failed:', error);
+        try {
+            const {data} = await axios.post(`${API_URL}/api/events/generateevent`, formData, {
+                headers: {
+                    'Content-Type': "multipart/form-data",
+                },
             });
+            // data = data.data;
+            console.log(data)
+            if (data.result) {
+                toast.success(data.message);
+                setData({
+                    ename: "",
+                    etype: "",
+                    ptype: "",
+                    noOfParticipants: 1,
+                    edate: new Date(),
+                    rcdate: new Date().setDate(new Date().getDate() + 1),
+                    rules: "",
+                    maxNoOfPartcipantsPerCollege: 1,
+                    edetails: "",
+                    ebrochure: null,
+                    efees: ""
+                })
+            }
+        } catch (error) {
+            console.error('Request failed:', error);
+        }
+
+
+
+        
 
 
 
@@ -107,9 +110,10 @@ export default function GenerateEvent() {
         if(data.etype==="Intra-College"){
             setData({...data,maxNoOfPartcipantsPerCollege:null})
         }
-    },[data.etype]);
+    },[data]);
 
     return (
+
         <section className='flex justify-center items-center '>
             <section className='p-5 md:p-10 shadow-2xl bg-white md:outline-none outline outline-blue-500 md:mt-0 md:mb-0 mt-2 mb-2 '>
                 <p className='text-2xl text-center text-white bg-blue-500 p-2'>Generate Event</p>
@@ -328,5 +332,6 @@ export default function GenerateEvent() {
                 </form>
             </section>
         </section>
+        
     )
 }
