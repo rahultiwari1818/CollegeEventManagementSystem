@@ -3,7 +3,7 @@ import { Fragment, forwardRef, useEffect } from 'react';
 import { Listbox, Transition } from '@headlessui/react';
 import { ReactComponent as UpIcon } from '../assets/Icons/up_arrow.svg';
 
-const Dropdown = forwardRef(({ people, selected, setSelected, name, label }, ref) => {
+const Dropdown = forwardRef(({ dataArr, selected, setSelected, name, label }, ref) => {
 
   useEffect(()=>{
     // handleInputChange()
@@ -55,7 +55,7 @@ const Dropdown = forwardRef(({ people, selected, setSelected, name, label }, ref
             leaveTo="opacity-0"
           >
             <Listbox.Options className="absolute mt-1 max-h-60  overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none z-10">
-              {people.map((person, personIdx) => (
+              {dataArr.map((obj, personIdx) => (
                 <Listbox.Option
                   key={personIdx}
                   className={({ active }) =>
@@ -63,7 +63,7 @@ const Dropdown = forwardRef(({ people, selected, setSelected, name, label }, ref
                       active ? 'bg-blue-500 text-red-500' : 'text-gray-900'
                     }`
                   }
-                  value={person}
+                  value={obj}
                 >
                   {({ selected }) => (
                     <>
@@ -72,7 +72,7 @@ const Dropdown = forwardRef(({ people, selected, setSelected, name, label }, ref
                           selected ? 'font-medium' : 'font-normal'
                         }`}
                       >
-                        {person.name}
+                        {obj.name}
                       </span>
                       {selected ? (
                         <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-blue-600"></span>

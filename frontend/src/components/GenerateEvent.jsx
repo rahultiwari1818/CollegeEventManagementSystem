@@ -18,10 +18,8 @@ export default function GenerateEvent() {
         edate: new Date(),
         rcdate: new Date().setDate(new Date().getDate() - 1),
         rules: "",
-        maxNoOfTeamsPerCollege: 1,
         edetails: "",
         ebrochure: null,
-        efees: ""
     });
 
 
@@ -106,11 +104,15 @@ export default function GenerateEvent() {
 
 
 
-    useEffect(()=>{
-        if(data.etype==="Intra-College"){
-            setData({...data,maxNoOfPartcipantsPerCollege:null})
-        }
-    },[data]);
+    // useEffect(()=>{
+    //     if(data.etype==="Intra-College"){
+    //         setData({...data,maxNoOfPartcipantsPerCollege:null})
+    //     }
+    // },[data]);
+
+
+    const eventTypes = [{ name: "Cultural" }, { name: "IT" } ,{ name: "Management" } ];
+
 
     return (
 
@@ -134,7 +136,7 @@ export default function GenerateEvent() {
                         <section className='md:p-2 md:m-2  p-1 m-1'>
                             <label htmlFor="etype">Event Type:</label>
                             <Dropdown
-                                people={[{ name: "Intra-College" }, { name: "Inter-College" }]}
+                                dataArr={eventTypes}
                                 selected={data.etype}
                                 setSelected={setData}
                                 name={"etype"}
@@ -144,7 +146,7 @@ export default function GenerateEvent() {
                         <section className='md:p-2 md:m-2  p-1 m-1'>
                             <label htmlFor="ptype">Participation  Type:</label>
                             <Dropdown
-                                people={[{ name: "Individual" }, { name: "Group" }]}
+                                dataArr={[{ name: "Individual" }, { name: "Group" }]}
                                 selected={data.ptype}
                                 setSelected={setData}
                                 name={"ptype"}
@@ -160,7 +162,7 @@ export default function GenerateEvent() {
                                 name="noOfParticipants"
                                 min={1}
                                 ref={noOfPartcipants}
-                                value={data.noOfPartcipants}
+                                value={data.noOfParticipants}
                                 onChange={updateData}
                                 onBlur={(e) => {
                                     if (e.target.name === "noOfPartcipants") {
@@ -175,7 +177,7 @@ export default function GenerateEvent() {
                                 required
                             />
                         </section>
-                        {
+                        {/* {
                             data.etype === "Inter-College" &&
                             <section className='md:p-2 md:m-2  p-1 m-1'>
                                 <label htmlFor="mopc">Max No Of Participants/Teams per College:</label>
@@ -197,7 +199,7 @@ export default function GenerateEvent() {
                                     required
                                 />
                             </section>
-                        }
+                        } */}
                     </section>
 
                     <section className='md:flex md:justify-between md:items-center block'>
@@ -230,7 +232,7 @@ export default function GenerateEvent() {
 
                         </section>
                     </section>
-                    {
+                    {/* {
                         data.etype === "Inter-College" &&
 
                         <section className='md:p-2 md:m-2  p-1 m-1'>
@@ -244,7 +246,7 @@ export default function GenerateEvent() {
                                 required
                             />
                         </section>
-                    }
+                    } */}
 
                     <section className='md:p-2 md:m-2  p-1 m-1'>
                         <label htmlFor="details">Event Details:</label><br />
