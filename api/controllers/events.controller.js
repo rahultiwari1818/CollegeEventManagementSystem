@@ -24,8 +24,6 @@ const fs = require("fs");
         edetails:req.body.edetails.trim(),
         rules:req.body.rules.trim(),
         rcdate:req.body.rcdate,
-        maxNoOfTeamsPerCollege:req.body.maxNoOfTeamsPerCollege || 0,
-        efees:req.body.efees,
         ebrochureName:orignalName,
         ebrochurePath:newFilePath,
         isCanceled:false

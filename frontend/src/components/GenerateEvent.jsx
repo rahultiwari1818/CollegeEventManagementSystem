@@ -46,9 +46,6 @@ export default function GenerateEvent() {
         formData.append("edetails", data.edetails.trim());
         formData.append("rules", data.rules.trim());
         formData.append("rcdate", formatDate(data.rcdate));
-        formData.append("maxNoOfTeamsPerCollege", data.maxNoOfTeamsPerCollege || 1);
-        formData.append("efees", data.efees);
-
         try {
             const {data} = await axios.post(`${API_URL}/api/events/generateevent`, formData, {
                 headers: {
@@ -67,10 +64,8 @@ export default function GenerateEvent() {
                     edate: new Date(),
                     rcdate: new Date().setDate(new Date().getDate() + 1),
                     rules: "",
-                    maxNoOfPartcipantsPerCollege: 1,
                     edetails: "",
                     ebrochure: null,
-                    efees: ""
                 })
             }
         } catch (error) {
@@ -111,7 +106,7 @@ export default function GenerateEvent() {
     // },[data]);
 
 
-    const eventTypes = [{ name: "Cultural" }, { name: "IT" } ,{ name: "Management" } ];
+    const eventTypes = [{ name: "Cultural" }, { name: "IT" } ,{ name: "Management" },{ name: "Sports" } ];
 
 
     return (

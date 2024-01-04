@@ -3,7 +3,6 @@ const mongoose = require("mongoose");
 const {Schema} = mongoose;
 
 const EventsSchema = new Schema({
-    // Ename,EType [ Intra-College / Inter-College ],Ptype[ Individual / Group], NoOfParticipants,Edate,Event Details,Rules, RegistrationClosingDate,MaxParticipants/GroupsPerCollege
     ename:{
         required:true,
         type:String
@@ -35,13 +34,6 @@ const EventsSchema = new Schema({
     rcdate:{
         required:true,
         type:Date
-    },
-    maxNoOfTeamsPerCollege:{
-        required:true,
-        type:Number
-    },
-    efees:{
-        type:Number
     },
     ebrochureName:{
         type:String
