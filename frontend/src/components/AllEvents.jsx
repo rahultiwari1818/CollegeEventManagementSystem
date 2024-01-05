@@ -30,46 +30,8 @@ export default function AllEvents() {
     }, [])
 
     return (
-        <section className='m-5'>
-
-          {
-            labels.length > 1  && 
+        <section>
           
-
-            <table className="min-w-full border border-blue-500 divide-y divide-blue-500">
-                <thead>
-                    <tr className="bg-blue-500 text-white">
-                    {labels.map((key) => (key !== '_id' && key !== "__v") && (
-              <th key={key} className="py-2 px-4 sm:px-6 md:px-8">
-                {key}
-              </th>
-            ))}
-            <th className="py-2 px-4 sm:px-6 md:px-8"> Details</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {data.map((row, index) => (
-            <tr key={index} className={index % 2 === 0 ? 'bg-white' : 'bg-blue-500 text-white'}>
-              {labels.map((key) => (key !== '_id' && key !== "__v") && (
-                <td key={key} className="py-2 px-4 sm:px-6 md:px-8">
-                  {key === 'edate' || key === 'rcdate'  ? formatMongoDate((row[key])) : row[key]}
-                </td>
-              ))}
-              <td className={index % 2 === 0 ? 'bg-white' : 'bg-blue-500 text-white'}>
-                <button 
-                className='px-3 py-2 rounded-lg shadow-lg bg-red-500 text-white hover:text-red-500 hover:bg-white'
-                onClick={()=>{getEventDetails(row._id)}}
-                >
-                    Get Event Details
-                    </button>
-              </td>
-            </tr>
-          ))}
-                    
-                </tbody>
-            </table>
-
-              }
         </section>
     )
 }
