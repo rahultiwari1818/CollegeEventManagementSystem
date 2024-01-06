@@ -30,8 +30,11 @@ export default function AllEvents() {
     }, [])
 
     return (
-        <section>
-          
+        <section className='md:grid md:grid-cols-2 lg:grid-cols-3 gap-10 sm:block '>
+            {
+                [1,2,3].map((val,idx)=>{
+                })
+            }
         </section>
     )
 }
