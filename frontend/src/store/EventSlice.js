@@ -17,10 +17,11 @@ export const fetchAllEvents = createAsyncThunk(
         try{
             const response = await axios.get(`${API_URL}/api/events/getevents`);
             // console.log(response,"res");
-            return response.data.data;
+            return response.data.data || [];
         }
         catch(err){
-
+            alert(err)
+            return [];
         }
     }
 );

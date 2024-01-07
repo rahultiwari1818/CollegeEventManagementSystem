@@ -19,7 +19,7 @@ export default function Login() {
 
   return (
     <section className='flex justify-center items-center mt-5'>
-        <section className='p-5 md:p-10 shadow-2xl bg-white rounded-lg '>
+        <section className='p-5 md:p-10 shadow-2xl bg-white rounded-lg m-5 '>
             <p className='text-2xl text-center text-red-500'>Login</p>
             <form  method="post" onSubmit={submitHandler} className='p-4'>
             <section className='md:p-2 md:m-2 p-1 m-1' >
