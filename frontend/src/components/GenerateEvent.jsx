@@ -10,23 +10,25 @@ export default function GenerateEvent() {
 
     const API_URL = process.env.REACT_APP_BASE_URL;
 
-    const [data, setData] = useState({
+    const initialState = {
         ename: "",
         etype: "",
         ptype: "",
         noOfParticipants: 1,
-        edate: new Date(),
-        rcdate: new Date().setDate(new Date().getDate() - 1),
+        edate: new Date(new Date().setDate(new Date().getDate() + 1)),
+        rcdate: new Date(),
         rules: "",
         edetails: "",
         ebrochure: null,
-    });
+    }
+
+    const [data, setData] = useState(initialState);
 
 
     const updateData = (e) => {
         const name = e.target.name;
         const value = e.target.value;
-
+        console.log("date",e.target.value);
         setData({ ...data, [name]: value });
 
     }
@@ -54,22 +56,14 @@ export default function GenerateEvent() {
             });
             if (data.result) {
                 toast.success(data.message);
-                setData({
-                    ename: "",
-                    etype: "",
-                    ptype: "",
-                    noOfParticipants: 1,
-                    edate: new Date(),
-                    rcdate: new Date().setDate(new Date().getDate() + 1),
-                    rules: "",
-                    edetails: "",
-                    ebrochure: null,
-                })
+                setData(initialState)
             }
         } catch (error) {
             console.error('Request failed:', error);
         }
+        finally{
 
+        }
 
 
         

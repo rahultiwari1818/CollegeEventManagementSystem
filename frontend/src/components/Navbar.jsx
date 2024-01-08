@@ -40,7 +40,7 @@ export default function Navbar() {
         {
           openSideBar &&
           <section className='lg:hidden fixed h-screen bg-blue-500 right-0 top-0 w-2/3'>
-              <section className='m-5 absolute bottom-10'>
+              <section className='m-5 absolute bottom-[10vh]'>
 			  		<Link to="/" className='py-3 px-4 bg-green-500  text-white shadow-lg rounded-lg mx-3' > Home </Link>
 					<Link to="generateevent" className=' block my-3 py-3 px-4 bg-green-500  text-white shadow-lg rounded-lg mx-3' onClick={() => closeSideBar()}> Generate Event </Link>
 					<Link to="login" className='block my-3 py-3 px-4 bg-red-500  text-white shadow-lg rounded-lg mx-3' onClick={() => closeSideBar()} > Login </Link>
