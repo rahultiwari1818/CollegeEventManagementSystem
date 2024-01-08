@@ -11,6 +11,7 @@ export default function AllEvents() {
 
     const dispatch = useDispatch();
     const data = useSelector((state)=>state.EventSlice.data);
+    const isLoading = useSelector((state)=>state.EventSlice.isLoading);
 
 
     // const labels = useMemo(()=>{
@@ -31,7 +32,7 @@ export default function AllEvents() {
             <section className='md:grid md:grid-cols-2 lg:grid-cols-3 gap-10 sm:block '>
                 {
                 data && data?.map((event,idx)=>{
-                        return <EventCard key={event._id} data={event}/>
+                        return <EventCard key={event._id} data={event} isLoading={isLoading}/>
                     })
                 }
             </section>
