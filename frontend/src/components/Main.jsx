@@ -6,7 +6,7 @@ import {  Route, Routes } from 'react-router-dom';
 import EventDetails from './EventDetails';
 export default function Main() {
   return (
-    <main className='max-h-[75vh] lg:max-h-[70vh] overflow-auto'>
+    <main className='max-h-[80vh] lg:max-h-[75vh] overflow-auto'>
 				<Routes>
 					
 					<Route path="/generateevent" element={<GenerateEvent/>}/>

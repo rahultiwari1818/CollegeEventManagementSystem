@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, {  useRef, useState } from 'react'
 import Dropdown from './Dropdown';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -52,8 +52,6 @@ export default function GenerateEvent() {
                     'Content-Type': "multipart/form-data",
                 },
             });
-            // data = data.data;
-            console.log(data)
             if (data.result) {
                 toast.success(data.message);
                 setData({
@@ -99,12 +97,7 @@ export default function GenerateEvent() {
 
 
 
-    // useEffect(()=>{
-    //     if(data.etype==="Intra-College"){
-    //         setData({...data,maxNoOfPartcipantsPerCollege:null})
-    //     }
-    // },[data]);
-
+    
 
     const eventTypes = [{ name: "Cultural" }, { name: "IT" } ,{ name: "Management" },{ name: "Sports" } ];
 
@@ -112,7 +105,7 @@ export default function GenerateEvent() {
     return (
 
         <section className='flex justify-center items-center '>
-            <section className='p-5 md:p-10 shadow-2xl bg-white md:outline-none outline outline-blue-500 md:mt-0 md:mb-0 mt-2 mb-2 '>
+            <section className='p-5 md:p-10 shadow-2xl bg-white md:outline-none outline outline-blue-500 md:mt-0 md:mb-0 mt-2 '>
                 <p className='text-2xl text-center text-white bg-blue-500 p-2'>Generate Event</p>
                 <form method="post" className='p-4' onSubmit={generateEventHandler}>
                     <section className='md:p-2 md:m-2 p-1 m-1' >
