@@ -48,7 +48,7 @@ const changeEventStatus = async(req,res)=>{
     const id = req.params.id;
     const data = req.body;
     const result = await Event.updateOne({ _id: id },{ $set: data});
-    const message = (data.isCanceled) ? "Event Canceled Successfully" : "Event Activated Successfully";
+    const message = (data.isCanceled) ? "Event Cancelled Successfully" : "Event Activated Successfully";
     return res.status(200).json({"message":message,"result":true})
 }
 

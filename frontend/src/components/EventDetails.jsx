@@ -44,7 +44,8 @@ export default function EventDetails() {
     }
 
     const changeEventStatus = async (status) => {
-
+        
+        setIsLoading((old)=>!old);
 
         const dataToUpdate = (status === "cancel") ?
             {
@@ -61,13 +62,13 @@ export default function EventDetails() {
                 dataToUpdate
             );
             toast.success(data.message);
-            setDataUpdated(() => !dataUpdated);
         } catch (error) {
 
         }
         finally {
        
             setDataUpdated((old)=>!old);
+            setIsLoading((old)=>!old);
         }
 
 
@@ -325,7 +326,9 @@ export default function EventDetails() {
                                     <section className='my-2'>
                                         <button
                                             className='px-5 py-3 bg-green-500 rounded-lg shadow-lg text-white hover:text-green-500 hover:bg-white hover:outline hover:outline-green-500'
-                                            onClick={() => { changeEventStatus("activate") }}
+                                            onClick={() => {
+                                                 changeEventStatus("activate");
+                                                }}
                                         >
                                             Activate  Event
                                         </button>

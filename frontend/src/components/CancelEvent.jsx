@@ -8,7 +8,7 @@ export default function CancelEvent({ openCancelCnfModal, setOpenCancelCnfModal,
                 <section className='text-center text-red-500'>
                     Are You Sure to Cancel Event ?
                 </section>
-                <section className='md:flex justify-between items-center py-2 md:py-5'>
+                <section className='flex gap-5 justify-around items-center py-2 md:py-5'>
                     <button className='px-5 py-4 bg-white text-blue-500 outline outline-blue-500 hover:bg-blue-500 hover:text-white rounded-lg'
                         onClick={() => { setOpenCancelCnfModal(!openCancelCnfModal) }}
                     >No</button>

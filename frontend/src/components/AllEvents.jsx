@@ -13,7 +13,7 @@ export default function AllEvents() {
     const data = useSelector((state)=>state.EventSlice.data);
     const isLoading = useSelector((state)=>state.EventSlice.isLoading);
 
-
+    
     // const labels = useMemo(()=>{
     //   return data.length > 0 ? Object.keys(data[0]):[];
     // },[data]);
@@ -29,12 +29,20 @@ export default function AllEvents() {
     return (
         <section className='flex justify-center items-center'>
 
-            <section className='md:grid md:grid-cols-2 lg:grid-cols-3 gap-10 sm:block '>
+
+            <section className='md:grid md:grid-cols-2 lg:grid-cols-3 gap-10 sm:block mb-5 '>
                 {
-                data && data?.map((event,idx)=>{
-                        return <EventCard key={event._id} data={event} isLoading={isLoading}/>
-                    })
+                    isLoading ?
+                    
+                        [1,2,3,4,5,6].map((event,idx)=>{
+                            return <EventCard key={idx} isLoading={isLoading}/>
+                        })
+                        :
+                        data && data?.map((event,idx)=>{
+                            return <EventCard key={event._id} data={event} isLoading={isLoading}/>
+                        })
                 }
+                
             </section>
         </section>
     )
