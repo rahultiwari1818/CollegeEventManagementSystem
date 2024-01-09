@@ -11,3 +11,4 @@ export function formatMongoDate(mongoDate) {
   
     return formattedDate;
 }
+
