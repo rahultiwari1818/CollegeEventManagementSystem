@@ -20,7 +20,7 @@ export const fetchAllEvents = createAsyncThunk(
             return response.data.data || [];
         }
         catch(err){
-            alert(err)
+            console.log(caches)
             return [];
         }
     }

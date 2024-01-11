@@ -1,10 +1,10 @@
 // Filename - public/worker.js
  
-let STATIC_CACHE_NAME = "gfg-pwa";
-let DYNAMIC_CACHE_NAME = "dynamic-gfg-pwa";
+let STATIC_CACHE_NAME = "collegeEventPWA";
+let DYNAMIC_CACHE_NAME = "dynamicCollegeEventPwa";
  
 // Add Routes and pages using React Browser Router
-let urlsToCache = ["/", "/generateevent", "/login"];
+let urlsToCache = ["/", "/generateevent", "/login",`/eventdetails/`];
  
 // Install a service worker
 self.addEventListener("install", (event) => {
@@ -20,11 +20,10 @@ self.addEventListener("install", (event) => {
 });
  
 // Cache and return requests
+
 self.addEventListener("fetch", (event) => {
     event.respondWith(
         caches.match(event.request).then((cacheRes) => {
-            // If the file is not present in STATIC_CACHE,
-            // it will be searched in DYNAMIC_CACHE
             return (
                 cacheRes ||
                 fetch(event.request).then((fetchRes) => {
@@ -41,11 +40,27 @@ self.addEventListener("fetch", (event) => {
             );
         })
     );
+    if (!navigator.onLine) {
+        if (
+            event.request.url ===
+            "http://localhost:3000/static/js/main.chunk.js"
+        ) {
+            event.waitUntil(
+                self.registration.showNotification(
+                    "Internet",
+                    {
+                        body: "internet not working",
+                        icon: "logo.png",
+                    }
+                )
+            );
+        }
+    }
 });
  
 // Update a service worker
 self.addEventListener("activate", (event) => {
-    let cacheWhitelist = ["gfg-pwa"];
+    let cacheWhitelist = ["collegeEventPWA"];
     event.waitUntil(
         caches.keys().then((cacheNames) => {
             return Promise.all(
@@ -61,4 +76,10 @@ self.addEventListener("activate", (event) => {
             );
         })
     );
+});
+
+axios.interceptors.request.use((config) => {
+    // Modify config to use the service worker URL
+    config.url = '/worker' + config.url;
+    return config;
 });
