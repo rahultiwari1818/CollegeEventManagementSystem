@@ -1,13 +1,13 @@
 const jwtToken = require("jsonwebtoken");
 const bycrypt = require("bcrypt");
-const Users = require("../models/Users");
+const Faculties = require("../models/Faculties");
 
 const SECRET_KEY = process.env.SECRET_KEY;
 
 const registerUser = async(req,res)=>{
     try {
 
-        let user = await Users.findOne({email:req.body.email});
+        let user = await Faculties.findOne({email:req.body.email});
 
         if(user){
             return res.status(400).json({"message":"Email Already registered.!","result":false});
@@ -16,11 +16,12 @@ const registerUser = async(req,res)=>{
         const salt = await bycrypt.genSalt(10);
         const secPass = await bycrypt.hash(req.body.password,salt);
 
-        user = await Users.create({
+        user = await Faculties.create({
             name:req.body.name.trim(),
             password:secPass,
             email:req.body.email.trim(),
-            userType:req.body.userType.trim()
+            role:req.body.userType.trim(),
+            phno:req.body.phno.trim()
         });
         
 
@@ -38,7 +39,7 @@ const loginUser = async(req,res)=>{
     const {email,password} = req.body;
     try {
         
-        const user = await Users.findOne({email:email})
+        const user = await Faculties.findOne({email:email})
 
         if(!user){
             return res.status(400).json({"message":"Email Does Not Exists.!"});
@@ -52,7 +53,7 @@ const loginUser = async(req,res)=>{
          const data = {
             user:{
                 id:user._id,
-                type:user.userType
+                type:user.role
             }
          };
 
@@ -66,7 +67,17 @@ const loginUser = async(req,res)=>{
     }
 }
 
+const getFaculties = async(req,res)=>{
+        try {
+            const data = await Faculties.find({});
+            return res.status(200).json({"message":"Faculties Data Fetched Successfully.","data":data,"result":true})
+        } catch (error) {
+            return res.status(400).json({"message":"Some Error Occured.","result":false})
+        }
+}
+
 module.exports = {
     registerUser,
-    loginUser
+    loginUser,
+    getFaculties
 };

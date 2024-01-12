@@ -5,6 +5,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { ReactComponent as CalanderIcon } from "../assets/Icons/calander_icon.svg";
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { formatFileSize } from '../utils';
 
 export default function GenerateEvent() {
 
@@ -14,6 +15,7 @@ export default function GenerateEvent() {
         ename: "",
         etype: "",
         ptype: "",
+        enature:"",
         noOfParticipants: 1,
         edate: new Date(new Date().setDate(new Date().getDate() + 1)),
         rcdate: new Date(),
@@ -81,20 +83,14 @@ export default function GenerateEvent() {
         });
     };
 
-    const formatFileSize = (bytes) => {
-        if (bytes === 0) return '0 Bytes';
-        const k = 1024;
-        const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-        const i = parseInt(Math.floor(Math.log(bytes) / Math.log(k)));
-        return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
-    };
+
 
 
 
     
 
-    const eventTypes = [{ name: "Cultural" }, { name: "IT" } ,{ name: "Management" },{ name: "Sports" } ];
-
+    const eventNatures = [{ name: "Cultural" }, { name: "IT" } ,{ name: "Management" },{ name: "Sports" } ];
+    const eventTypes = [{name:"Intra-College"},{name:"Inter-College"}];
 
     return (
 
@@ -116,13 +112,13 @@ export default function GenerateEvent() {
                     </section>
                     <section className='md:flex md:justify-between md:items-center block '>
                         <section className='md:p-2 md:m-2  p-1 m-1'>
-                            <label htmlFor="etype">Event Type:</label>
+                            <label htmlFor="etype">Event Nature:</label>
                             <Dropdown
-                                dataArr={eventTypes}
-                                selected={data.etype}
+                                dataArr={eventNatures}
+                                selected={data.enature}
                                 setSelected={setData}
-                                name={"etype"}
-                                label={"Select Event Type"}
+                                name={"enature"}
+                                label={"Select Event Nature"}
                             />
                         </section>
                         <section className='md:p-2 md:m-2  p-1 m-1'>
@@ -138,6 +134,17 @@ export default function GenerateEvent() {
                         </section>
                     </section>
                     <section className='md:flex md:justify-between md:items-center block '>
+
+                    <section className='md:p-2 md:m-2  p-1 m-1'>
+                            <label htmlFor="nop">Event Type:</label>
+                            <Dropdown
+                                dataArr={eventTypes}
+                                selected={data.etype}
+                                setSelected={setData}
+                                name={"etype"}
+                                label={"Select Event Type"}
+                            />
+                        </section>
                         <section className='md:p-2 md:m-2  p-1 m-1'>
                             <label htmlFor="nop">Max No Of Team Members:</label>
                             <input type="number"
@@ -159,29 +166,7 @@ export default function GenerateEvent() {
                                 required
                             />
                         </section>
-                        {/* {
-                            data.etype === "Inter-College" &&
-                            <section className='md:p-2 md:m-2  p-1 m-1'>
-                                <label htmlFor="mopc">Max No Of Participants/Teams per College:</label>
-                                <input type="number"
-                                    name="maxNoOfPartcipantsPerCollege"
-                                    min={1}
-                                    value={data.maxNoOfPartcipantsPerCollege}
-                                    onChange={updateData}
-                                    onBlur={(e) => {
-                                        if (e.target.name === "noOfPartcipants") {
-                                            if (e.target.value < 1) {
-                                                setData({ ...data, [e.target.name]: 1 });
-                                                return;
-                                            }
-                                        }
-                                    }}
-                                    placeholder='Max No Of Participants/Teams per College'
-                                    className='block shadow-lg md:p-3 rounded-lg md:m-2 p-2 m-1'
-                                    required
-                                />
-                            </section>
-                        } */}
+                        
                     </section>
 
                     <section className='md:flex md:justify-between md:items-center block'>
@@ -214,21 +199,7 @@ export default function GenerateEvent() {
 
                         </section>
                     </section>
-                    {/* {
-                        data.etype === "Inter-College" &&
-
-                        <section className='md:p-2 md:m-2  p-1 m-1'>
-                            <label htmlFor="efees">Event Fees:</label>
-                            <input type="number"
-                                name="efees"
-                                className=' w-full shadow-lg md:p-3 rounded-lg md:m-2 p-2 m-1'
-                                placeholder='Enter Event Fees Amount in Rs.'
-                                value={data.efees}
-                                onChange={updateData}
-                                required
-                            />
-                        </section>
-                    } */}
+                    
 
                     <section className='md:p-2 md:m-2  p-1 m-1'>
                         <label htmlFor="details">Event Details:</label><br />
