@@ -1,13 +1,11 @@
-import React, { useEffect, useState } from 'react'
-import {ReactComponent as FileUploadIcon} from "../assets/Icons/FileUploadIcon.svg";
-import { formatFileSize } from '../utils';
+import React, { useCallback, useEffect, useState } from 'react'
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 export default function Installation() {
     
     const initialState = {
         collegename:"",
-        collegelogo:null,
         sadminname:"",
         sadminemail:"",
         sadminphno:"",
@@ -18,7 +16,7 @@ export default function Installation() {
 
     const API_URL = process.env.REACT_APP_BASE_URL;
 
-    async function fetchFacultiesData(){
+    const  fetchFacultiesData  = useCallback(async()=>{
 
         try {
             
@@ -31,7 +29,7 @@ export default function Installation() {
         } catch (error) {
             
         }
-    }
+    },[])
 
     useEffect(()=>{
         fetchFacultiesData();
@@ -46,8 +44,25 @@ export default function Installation() {
 
     }
 
-    const onSubmitHandler = (e) => {
+    const onSubmitHandler = async(e) => {
         e.preventDefault();
+
+        try {
+            const {result,message} = await axios.post(`${API_URL}/api/faculties/setup`,
+                data
+            );
+
+            if(result){
+                toast.success(message);
+            }
+            else{
+                toast.error(message);
+            }
+        } catch (error) {
+            
+        }
+        
+        
     }
 
 
@@ -68,7 +83,7 @@ export default function Installation() {
                             required
                         />
                     </section>
-                    <section className='md:flex md:justify-between md:items-center block '>
+                    {/* <section className='md:flex md:justify-between md:items-center block '>
 
                         <section className='md:p-2 md:m-2  p-1 m-1'>
                         <p className='py-2'>Upload College Logo :</p>
@@ -115,7 +130,7 @@ export default function Installation() {
                             </section>
 
                         </section>
-                    </section>
+                    </section> */}
                    <section className='md:p-2 md:m-2 p-1 m-1'>
                    <label htmlFor="sadminname">Super Admin Name:</label>
                         <input

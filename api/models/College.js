@@ -6,10 +6,6 @@ const CollegeSchema = new Schema({
     collegename:{
         required:true,
         type:String
-    },
-    collegelogo:{
-        required:true,
-        type:String
     }
 });
 
