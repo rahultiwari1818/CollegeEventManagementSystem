@@ -10,15 +10,16 @@ const {
     changeEventStatus,
     updateEventDetails
 } = require("../controllers/events.controller.js");
+const fetchUser = require("../middlewares/fetchUser.js");
 
 router.post("/generateevent",upload.single("ebrochure"),generateEvent);
 
-router.get("/getevents",getAllEvents);
+router.get("/getevents",fetchUser,getAllEvents);
 
-router.get("/getSpecificEvent/:id",getSpecificEvent);
+router.get("/getSpecificEvent/:id",fetchUser,getSpecificEvent);
 
-router.patch("/changeEventStatus/:id",changeEventStatus);
+router.patch("/changeEventStatus/:id",fetchUser,changeEventStatus);
 
-router.patch("/updateEventDetails/:id",updateEventDetails);
+router.patch("/updateEventDetails/:id",fetchUser,updateEventDetails);
 
 module.exports = router;

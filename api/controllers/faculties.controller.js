@@ -5,7 +5,7 @@ const College = require("../models/College");
 
 const SECRET_KEY = process.env.SECRET_KEY;
 
-const registerUser = async(req,res)=>{
+const registerFaculties = async(req,res)=>{
     try {
 
         let user = await Faculties.findOne({email:req.body.email});
@@ -31,12 +31,13 @@ const registerUser = async(req,res)=>{
 
         
     } catch (error) {
+
         return res.status(400).json({"message":"Error Occured"});
     }
 }
 
 
-const loginUser = async(req,res)=>{
+const loginFaculty = async(req,res)=>{
     const {email,password} = req.body;
     try {
         
@@ -50,7 +51,7 @@ const loginUser = async(req,res)=>{
          if(!comparedPassword){
             return res.status(400).json({"message":"Invalid Password"});
          }
-
+         
          const data = {
             user:{
                 id:user._id,
@@ -60,7 +61,7 @@ const loginUser = async(req,res)=>{
 
          const token = jwtToken.sign(data,SECRET_KEY);
 
-         return res.status(200).json({"message":"Logged in Successfully",result:true,token});
+         return res.status(200).json({"message":"Logged in Successfully",data:user,result:true,token});
 
     } catch (error) {
         
@@ -82,25 +83,27 @@ const setUpSystem =  async(req,res)=>{
 
     try {
 
+
         const salt = await bycrypt.genSalt(10);
-        const secPass = await bycrypt.hash(req.body.password,salt);
+        const secPass = await bycrypt.hash(req.body.sadminpassword,salt);
 
         college = await College.create({
-            collegename:req.collegename.trim()
+            collegename:req.body.collegename.trim()
         })
         
         user = await Faculties.create({
-            name:req.body.name.trim(),
+            name:req.body.sadminname.trim(),
             password:secPass,
-            email:req.body.email.trim(),
+            email:req.body.sadminemail.trim(),
             role:"Super Admin",
-            phno:req.body.phno.trim()
+            phno:req.body.sadminphno.trim()
         });
 
         return res.status(200).json({"message":"System Set Up Successfull.!","result":true});
 
 
     } catch (error) {
+        console.log(error)
         return res.status(400).json({"result":false,"message":"Some Error Occured"});
     }
 
@@ -108,8 +111,8 @@ const setUpSystem =  async(req,res)=>{
 
 
 module.exports = {
-    registerUser,
-    loginUser,
+    registerFaculties,
+    loginFaculty,
     getFaculties,
     setUpSystem
 };

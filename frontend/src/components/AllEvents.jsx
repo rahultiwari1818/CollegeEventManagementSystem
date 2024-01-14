@@ -12,13 +12,15 @@ export default function AllEvents() {
     const dispatch = useDispatch();
     const data = useSelector((state)=>state.EventSlice.data);
     const isLoading = useSelector((state)=>state.EventSlice.isLoading);
-
+    const errorObj = useSelector((state)=>state.EventSlice.errorObj);
     
     // const labels = useMemo(()=>{
     //   return data.length > 0 ? Object.keys(data[0]):[];
     // },[data]);
     
- 
+    useEffect(()=>{
+        console.log(errorObj,data)
+    },[errorObj])
 
 
     useEffect(() => {

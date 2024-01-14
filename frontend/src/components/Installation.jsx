@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import Overlay from './Overlay';
 export default function Installation() {
     
     const initialState = {
@@ -12,30 +13,12 @@ export default function Installation() {
         sadminpassword:""
     };
 
+    const [data,setData] = useState(initialState);
+    const [isLoading, setIsLoading] = useState(false);
+
     const navigate = useNavigate();
 
     const API_URL = process.env.REACT_APP_BASE_URL;
-
-    const  fetchFacultiesData  = useCallback(async()=>{
-
-        try {
-            
-            const {data} = await axios.get(`${API_URL}/api/faculties/getFaculties`);
-
-            if(data.length > 0 ){
-                navigate("/login");
-            }
-
-        } catch (error) {
-            
-        }
-    },[])
-
-    useEffect(()=>{
-        fetchFacultiesData();
-    },[fetchFacultiesData])
-
-    const [data,setData] = useState(initialState);
 
     const updateData = (e) =>{
         const name = e.target.name;
@@ -44,29 +27,69 @@ export default function Installation() {
 
     }
 
-    const onSubmitHandler = async(e) => {
-        e.preventDefault();
+    const  fetchFacultiesData  = useCallback(async()=>{
 
         try {
-            const {result,message} = await axios.post(`${API_URL}/api/faculties/setup`,
+            
+            const response = await axios.get(`${API_URL}/api/faculties/isSetUpDone`);
+                console.log(response)
+            if(response.data.isSetUp  ){
+                navigate("/login");
+            }
+
+        } catch (error) {
+            
+        }
+    },[])
+
+    
+
+
+    const onSubmitHandler = async(e) => {
+        setIsLoading(()=>true);
+        e.preventDefault();
+        console.log("logged")
+        try {
+            const response = await axios.post(`${API_URL}/api/faculties/setup`,
                 data
             );
 
-            if(result){
-                toast.success(message);
+            // console.log(response)
+
+            if(response.data.result){
+                toast.success(response.data.message);
             }
             else{
-                toast.error(message);
+                toast.error(response.data.message);
             }
-        } catch (error) {
-            
+            setData(()=>initialState)
+            navigate("/login");
+        } catch ({response}) {
+            console.log(response)
+            toast.error(response.data.message)
+        }
+        finally{
+            setIsLoading(()=>false);
         }
         
         
     }
 
+    useEffect(()=>{
+        fetchFacultiesData();
+    },[fetchFacultiesData])
+
+
+    
+
+
 
     return (
+        <>
+        {
+            isLoading &&
+            <Overlay/>
+        }
         <section className='flex justify-center items-center '>
             <section className='p-5 md:p-10 shadow-2xl bg-white md:outline-none outline outline-blue-500 md:mt-0 md:mb-0 mt-2 '>
                 <p className='text-2xl text-center text-red-500 bg-blue-500 p-2'>Set Up System</p>
@@ -180,10 +203,12 @@ export default function Installation() {
                         /> 
                    </section>
                     <section className='md:p-2 md:m-2  p-1 m-1'>
-                        <input type="submit" value="Finish Set Up" className='text-red-500 bg-white rounded-lg shadow-lg px-5 py-3 w-full m-2 outline outline-red-500 hover:text-white hover:bg-red-500 ' />
+                        <input type="submit" value="Finish Set Up" className='cursor-pointer text-red-500 bg-white rounded-lg shadow-lg px-5 py-3 w-full m-2 outline outline-red-500 hover:text-white hover:bg-red-500 ' />
                     </section>
                 </form>
             </section>
         </section>
+
+        </>
     )
 }

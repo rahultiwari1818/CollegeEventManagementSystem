@@ -1,5 +1,5 @@
 import axios from 'axios'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect , useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { formatMongoDate } from '../utils';
 import { toast } from 'react-toastify';
@@ -12,6 +12,7 @@ export default function EventDetails() {
     const { id } = useParams();
 
     const API_URL = process.env.REACT_APP_BASE_URL;
+    const token = localStorage.getItem("token");
 
     const [data, setData] = useState({});
     const [isLoading, setIsLoading] = useState(true);
@@ -21,7 +22,11 @@ export default function EventDetails() {
 
     const getEventDetails = async () => {
         try {
-            const { data } = await axios.get(`${API_URL}/api/events/getSpecificEvent/${id}`);
+            const { data } = await axios.get(`${API_URL}/api/events/getSpecificEvent/${id}`,{
+                headers:{
+                    "auth-token":token,
+                }
+            });
             setData(data.data[0]);
         } catch (error) {
             setData({});

@@ -12,6 +12,10 @@ export default function Navbar() {
 	setOpenSideBar(()=>!openSideBar);
   }
 
+  const logoutHandler = () =>{
+    localStorage.removeItem("token");
+  }
+
   
   return (
     
@@ -22,12 +26,13 @@ export default function Navbar() {
         <img src={CollegeLogo} alt="logo" className='w-20 h-20 md:h-24 md:w-24 lg:h-32 lg:w-32' />
         <section className='hidden lg:flex'>
           {
-            pathname !== "/installation"
+            pathname !== "/"
             &&
             <>
-          <Link to="/" className='py-3 px-4 bg-green-500  text-white shadow-lg rounded-lg mx-3' > Home </Link>
+          <Link to="/home" className='py-3 px-4 bg-green-500  text-white shadow-lg rounded-lg mx-3' > Home </Link>
           <Link to="generateevent" className='py-3 px-4 bg-green-500  text-white shadow-lg rounded-lg mx-3' > Generate Event </Link>
           <Link to="login" className='py-3 px-4 bg-red-500  text-white shadow-lg rounded-lg mx-3' > Login </Link>
+          <Link to="login" className='py-3 px-4 bg-red-500  text-white shadow-lg rounded-lg mx-3' onClick={logoutHandler} > Logout </Link>
           </>
           }
         </section>
@@ -51,12 +56,16 @@ export default function Navbar() {
           openSideBar &&
           <section className='lg:hidden fixed h-screen bg-blue-500 right-0 top-0 w-2/3'>
             {
-              pathname !== "/installation"
+              pathname !== "/"
               && 
               <section className='m-5 absolute bottom-[10vh]'>
-			  		<Link to="/" className='py-3 px-4 bg-green-500  text-white shadow-lg rounded-lg mx-3' > Home </Link>
+			  		<Link to="/home" className='py-3 px-4 bg-green-500  text-white shadow-lg rounded-lg mx-3'onClick={() => closeSideBar()} > Home </Link>
 					<Link to="generateevent" className=' block my-3 py-3 px-4 bg-green-500  text-white shadow-lg rounded-lg mx-3' onClick={() => closeSideBar()}> Generate Event </Link>
 					<Link to="login" className='block my-3 py-3 px-4 bg-red-500  text-white shadow-lg rounded-lg mx-3' onClick={() => closeSideBar()} > Login </Link>
+          <Link to="login" className='py-3 px-4 bg-red-500  text-white shadow-lg rounded-lg mx-3' onClick={()=>{logoutHandler();
+           closeSideBar();
+          }} > Logout </Link>
+
               </section>
             }
 

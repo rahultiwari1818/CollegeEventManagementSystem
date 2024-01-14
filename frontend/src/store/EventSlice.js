@@ -6,22 +6,27 @@ let initialState = {
     isLoading : false,
     data:[],
     isError : false,
+    errorObj :{}
 };
 
 const API_URL = process.env.REACT_APP_BASE_URL;
-
+   
+const token = localStorage.getItem("token");
 
 export const fetchAllEvents = createAsyncThunk(
     "fetchAllEvents",
     async(data,{getState})=>{
         try{
-            const response = await axios.get(`${API_URL}/api/events/getevents`);
+            const response = await axios.get(`${API_URL}/api/events/getevents`,{
+                headers:{
+                    "auth-token": token,
+                }
+            });
             // console.log(response,"res");
             return response.data.data || [];
         }
-        catch(err){
-            console.log(caches)
-            return [];
+        catch({response}){
+           return []
         }
     }
 );
@@ -44,8 +49,10 @@ export const EventSlice = createSlice({
             state.isLoading = false;
         })
         .addCase(fetchAllEvents.rejected,(state,action)=>{
+            console.log(action,"payload")
             state.isError = true;
-
+            state.isLoading = false;
+            state.errorObj = action.payload;
         })
     }
 
