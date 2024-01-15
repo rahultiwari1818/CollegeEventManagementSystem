@@ -14,7 +14,7 @@ export const UserSlice = createSlice({
             state.role = action.payload.role
             state.name = action.payload.name
             state.isLoggedIn = true
-            
+            console.log(action.payload)
         } ,
         logoutUser:(state,action)=>{
             state._id=""

@@ -23,6 +23,8 @@ export default function Login() {
         setData({...data,[e.target.name]:e.target.value});
     }
 
+    
+
     const submitHandler = async(e) =>{
         setIsLoading(()=>true);
         e.preventDefault();
@@ -30,18 +32,21 @@ export default function Login() {
         try {
             
             const response = await axios.post(`${API_URL}/api/auth/login`,data);
-            console.log(response.data)
+            console.log(response.data.data)
             if(response.data.result){
-                toast.success(response.data.message);
-                dispatch(setNewUser(response.data.user))
                 localStorage.setItem("token",response.data.token);
+                toast.success(response.data.message);
+                dispatch(setNewUser({_id:response.data.data._id,
+                name:response.data.data.name,
+                role : response.data.data.role,}))
                 navigate("/home");
             }
             else{
-                toast.error(response.data.message);
+                toast.error(response?.data.message);
             }
         } catch ({response}) {
-            toast.error(response.data.message);
+        console.log("hey");
+            toast.error(response?.data.message);
         }
         finally{
             setIsLoading(()=>false);

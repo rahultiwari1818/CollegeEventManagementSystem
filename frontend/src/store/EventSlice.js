@@ -16,6 +16,7 @@ const token = localStorage.getItem("token");
 export const fetchAllEvents = createAsyncThunk(
     "fetchAllEvents",
     async(data,{getState})=>{
+        console.log("token",token)
         try{
             const response = await axios.get(`${API_URL}/api/events/getevents`,{
                 headers:{

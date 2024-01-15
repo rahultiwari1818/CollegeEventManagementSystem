@@ -12,7 +12,7 @@ const {
 } = require("../controllers/events.controller.js");
 const fetchUser = require("../middlewares/fetchUser.js");
 
-router.post("/generateevent",upload.single("ebrochure"),generateEvent);
+router.post("/generateevent",upload.single("eposter"),upload.single("ebrochure"),generateEvent);
 
 router.get("/getevents",fetchUser,getAllEvents);
 
