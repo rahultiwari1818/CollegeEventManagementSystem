@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { setNewUser } from '../store/UserSlice';
-
+import Overlay from "./Overlay"
 export default function Login() {
 
     const [data,setData] = useState({
@@ -34,18 +34,19 @@ export default function Login() {
             const response = await axios.post(`${API_URL}/api/auth/login`,data);
             console.log(response.data.data)
             if(response.data.result){
-                localStorage.setItem("token",response.data.token);
-                toast.success(response.data.message);
-                dispatch(setNewUser({_id:response.data.data._id,
-                name:response.data.data.name,
-                role : response.data.data.role,}))
+                    localStorage.setItem("token",response.data.token);
+                    toast.success(response.data.message);
+                    dispatch(setNewUser({_id:response.data.data._id,
+                    name:response.data.data.name,
+                    role : response.data.data.role,
+                    isLoggedIn :true
+                }))
                 navigate("/home");
             }
             else{
                 toast.error(response?.data.message);
             }
         } catch ({response}) {
-        console.log("hey");
             toast.error(response?.data.message);
         }
         finally{
@@ -55,6 +56,14 @@ export default function Login() {
 
 
   return (
+    <>
+
+    {
+        isLoading &&
+        <Overlay/>
+    }
+
+
     <section className='flex justify-center items-center my-5'>
         <section className='p-5 md:p-10 shadow-2xl bg-white rounded-lg m-5 '>
             <p className='text-2xl text-center text-red-500'>Login</p>
@@ -73,5 +82,6 @@ export default function Login() {
             </form>
         </section>
     </section>
+    </>
   )
 }

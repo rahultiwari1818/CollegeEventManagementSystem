@@ -1,12 +1,13 @@
 import axios from 'axios'
 import React, { useEffect , useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { formatMongoDate } from '../utils';
 import { toast } from 'react-toastify';
 import CancelEvent from './CancelEvent';
 import UpdateEvent from './UpdateEvent';
 import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
+import { useSelector } from 'react-redux';
 export default function EventDetails() {
 
     const { id } = useParams();
@@ -19,6 +20,12 @@ export default function EventDetails() {
     const [dataUpdated, setDataUpdated] = useState(false);
     const [openUpdateModal, setOpenUpdateModal] = useState(false);
     const [openCancelCnfModal, setOpenCancelCnfModal] = useState(false);
+    const navigate = useNavigate();
+    const userData = useSelector((state)=>state.UserSlice);
+
+    console.log(userData)
+
+
 
     const getEventDetails = async () => {
         try {
@@ -65,6 +72,11 @@ export default function EventDetails() {
 
             const { data } = await axios.patch(`${API_URL}/api/events/changeEventStatus/${id}`,
                 dataToUpdate
+                ,{
+                    headers:{
+                        "token":token,
+                    }
+                }
             );
             toast.success(data.message);
         } catch (error) {
@@ -92,6 +104,10 @@ export default function EventDetails() {
     useEffect(() => {
         getEventDetails();
     }, [dataUpdated])
+
+    useEffect(()=>{
+        if(!userData.isLoggedIn) navigate("/login");
+    },[userData])
 
 
     return (
@@ -244,7 +260,7 @@ export default function EventDetails() {
                                     duration={0.9}
                                 />
                                 :
-                            data.edetails}</p>
+                          decodeURIComponent(  data.edetails)}</p>
                         </section>
                         <section className="my-2 py-2">
                             <p className='text-xl'>Event Rules:</p>
@@ -259,7 +275,7 @@ export default function EventDetails() {
                                     duration={0.9}
                                 />
                                 :
-                            data.rules}</p>
+                           decodeURIComponent( data.rules)}</p>
                         </section>
                         <section className="my-2 py-2">
                             <button
@@ -288,10 +304,9 @@ export default function EventDetails() {
 
                         {/* Conditional Rendering for Admins */}
                         {
-                            true &&
+                            (userData.role === "Admin" || userData.role === "Super Admin") &&
                             <section className="my-2 py-2 block  md:flex justify-around  items-center">
-                                {
-                                    true &&
+                                
                                     <section className='my-2'>
 
                                         <button
@@ -300,7 +315,7 @@ export default function EventDetails() {
                                             Update
                                         </button>
                                     </section>
-                                }
+                                
 
                                 <section className='my-2'>
                                     <button
@@ -312,7 +327,7 @@ export default function EventDetails() {
                                 </section>
 
                                 {/* to cancel event */}
-                                {(true && !data.isCanceled) &&
+                                {( !data.isCanceled) &&
 
                                     <section className='my-2'>
                                         <button
@@ -325,7 +340,7 @@ export default function EventDetails() {
                                 }
                                 {/* to activate event */}
                                 {
-                                    (true && data.isCanceled) &&
+                                    (data.isCanceled) &&
 
 
                                     <section className='my-2'>

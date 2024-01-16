@@ -12,7 +12,7 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
 
     const [data, setData] = useState(dataToUpdate);
     const noOfPartcipants = useRef(null);
-
+    const token = localStorage.getItem("token");
 
     const { id } = useParams();
 
@@ -26,13 +26,18 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
             ptype: data.ptype.trim(),
             noOfParticipants: data.noOfParticipants,
             edate: formatDate(data.edate),
-            edetails: data.edetails.trim(),
-            rules: data.rules.trim(),
+            edetails: encodeURIComponent( data.edetails.trim()),
+            rules: encodeURIComponent( data.rules.trim()),
             rcdate: formatDate(data.rcdate),
         };
 
         try {
-            const { data } = await axios.patch(`${API_URL}/api/events/updateEventDetails/${id}`, dataObject);
+            const { data } = await axios.patch(`${API_URL}/api/events/updateEventDetails/${id}`, dataObject,
+            {
+                headers:{
+                    "auth-token":token,
+                }
+            });
             if (data.result) {
                 toast.success(data.message);
             }

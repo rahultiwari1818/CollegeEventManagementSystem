@@ -3,18 +3,25 @@ import CollegeLogo from "../assets/images/CollegeLogo.png";
 import { Link, useLocation } from 'react-router-dom';
 import { ReactComponent as HamburgerIcon } from "../assets/Icons/HamburgerIcon.svg";
 import { ReactComponent as CloseIcon } from "../assets/Icons/CloseIcon.svg";
+import { useDispatch, useSelector } from 'react-redux';
+import { logoutUser } from '../store/UserSlice';
 export default function Navbar() {
 
   const [openSideBar, setOpenSideBar] = useState(false);
   const {pathname} = useLocation();
+  const isLoggedIn = useSelector((state)=>state.UserSlice.isLoggedIn);
+  const dispatch = useDispatch();
 
   const closeSideBar = () =>{
 	setOpenSideBar(()=>!openSideBar);
   }
 
   const logoutHandler = () =>{
+    dispatch(logoutUser());
     localStorage.removeItem("token");
   }
+
+  console.log(isLoggedIn,"is logged in")
 
   
   return (
@@ -29,10 +36,18 @@ export default function Navbar() {
             pathname !== "/"
             &&
             <>
-          <Link to="/home" className='py-3 px-4 bg-green-500  text-white shadow-lg rounded-lg mx-3' > Home </Link>
+         
+          {
+            isLoggedIn ?
+            <>
+             <Link to="/home" className='py-3 px-4 bg-green-500  text-white shadow-lg rounded-lg mx-3' > Home </Link>
           <Link to="generateevent" className='py-3 px-4 bg-green-500  text-white shadow-lg rounded-lg mx-3' > Generate Event </Link>
-          <Link to="login" className='py-3 px-4 bg-red-500  text-white shadow-lg rounded-lg mx-3' > Login </Link>
           <Link to="login" className='py-3 px-4 bg-red-500  text-white shadow-lg rounded-lg mx-3' onClick={logoutHandler} > Logout </Link>
+            </>
+            :
+            <Link to="login" className='py-3 px-4 bg-red-500  text-white shadow-lg rounded-lg mx-3' > Login </Link>
+          }
+          
           </>
           }
         </section>
@@ -59,12 +74,21 @@ export default function Navbar() {
               pathname !== "/"
               && 
               <section className='m-5 absolute bottom-[10vh]'>
-			  		<Link to="/home" className='py-3 px-4 bg-green-500  text-white shadow-lg rounded-lg mx-3'onClick={() => closeSideBar()} > Home </Link>
+			  		
+          {
+            isLoggedIn ?
+            <>
+          <Link to="/home" className='py-3 px-4 bg-green-500  text-white shadow-lg rounded-lg mx-3'onClick={() => closeSideBar()} > Home </Link>
 					<Link to="generateevent" className=' block my-3 py-3 px-4 bg-green-500  text-white shadow-lg rounded-lg mx-3' onClick={() => closeSideBar()}> Generate Event </Link>
-					<Link to="login" className='block my-3 py-3 px-4 bg-red-500  text-white shadow-lg rounded-lg mx-3' onClick={() => closeSideBar()} > Login </Link>
           <Link to="login" className='py-3 px-4 bg-red-500  text-white shadow-lg rounded-lg mx-3' onClick={()=>{logoutHandler();
            closeSideBar();
           }} > Logout </Link>
+          </>
+            :
+					<Link to="login" className='block my-3 py-3 px-4 bg-red-500  text-white shadow-lg rounded-lg mx-3' onClick={() => closeSideBar()} > Login </Link>
+          
+
+          }
 
               </section>
             }

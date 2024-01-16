@@ -14,7 +14,7 @@ export default function Installation() {
     };
 
     const [data,setData] = useState(initialState);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     const navigate = useNavigate();
 
@@ -79,7 +79,9 @@ export default function Installation() {
         fetchFacultiesData();
     },[fetchFacultiesData])
 
-
+    useEffect(()=>{
+        setIsLoading(false);
+    })
     
 
 

@@ -1,4 +1,4 @@
-import React, {  useRef, useState } from 'react'
+import React, {  useEffect, useRef, useState } from 'react'
 import Dropdown from './Dropdown';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -7,11 +7,13 @@ import { ReactComponent as FileUploadIcon } from "../assets/Icons/FileUploadIcon
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { formatFileSize } from '../utils';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 export default function GenerateEvent() {
 
     const API_URL = process.env.REACT_APP_BASE_URL;
-
+    const token = localStorage.getItem("token");
     const initialState = {
         ename: "",
         etype: "",
@@ -27,7 +29,8 @@ export default function GenerateEvent() {
     }
 
     const [data, setData] = useState(initialState);
-
+    const isLoggedIn = useSelector((state)=>state.UserSlice.isLoggedIn);
+    const navigate = useNavigate();
 
     const updateData = (e) => {
         const name = e.target.name;
@@ -49,13 +52,14 @@ export default function GenerateEvent() {
         formData.append("ptype", data.ptype.trim());
         formData.append("noOfParticipants", data.noOfParticipants);
         formData.append("edate", formatDate(data.edate));
-        formData.append("edetails", data.edetails.trim());
-        formData.append("rules", data.rules.trim());
+        formData.append("edetails", encodeURIComponent( data.edetails.trim()));
+        formData.append("rules", encodeURIComponent( data.rules.trim()));
         formData.append("rcdate", formatDate(data.rcdate));
         try {
             const {data} = await axios.post(`${API_URL}/api/events/generateevent`, formData, {
                 headers: {
                     'Content-Type': "multipart/form-data",
+                    "auth-token":token,
                 },
             });
             if (data.result) {
@@ -85,7 +89,9 @@ export default function GenerateEvent() {
         });
     };
 
-
+    useEffect(()=>{
+        if(!isLoggedIn) navigate("/login");
+    },[isLoggedIn])
 
 
 

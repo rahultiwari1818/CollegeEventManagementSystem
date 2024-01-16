@@ -55,7 +55,8 @@ const loginFaculty = async(req,res)=>{
          const data = {
             user:{
                 id:user._id,
-                type:user.role
+                type:user.role,
+                name:user.name,
             }
          };
 
@@ -78,6 +79,13 @@ const getFaculties = async(req,res)=>{
         }
 }
 
+const getSpecificFacultyDetail =  async(req,res)=>{
+    try {
+        return res.status(200).json({"message":"Faculty Data Fetched Successfully.","data":req.user,"result":true})
+    } catch (error) {
+        
+    }
+}
 
 const setUpSystem =  async(req,res)=>{
 

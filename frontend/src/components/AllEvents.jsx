@@ -3,6 +3,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { useDispatch,useSelector } from 'react-redux';
 import { fetchAllEvents } from '../store/EventSlice';
 import EventCard from './EventCard';
+import { useNavigate } from 'react-router-dom';
 export default function AllEvents() {
 
     // const [data, setData] = useState([]);
@@ -13,7 +14,8 @@ export default function AllEvents() {
     const data = useSelector((state)=>state.EventSlice.data);
     const isLoading = useSelector((state)=>state.EventSlice.isLoading);
     const errorObj = useSelector((state)=>state.EventSlice.errorObj);
-    
+    const isLoggedIn = useSelector((state)=>state.UserSlice.isLoggedIn);
+    const navigate = useNavigate();
     // const labels = useMemo(()=>{
     //   return data.length > 0 ? Object.keys(data[0]):[];
     // },[data]);
@@ -27,6 +29,10 @@ export default function AllEvents() {
         // fetchEvents();
         dispatch(fetchAllEvents());
     }, [])
+
+    useEffect(()=>{
+        if(!isLoggedIn) navigate("/login");
+    },[isLoggedIn])
 
     return (
         <section className='flex justify-center items-center'>
