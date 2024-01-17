@@ -1,14 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const {
-    registerFaculties,
-    loginFaculty
-} = require("../controllers/faculties.controller");
+const { checkIsLoggedIn } = require("../controllers/auth.controller");
+const fetchUser = require("../middlewares/fetchUser");
 
 
 
-router.post("/register", registerFaculties);
 
-router.post("/login",loginFaculty)
+router.post("/checkIsLoggedIn",fetchUser,checkIsLoggedIn);
 
 module.exports = router;

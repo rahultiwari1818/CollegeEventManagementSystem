@@ -4,6 +4,7 @@ import { useDispatch,useSelector } from 'react-redux';
 import { fetchAllEvents } from '../store/EventSlice';
 import EventCard from './EventCard';
 import { useNavigate } from 'react-router-dom';
+import { checkIsLoggedIn } from '../utils';
 export default function AllEvents() {
 
     // const [data, setData] = useState([]);
@@ -14,7 +15,6 @@ export default function AllEvents() {
     const data = useSelector((state)=>state.EventSlice.data);
     const isLoading = useSelector((state)=>state.EventSlice.isLoading);
     const errorObj = useSelector((state)=>state.EventSlice.errorObj);
-    const isLoggedIn = useSelector((state)=>state.UserSlice.isLoggedIn);
     const navigate = useNavigate();
     // const labels = useMemo(()=>{
     //   return data.length > 0 ? Object.keys(data[0]):[];
@@ -31,8 +31,10 @@ export default function AllEvents() {
     }, [])
 
     useEffect(()=>{
-        if(!isLoggedIn) navigate("/login");
-    },[isLoggedIn])
+       const response = checkIsLoggedIn();
+       console.log("il",response)
+    //    if(!isLoggedIn) navigate("/login");
+    },[])
 
     return (
         <section className='flex justify-center items-center'>

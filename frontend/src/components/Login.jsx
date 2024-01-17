@@ -31,7 +31,7 @@ export default function Login() {
 
         try {
             
-            const response = await axios.post(`${API_URL}/api/auth/login`,data);
+            const response = await axios.post(`${API_URL}/api/faculties/login`,data);
             console.log(response.data.data)
             if(response.data.result){
                     localStorage.setItem("token",response.data.token);
@@ -39,7 +39,6 @@ export default function Login() {
                     dispatch(setNewUser({_id:response.data.data._id,
                     name:response.data.data.name,
                     role : response.data.data.role,
-                    isLoggedIn :true
                 }))
                 navigate("/home");
             }

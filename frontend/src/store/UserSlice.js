@@ -8,22 +8,18 @@ export const UserSlice = createSlice({
     initialState:{
         _id:"",
         name:"",
-        role:"",
-        isLoggedIn:false
+        role:""
     },
     reducers:{
         setNewUser:(state,action)=>{
             state._id=action.payload._id
             state.role = action.payload.role
             state.name = action.payload.name
-            state.isLoggedIn = action.payload.isLoggedIn
-            // console.log(action.payload)
         } ,
         logoutUser:(state,action)=>{
             state._id=""
             state.name=""
             state.role=""
-            state.isLoggedIn=false
         }
     },
     extraReducers: (builder)=>{

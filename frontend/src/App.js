@@ -1,11 +1,9 @@
-import { BrowserRouter, useLocation } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
 import Footer from "./components/Footer";
 import Router from "./components/Router";
 import Navbar from "./components/Navbar";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useEffect } from "react";
-import { useSelector } from "react-redux";
 function App() {
 
 
