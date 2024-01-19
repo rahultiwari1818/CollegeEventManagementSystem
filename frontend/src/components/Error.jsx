@@ -1,5 +1,6 @@
 import React from 'react'
 import './error.scss';
+import  Astronaut  from "../assets/images/astronaut.png";
 
 export default function Error() {
   return (
@@ -16,7 +17,7 @@ export default function Error() {
         <section className="imagesectionision">
           <section className="layer"></section>
           <section className="innerImage">
-            {/* <img src={astronaut} alt="astronaut" /> */}
+            <img src={Astronaut} alt="astronaut" />
           </section>
         </section>
     </section>
