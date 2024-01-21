@@ -10,7 +10,7 @@ function App() {
 	return (
 		<BrowserRouter>
 			<Navbar />
-			<main className="max-h-[80vh] lg:max-h-[75vh] overflow-auto">
+			<main className="max-h-[82vh] lg:max-h-[77vh] overflow-auto">
 					<Router />
 			</main>
 			<Footer />
