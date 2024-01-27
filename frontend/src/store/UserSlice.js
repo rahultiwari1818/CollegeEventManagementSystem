@@ -12,8 +12,8 @@ export const UserSlice = createSlice({
     },
     reducers:{
         setNewUser:(state,action)=>{
-            state._id=action.payload._id
-            state.role = action.payload.role
+            state._id=action.payload.id
+            state.role = action.payload.type
             state.name = action.payload.name
         } ,
         logoutUser:(state,action)=>{

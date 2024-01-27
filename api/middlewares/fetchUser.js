@@ -12,7 +12,7 @@ const fetchUser = async(req,res,next) =>{
     try {
         
         const data = jwtToken.verify(authToken,SECRET_KEY);
-        req.data = data.user;
+        req.user = data.user;
         next();
 
     } catch (error) {

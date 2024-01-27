@@ -96,7 +96,7 @@ export default function EventDetails() {
 
 
 
-    console.log(data)
+    console.log(userData)
 
     const curDate = new Date();
 
@@ -105,9 +105,7 @@ export default function EventDetails() {
         getEventDetails();
     }, [dataUpdated])
 
-    useEffect(()=>{
-        if(!userData.isLoggedIn) navigate("/login");
-    },[userData])
+   
 
 
     return (

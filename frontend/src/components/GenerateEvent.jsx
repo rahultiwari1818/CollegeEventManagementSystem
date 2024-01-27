@@ -29,8 +29,6 @@ export default function GenerateEvent() {
     }
 
     const [data, setData] = useState(initialState);
-    const isLoggedIn = useSelector((state)=>state.UserSlice.isLoggedIn);
-    const navigate = useNavigate();
 
     const updateData = (e) => {
         const name = e.target.name;
@@ -89,10 +87,7 @@ export default function GenerateEvent() {
         });
     };
 
-    useEffect(()=>{
-        if(!isLoggedIn) navigate("/login");
-    },[isLoggedIn])
-
+   
 
 
     
