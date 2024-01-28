@@ -1,6 +1,6 @@
 import axios from 'axios'
 import React, { useEffect , useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import {  useParams } from 'react-router-dom'
 import { formatMongoDate } from '../utils';
 import { toast } from 'react-toastify';
 import CancelEvent from './CancelEvent';
@@ -20,7 +20,6 @@ export default function EventDetails() {
     const [dataUpdated, setDataUpdated] = useState(false);
     const [openUpdateModal, setOpenUpdateModal] = useState(false);
     const [openCancelCnfModal, setOpenCancelCnfModal] = useState(false);
-    const navigate = useNavigate();
     const userData = useSelector((state)=>state.UserSlice);
 
     console.log(userData)
@@ -74,7 +73,7 @@ export default function EventDetails() {
                 dataToUpdate
                 ,{
                     headers:{
-                        "token":token,
+                        "auth-token":token,
                     }
                 }
             );
@@ -258,7 +257,7 @@ export default function EventDetails() {
                                     duration={0.9}
                                 />
                                 :
-                          decodeURIComponent(  data.edetails)}</p>
+                          (  data.edetails)}</p>
                         </section>
                         <section className="my-2 py-2">
                             <p className='text-xl'>Event Rules:</p>
@@ -273,7 +272,7 @@ export default function EventDetails() {
                                     duration={0.9}
                                 />
                                 :
-                           decodeURIComponent( data.rules)}</p>
+                           ( data.rules)}</p>
                         </section>
                         <section className="my-2 py-2">
                             <button

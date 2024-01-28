@@ -5,7 +5,7 @@ import { ReactComponent as HamburgerIcon } from "../assets/Icons/HamburgerIcon.s
 import { ReactComponent as CloseIcon } from "../assets/Icons/CloseIcon.svg";
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
-import { setNewUser } from '../store/UserSlice';
+import { logoutUser, setNewUser } from '../store/UserSlice';
 export default function Navbar() {
 
   const [openSideBar, setOpenSideBar] = useState(false);
@@ -23,6 +23,7 @@ export default function Navbar() {
 
   const logoutHandler = () => {
     localStorage.removeItem("token");
+    dispatch(logoutUser());
   }
 
   // console.log(isLoggedIn, "is logged in")
@@ -43,7 +44,7 @@ export default function Navbar() {
     .catch(({response})=>{
       setIsLoggedIn(()=>false);
       console.log(response)
-      if(response.status==401){
+      if(response.status===401){
         if(!location?.pathname==="/login") navigate("/login");
       }
     })

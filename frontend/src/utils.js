@@ -1,4 +1,3 @@
-import axios from "axios";
 
 
 export function formatMongoDate(mongoDate) {
@@ -24,28 +23,6 @@ export const formatFileSize = (bytes) => {
   return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
 };
 
-export const checkIsLoggedIn = () => {
-	const API_URL = process.env.REACT_APP_BASE_URL;
-	const token = localStorage.getItem("token");
-  
-	return axios.post(`${API_URL}/api/auth/checkIsLoggedIn`, "xyz", {
-	  headers: {
-		"auth-token": token,
-	  }
-	})
-	.then(response => {
-	  return {
-		isLoggedIn: true,
-		data: response.data
-	  };
-	})
-	.catch(error => {
-	  return {
-		isLoggedIn: false,
-		data: {}
-	  };
-	});
-  };
 
 
 
