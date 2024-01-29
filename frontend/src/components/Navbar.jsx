@@ -10,7 +10,7 @@ export default function Navbar() {
 
   const [openSideBar, setOpenSideBar] = useState(false);
   const { pathname } = useLocation();
-  const [isLoggedIn,setIsLoggedIn] = useState(false);
+  const [isLoggedIn,setIsLoggedIn] = useState(undefined);
   const API_URL = process.env.REACT_APP_BASE_URL;
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
@@ -44,7 +44,7 @@ export default function Navbar() {
     .catch(({response})=>{
       setIsLoggedIn(()=>false);
       console.log(response)
-      if(response.status===401){
+      if(response?.status===401){
         if(!location?.pathname==="/login") navigate("/login");
       }
     })
@@ -65,6 +65,11 @@ export default function Navbar() {
             <>
 
               {
+                isLoggedIn === undefined
+                ?
+                <>
+                </>
+                :
                 isLoggedIn ?
                   <>
                     <Link to="/home" className='py-3 px-4 bg-green-500  text-white shadow-lg rounded-lg mx-3' > Home </Link>
@@ -103,6 +108,11 @@ export default function Navbar() {
               <section className='m-5 absolute bottom-[10vh]'>
 
                 {
+                                  isLoggedIn === undefined
+                                  ?
+                                  <>
+                                  </>
+                                  :
                   isLoggedIn ?
                     <>
                       <Link to="/home" className='py-3 px-4 bg-green-500  text-white shadow-lg rounded-lg mx-3' onClick={() => closeSideBar()} > Home </Link>

@@ -26,8 +26,8 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
             ptype: data.ptype.trim(),
             noOfParticipants: data.noOfParticipants,
             edate: formatDate(data.edate),
-            edetails: encodeURIComponent( data.edetails.trim()),
-            rules: encodeURIComponent( data.rules.trim()),
+            edetails: ( data.edetails.trim()),
+            rules: ( data.rules.trim()),
             rcdate: formatDate(data.rcdate),
         };
 

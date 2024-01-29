@@ -11,12 +11,12 @@ let initialState = {
 
 const API_URL = process.env.REACT_APP_BASE_URL;
    
-const token = localStorage.getItem("token");
 
 export const fetchAllEvents = createAsyncThunk(
     "fetchAllEvents",
     async(data,{getState})=>{
-        console.log("token",token)
+        const token = localStorage.getItem("token");
+
         try{
             const response = await axios.get(`${API_URL}/api/events/getevents`,{
                 headers:{
