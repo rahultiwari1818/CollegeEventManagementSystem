@@ -31,7 +31,6 @@ export default function GenerateEvent() {
     const updateData = (e) => {
         const name = e.target.name;
         const value = e.target.value;
-        console.log("date",e.target.value);
         setData({ ...data, [name]: value });
 
     }

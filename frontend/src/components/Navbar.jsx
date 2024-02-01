@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, {  useLayoutEffect, useState } from 'react'
 import CollegeLogo from "../assets/images/CollegeLogo.png";
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ReactComponent as HamburgerIcon } from "../assets/Icons/HamburgerIcon.svg";
@@ -28,9 +28,7 @@ export default function Navbar() {
 
   // console.log(isLoggedIn, "is logged in")
 
-
-  useEffect(()=>{
-    console.log("user checked")
+  useLayoutEffect(()=>{
     axios.post(`${API_URL}/api/auth/checkIsLoggedIn`,"",{
       headers:{
         "auth-token":token
@@ -49,6 +47,7 @@ export default function Navbar() {
       }
     })
   },[location])
+
 
 
   return (
