@@ -5,6 +5,8 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { ReactComponent as CalanderIcon } from "../assets/Icons/calander_icon.svg";
 import { ReactComponent as FileUploadIcon } from "../assets/Icons/FileUploadIcon.svg";
 import { ReactComponent as AddIcon } from "../assets/Icons/add_icon.svg";
+import { ReactComponent as EditIcon } from "../assets/Icons/edit_icon.svg";
+import { ReactComponent as DeleteIcon } from "../assets/Icons/DeleteIcon.svg";
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { formatFileSize } from '../utils';
@@ -32,7 +34,7 @@ export default function GenerateEvent() {
     }
 
     const [data, setData] = useState(initialState);
-
+    const [subEventDataToUpdate,setSubEventDataToUpdate] = useState({});
     const updateData = (e) => {
         const name = e.target.name;
         const value = e.target.value;
@@ -42,6 +44,23 @@ export default function GenerateEvent() {
     const updateHasSubEvents = useCallback((value) => {
         setData({ ...data, hasSubEvents: value })
     }, []);
+
+    const removeSubEvent = (id) =>{
+        const filteredSubEvents = data?.subEvents?.filter((event)=>event.sId !== id);
+        // console.log(filteredSubEvents)
+        setData({
+            ...data,
+            subEvents:filteredSubEvents
+        })
+    }
+
+    const updateAddSubEvent = (id) =>{
+        const subEventData =  data?.subEvents?.filter((event)=>event.sId === id);
+
+        setSubEventDataToUpdate(()=>subEventData[0]);
+        setOpenAddSubEventModal((old)=>!old)
+    }
+
 
     const [openAddSubEventModal, setOpenAddSubEventModal] = useState(false);
 
@@ -95,9 +114,9 @@ export default function GenerateEvent() {
     };
 
 
-    useEffect(()=>{
+    useEffect(() => {
         console.log(data);
-    },[data])
+    }, [data])
 
 
 
@@ -145,6 +164,52 @@ export default function GenerateEvent() {
                                 />
                             </section>
                         </section>
+
+                        <section className='md:p-2 md:m-2  p-1 m-1'>
+                            <ToggleSwitch headingText={"Has Sub Event?"} updateHasSubEvents={updateHasSubEvents} hasSubEvents={data.hasSubEvents} />
+                        </section>
+
+                        {
+                            data?.hasSubEvents
+                            &&
+                            <section className='md:p-2 md:m-2  p-1 m-1'>
+
+                                <p className='flex gap-5 items-center'>
+
+                                    Add Sub Events   <span className='rounded-lg  outline outline-blue-500'>
+                                        <AddIcon className='cursor-pointer' onClick={setOpenAddSubEventModal} />
+                                    </span>
+                                </p>
+                                <table className="w-full border-collapse border border-blue-500 my-3 rounded-lg">
+                                    <thead className="">
+                                        <tr>
+                                            <th className="py-2 px-4 border border-blue-500">Sr No</th>
+                                            <th className="py-2 px-4 border border-blue-500">Event Name</th>
+                                            <th className="py-2 px-4 border border-blue-500">Update</th>
+                                            <th className="py-2 px-4 border border-blue-500">Delete</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {data?.subEvents?.map((event, idx) => (
+                                            <tr className="p-2" key={event?.sId}>
+                                                <td className="py-2 px-4 border border-blue-500">{idx + 1}</td>
+                                                <td className="py-2 px-4 border border-blue-500">{event.subEventName}</td>
+                                                <td className="py-2 px-4 border border-blue-500">
+                                                    <EditIcon className="cursor-pointer" onClick={()=>updateAddSubEvent(event.sId)}/>
+                                                </td>
+                                                <td className="py-2 px-4 border border-blue-500">
+                                                    <DeleteIcon className="cursor-pointer" onClick={()=>removeSubEvent(event.sId)}/>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+
+
+                            </section>
+                        }
+
+
                         <section className='md:flex md:justify-between md:items-center block '>
 
                             <section className='md:p-2 md:m-2  p-1 m-1'>
@@ -158,33 +223,8 @@ export default function GenerateEvent() {
                                 />
                             </section>
 
-                        <section className='md:p-2 md:m-2  p-1 m-1'>
-                            <ToggleSwitch headingText={"Has Sub Event?"} updateHasSubEvents={updateHasSubEvents} hasSubEvents={data.hasSubEvents} />
-                        </section>
-
-                        {
-                            data?.hasSubEvents
-                            &&
-                            <section className='md:p-2 md:m-2  p-1 m-1'>
-                                {
-                                    data?.subEvents?.map((event)=>{
-                                        return <section className='md:flex justify-between items-center' key={event?.sId}>
-
-
-                                        </section>
-                                    })
-                                }
-
-
-                                <p className='flex gap-5 items-center'>
-
-                                    Add Sub Events  <AddIcon className='cursor-pointer' onClick={setOpenAddSubEventModal} />
-                                </p>
-                            </section>
-                        }
-
                             {
-                                !data?.hasSubEvents 
+                                !data?.hasSubEvents
                                 &&
 
                                 <section className='md:p-2 md:m-2  p-1 m-1'>
@@ -209,7 +249,6 @@ export default function GenerateEvent() {
                                     />
                                 </section>
                             }
-
                         </section>
 
 
@@ -363,7 +402,7 @@ export default function GenerateEvent() {
                     </form>
                 </section>
             </section>
-            <AddSubEvents openUpdateModal={openAddSubEventModal} setOpenUpdateModal={setOpenAddSubEventModal} heading={"Add Sub Event"} setData={setData}/>
+            <AddSubEvents openUpdateModal={openAddSubEventModal} setOpenUpdateModal={setOpenAddSubEventModal} heading={"Add Sub Event"} setData={setData} dataToBeUpdated={subEventDataToUpdate} setSubEventDataToUpdate={setSubEventDataToUpdate}/>
         </>
     )
 }

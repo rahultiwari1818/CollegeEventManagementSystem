@@ -20,7 +20,7 @@ export default function Error() {
 
 
   return (
-    <section className='pageNotFound w-full h-full py-2  bg-black  md:py-32 '>
+    <section className='pageNotFound w-full h-[82vh] lg:h-[80vh] py-2  bg-black  md:py-32 '>
     <section className='container mx-auto grid grid-cols-1 gap-3 items-center content-center px-2 py-5 md:grid-cols-2 overflow-hidden'>
         <section className="errorsectionision flex flex-col items-center content-center py-10 px-2 order-1 md:order-2">
           <h1 className='mainHeading text-center text-6xl text-white'>404-Error</h1>
