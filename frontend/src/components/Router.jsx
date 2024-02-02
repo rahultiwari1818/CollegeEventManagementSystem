@@ -9,7 +9,7 @@ import Error from './Error';
 export default function Router() {
 	return (
 		<Routes>
-			<Route path="/" element={<Installation />} />
+			<Route exact path="/" element={<Installation />} />
 			<Route path="/generateevent" element={<GenerateEvent />} />
 			<Route path="/login" element={<Login />} />
 			<Route path="/home" element={<AllEvents />} />

@@ -1,6 +1,6 @@
 import React, {  useLayoutEffect, useState } from 'react'
 import CollegeLogo from "../assets/images/CollegeLogo.png";
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { ReactComponent as HamburgerIcon } from "../assets/Icons/HamburgerIcon.svg";
 import { ReactComponent as CloseIcon } from "../assets/Icons/CloseIcon.svg";
 import axios from 'axios';
@@ -13,9 +13,9 @@ export default function Navbar() {
   const [isLoggedIn,setIsLoggedIn] = useState(undefined);
   const API_URL = process.env.REACT_APP_BASE_URL;
   const token = localStorage.getItem("token");
-  const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const closeSideBar = () => {
     setOpenSideBar(() => !openSideBar);
   }
@@ -36,14 +36,14 @@ export default function Navbar() {
     })
     .then(({data})=>{
       setIsLoggedIn(()=>true);
-        if(location?.pathname==="/login") navigate("/home");
+        if(location?.pathname==="/login") navigate("/home")  ;
         dispatch(setNewUser(data.user))
     })
     .catch(({response})=>{
       setIsLoggedIn(()=>false);
       console.log(response)
       if(response?.status===401){
-        if(!location?.pathname==="/login") navigate("/login");
+        if(!location?.pathname==="/login") navigate("/login")  ;
       }
     })
   },[location])
