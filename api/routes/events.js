@@ -15,7 +15,7 @@ const fetchUser = require("../middlewares/fetchUser.js");
 
 
 
-router.post("/generateevent",fetchUser,upload.single("eposter"),upload.single("ebrochure"),generateEvent);
+router.post("/generateevent", fetchUser, upload.fields([{ name: 'eposter' }, { name: 'ebrochure' }]), generateEvent);
 
 router.post("/generateSubEvent/:masterEventId",fetchUser,async()=>{
 

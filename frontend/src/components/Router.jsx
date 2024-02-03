@@ -6,6 +6,7 @@ import {  Route, Routes } from 'react-router-dom';
 import EventDetails from './EventDetails';
 import Installation from './Installation';
 import Error from './Error';
+import AddStudents from './AddStudents';
 export default function Router() {
 	return (
 		<Routes>
@@ -14,6 +15,7 @@ export default function Router() {
 			<Route path="/login" element={<Login />} />
 			<Route path="/home" element={<AllEvents />} />
 			<Route path="/eventdetails/:id" element={<EventDetails />} />
+			<Route path="/addstudents" element={<AddStudents />} />
 			<Route path="*" element={<Error/>}/>
 		</Routes>
 	)

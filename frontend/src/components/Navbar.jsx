@@ -1,6 +1,6 @@
 import React, {  useLayoutEffect, useState } from 'react'
 import CollegeLogo from "../assets/images/CollegeLogo.png";
-import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ReactComponent as HamburgerIcon } from "../assets/Icons/HamburgerIcon.svg";
 import { ReactComponent as CloseIcon } from "../assets/Icons/CloseIcon.svg";
 import axios from 'axios';
@@ -54,7 +54,7 @@ export default function Navbar() {
 
 
 
-    <nav className='bg-blue-500 p-2  top-0 sticky z-10'>
+    <nav className='bg-blue-500 p-2  top-0 sticky z-10 '>
       <section className='lg:flex items-center  lg:justify-around '>
         <img src={CollegeLogo} alt="logo" className='w-20 h-20 md:h-24 md:w-24 lg:h-32 lg:w-32' />
         <section className='hidden lg:flex'>
@@ -73,6 +73,7 @@ export default function Navbar() {
                   <>
                     <Link to="/home" className='py-3 px-4 bg-green-500  text-white shadow-lg rounded-lg mx-3' > Home </Link>
                     <Link to="generateevent" className='py-3 px-4 bg-green-500  text-white shadow-lg rounded-lg mx-3' > Generate Event </Link>
+                    <Link to="addstudents" className='py-3 px-4 bg-green-500  text-white shadow-lg rounded-lg mx-3' > Add Students </Link>
                     <Link to="login" className='py-3 px-4 bg-red-500  text-white shadow-lg rounded-lg mx-3' onClick={logoutHandler} > Logout </Link>
                   </>
                   :
@@ -116,6 +117,7 @@ export default function Navbar() {
                     <>
                       <Link to="/home" className='py-3 px-4 bg-green-500  text-white shadow-lg rounded-lg mx-3' onClick={() => closeSideBar()} > Home </Link>
                       <Link to="generateevent" className=' block my-3 py-3 px-4 bg-green-500  text-white shadow-lg rounded-lg mx-3' onClick={() => closeSideBar()}> Generate Event </Link>
+                      <Link to="addstudents" className=' block my-3 py-3 px-4 bg-green-500  text-white shadow-lg rounded-lg mx-3' onClick={() => closeSideBar()}> Add Students </Link>
                       <Link to="login" className='py-3 px-4 bg-red-500  text-white shadow-lg rounded-lg mx-3' onClick={() => {
                         logoutHandler();
                         closeSideBar();

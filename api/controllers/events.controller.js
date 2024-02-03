@@ -1,35 +1,46 @@
 const Event = require("../models/Events.js");
-const fs = require("fs");
+const fs = require("fs").promises;
+const path = require("path")
+const generateEvent = async (req, res) => {
+    const { ename, etype, ptype, noOfParticipants, edate, edetails, rules, rcdate, hasSubEvents,enature } = req.body;
+    const brochure = req.files["ebrochure"][0]; // Accessing the first file uploaded for "ebrochure" field
+    const poster = req.files["eposter"][0]; // Accessing the first file uploaded for "eposter" field
+    const originalBrochureName = brochure.originalname;
+    const originalPosterName = poster.originalname;
+    const current_time = Date.now();
+    const newBrochurePath = `uploads/${ename}_brochure_${current_time}.${path.extname(originalBrochureName)}`;
+    const newPosterPath = `uploads/${ename}_poster_${current_time}.${path.extname(originalPosterName)}`;
 
+    try {
+        await fs.rename(brochure.path, newBrochurePath);
+        await fs.rename(poster.path, newPosterPath);
 
- const generateEvent = async(req,res)=>{
-    const file = req.file;
-    const orignalName = file.originalname;
-    const current_time = Date.now()
-    const newFilePath = `uploads/${current_time}-${file.originalname}`;
-    try{
+        const subEvents = JSON.parse(req.body.subEvents); // Parse subEvents JSON string
+        const genEvent = await Event.create({
+            ename: ename.trim(),
+            etype: etype.trim(),
+            ptype: ptype.trim(),
+            enature:enature.trim(),
+            noOfParticipants: noOfParticipants,
+            edate: edate,
+            edetails: edetails.trim(),
+            rules: rules.trim(),
+            rcdate: rcdate,
+            ebrochureName: originalBrochureName,
+            ebrochurePath: newBrochurePath,
+            eposterName: originalPosterName,
+            eposterPath: newPosterPath,
+            hasSubEvents: hasSubEvents,
+            subEvents: subEvents,
+            isCanceled: false
+        });
 
-        fs.renameSync(file.path,newFilePath);
-
-    }catch(err){
-        return res.status(504).json({"message":err.message,"result":false});
+        return res.status(200).json({ "message": "Event Generated Successfully", "result": true });
+    } catch (err) {
+        console.error('Error:', err.message);
+        return res.status(500).json({ "message": "Failed to generate event", "result": false });
     }
-
-    genEvent = await Event.create({
-        ename:req.body.ename.trim(),
-        etype:req.body.etype.trim(),
-        ptype:req.body.ptype.trim(),
-        noOfParticipants:req.body.noOfParticipants,
-        edate:req.body.edate,
-        edetails:req.body.edetails.trim(),
-        rules:req.body.rules.trim(),
-        rcdate:req.body.rcdate,
-        ebrochureName:orignalName,
-        ebrochurePath:newFilePath,
-        isCanceled:false
-    })
-    return res.status(200).json({"message":"Event Generated Successfully","result":true})
-}
+};
 
 
 const getAllEvents = async(req,res)=>{

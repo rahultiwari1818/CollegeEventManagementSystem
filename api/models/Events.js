@@ -12,6 +12,9 @@ const EventsSchema = new Schema({
         type:String
     },
     ptype:{
+        type:String
+    },
+    enature:{
         required:true,
         type:String
     },
@@ -40,6 +43,20 @@ const EventsSchema = new Schema({
     },
     ebrochurePath:{
         type:String
+    },
+    ePosterName:{
+        type:String
+    },
+    ePosterPath:{
+        type:String
+    },
+    hasSubEvents:{
+        required:true,
+        type:Boolean,
+    },
+    subEvents:{
+        required:true,
+        type:Array
     },
     isCanceled:{
         type:Boolean
