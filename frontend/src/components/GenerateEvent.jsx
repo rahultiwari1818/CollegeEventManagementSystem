@@ -339,6 +339,7 @@ export default function GenerateEvent() {
                                         type="file"
                                         id="dropzoneFileForPoster"
                                         name="eposter"
+                                        accept="image/*" 
                                         className="hidden"
                                         onChange={(e) => {
                                             const file = e.target.files[0];
@@ -383,6 +384,7 @@ export default function GenerateEvent() {
                                         id="dropzoneFileForBrochure"
                                         name="ebrochure"
                                         className="hidden"
+                                        accept=".pdf,.docx" 
                                         onChange={(e) => {
                                             const file = e.target.files[0];
                                             // console.log("brochure",file);

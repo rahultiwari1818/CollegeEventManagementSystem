@@ -75,10 +75,14 @@ export default function AddSubEvents({ openUpdateModal, setOpenUpdateModal, head
         })
         setSubEventData(() => initialState)
         setOpenUpdateModal((old) => !old);
+        setSubEventDataToUpdate(() => { });
+
     }
 
     const submitHandler = (e) => {
         e.preventDefault();
+        console.log(dataToBeUpdated,"dtu");
+
         if (dataToBeUpdated?.sId) {
             updateHandler();
         }

@@ -44,10 +44,10 @@ const EventsSchema = new Schema({
     ebrochurePath:{
         type:String
     },
-    ePosterName:{
+    eposterName:{
         type:String
     },
-    ePosterPath:{
+    eposterPath:{
         type:String
     },
     hasSubEvents:{

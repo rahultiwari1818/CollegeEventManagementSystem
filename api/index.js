@@ -14,6 +14,7 @@ app.use('/uploads', express.static('uploads'));
 app.use("/api/events",require("./routes/events.js"));
 app.use("/api/auth",require("./routes/auth.js"));
 app.use("/api/faculties",require("./routes/faculties.js"))
+app.use("/api/students",require("./routes/students.js"))
 
 app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);

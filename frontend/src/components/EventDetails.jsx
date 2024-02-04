@@ -1,6 +1,6 @@
 import axios from 'axios'
-import React, { useEffect , useState } from 'react'
-import {  useParams } from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
+import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { formatMongoDate } from '../utils';
 import { toast } from 'react-toastify';
 import CancelEvent from './CancelEvent';
@@ -11,7 +11,7 @@ import { useSelector } from 'react-redux';
 export default function EventDetails() {
 
     const { id } = useParams();
-
+    const navigate = useNavigate();
     const API_URL = process.env.REACT_APP_BASE_URL;
     const token = localStorage.getItem("token");
 
@@ -20,7 +20,7 @@ export default function EventDetails() {
     const [dataUpdated, setDataUpdated] = useState(false);
     const [openUpdateModal, setOpenUpdateModal] = useState(false);
     const [openCancelCnfModal, setOpenCancelCnfModal] = useState(false);
-    const userData = useSelector((state)=>state.UserSlice);
+    const userData = useSelector((state) => state.UserSlice);
 
     console.log(userData)
 
@@ -28,11 +28,14 @@ export default function EventDetails() {
 
     const getEventDetails = async () => {
         try {
-            const { data } = await axios.get(`${API_URL}/api/events/getSpecificEvent/${id}`,{
-                headers:{
-                    "auth-token":token,
+            const { data } = await axios.get(`${API_URL}/api/events/getSpecificEvent/${id}`, {
+                headers: {
+                    "auth-token": token,
                 }
             });
+            if(data.data.length==0){
+                navigate("/home");
+            }
             setData(data.data[0]);
         } catch (error) {
             setData({});
@@ -50,13 +53,17 @@ export default function EventDetails() {
         window.open(`${API_URL}/${data.ebrochurePath}`, "_blank")
     }
 
+    const viewPoster = () => {
+        window.open(`${API_URL}/${data.eposterPath}`, "_blank")
+    }
+
     const redirectToRegister = () => {
 
     }
 
     const changeEventStatus = async (status) => {
-        
-        setIsLoading((old)=>!old);
+
+        setIsLoading((old) => !old);
 
         const dataToUpdate = (status === "cancel") ?
             {
@@ -71,9 +78,9 @@ export default function EventDetails() {
 
             const { data } = await axios.patch(`${API_URL}/api/events/changeEventStatus/${id}`,
                 dataToUpdate
-                ,{
-                    headers:{
-                        "auth-token":token,
+                , {
+                    headers: {
+                        "auth-token": token,
                     }
                 }
             );
@@ -82,9 +89,9 @@ export default function EventDetails() {
 
         }
         finally {
-       
-            setDataUpdated((old)=>!old);
-            setIsLoading((old)=>!old);
+
+            setDataUpdated((old) => !old);
+            setIsLoading((old) => !old);
         }
 
 
@@ -104,7 +111,7 @@ export default function EventDetails() {
         getEventDetails();
     }, [dataUpdated])
 
-   
+
 
 
     return (
@@ -199,89 +206,183 @@ export default function EventDetails() {
                                     :
                                     formatMongoDate(data.rcdate)}</p>
                         </section>
-                        <section className="my-2 ">
-                            <table className="min-w-full bg-white border border-b border-blue-500">
-                                <thead>
-                                    <tr>
-                                        <th className="py-2 px-4 border-b text-blue-500">Participation Type</th>
-                                       
-                                        <th className="py-2 px-4 border-b text-blue-500">Max No of Allowed Participant Per Team</th>
-                                        
 
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td className="py-2 px-4 border-b">{
-                                            isLoading ?
-                                                <Skeleton
-                                                    count={1}
-                                                    height="100%"
-                                                    width="50%"
-                                                    baseColor="#4299e1"
-                                                    highlightColor="#f7fafc"
-                                                    duration={0.9}
-                                                />
-                                                :
-                                                data.ptype}</td>
-                                        {
+                        {
+                            data?.hasSubEvents
+                                ?
+                                <section className='my-2'>
+                                    <table className="min-w-full bg-white border border-b border-blue-500">
+                                        <thead>
+                                            <tr>
+                                                <th className="py-2 px-4 border-b text-blue-500">Sr No</th>
+                                                <th className="py-2 px-4 border-b text-blue-500">Sub Event Name</th>
+                                                <th className="py-2 px-4 border-b text-blue-500">Participation Type</th>
+                                                <th className="py-2 px-4 border-b text-blue-500">No Of Participant Allowed</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {
+                                                isLoading
+                                                    ?
 
-                                            <td className="py-2 px-4 border-b">{
-                                                isLoading ?
-                                                    <Skeleton
-                                                        count={1}
-                                                        height="100%"
-                                                        width="50%"
-                                                        baseColor="#4299e1"
-                                                        highlightColor="#f7fafc"
-                                                        duration={0.9}
-                                                    />
+                                                    [1, 2, 3].map((skeleton, idx) => {
+                                                        return <tr key={idx}>
+                                                            <td className="py-2 px-4 border-b"><Skeleton
+                                                                count={1}
+                                                                height="100%"
+                                                                width="10%"
+                                                                baseColor="#4299e1"
+                                                                highlightColor="#f7fafc"
+                                                                duration={0.9}
+                                                            /></td>
+                                                            <td className="py-2 px-4 border-b"><Skeleton
+                                                                count={1}
+                                                                height="100%"
+                                                                width="30%"
+                                                                baseColor="#4299e1"
+                                                                highlightColor="#f7fafc"
+                                                                duration={0.9}
+                                                            /></td>
+                                                            <td className="py-2 px-4 border-b"><Skeleton
+                                                                count={1}
+                                                                height="100%"
+                                                                width="30%"
+                                                                baseColor="#4299e1"
+                                                                highlightColor="#f7fafc"
+                                                                duration={0.9}
+                                                            /></td>
+                                                            <td className="py-2 px-4 border-b"><Skeleton
+                                                                count={1}
+                                                                height="100%"
+                                                                width="30%"
+                                                                baseColor="#4299e1"
+                                                                highlightColor="#f7fafc"
+                                                                duration={0.9}
+                                                            /></td>
+                                                        </tr>
+                                                    })
+
                                                     :
-                                                    data.noOfParticipants}</td>
-                                        }
 
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </section>
+                                                    data?.subEvents?.map((event, idx) => {
+                                                        return <tr key={event.sId}>
+                                                            <td className="py-2 px-4 border-b">{idx + 1}</td>
+                                                            <td className="py-2 px-4 border-b">{event.subEventName}</td>
+                                                            <td className="py-2 px-4 border-b">{event.ptype}</td>
+                                                            <td className="py-2 px-4 border-b">{event.noOfParticipants}</td>
+                                                        </tr>
+                                                    })
+                                            }
+                                        </tbody>
+                                    </table>
+                                </section>
+                                :
+
+                                <section className="my-2 ">
+                                    <table className="min-w-full bg-white border border-b border-blue-500">
+                                        <thead>
+                                            <tr>
+                                                <th className="py-2 px-4 border-b text-blue-500">Participation Type</th>
+
+                                                <th className="py-2 px-4 border-b text-blue-500">Max No of Allowed Participant Per Team</th>
+
+
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td className="py-2 px-4 border-b">{
+                                                    isLoading ?
+                                                        <Skeleton
+                                                            count={1}
+                                                            height="100%"
+                                                            width="50%"
+                                                            baseColor="#4299e1"
+                                                            highlightColor="#f7fafc"
+                                                            duration={0.9}
+                                                        />
+                                                        :
+                                                        data.ptype}</td>
+                                                {
+
+                                                    <td className="py-2 px-4 border-b">{
+                                                        isLoading ?
+                                                            <Skeleton
+                                                                count={1}
+                                                                height="100%"
+                                                                width="50%"
+                                                                baseColor="#4299e1"
+                                                                highlightColor="#f7fafc"
+                                                                duration={0.9}
+                                                            />
+                                                            :
+                                                            data.noOfParticipants}</td>
+                                                }
+
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </section>
+                        }
+
                         <section className="my-2 py-2">
                             <p className='text-xl'>Event Details:</p>
                             <p className="text-lg my-2 shadow-xl rounded-xl px-2 py-2">{
                                 isLoading ?
-                                <Skeleton
-                                    count={3}
-                                    height="100%"
-                                    width="80%"
-                                    baseColor="#4299e1"
-                                    highlightColor="#f7fafc"
-                                    duration={0.9}
-                                />
-                                :
-                          (  data.edetails)}</p>
+                                    <Skeleton
+                                        count={3}
+                                        height="100%"
+                                        width="80%"
+                                        baseColor="#4299e1"
+                                        highlightColor="#f7fafc"
+                                        duration={0.9}
+                                    />
+                                    :
+                                    (data.edetails)}</p>
                         </section>
                         <section className="my-2 py-2">
                             <p className='text-xl'>Event Rules:</p>
                             <p className="text-lg my-2 shadow-xl rounded-xl px-2 py-2">{
                                 isLoading ?
-                                <Skeleton
-                                    count={3}
-                                    height="100%"
-                                    width="80%"
-                                    baseColor="#4299e1"
-                                    highlightColor="#f7fafc"
-                                    duration={0.9}
-                                />
-                                :
-                           ( data.rules)}</p>
+                                    <Skeleton
+                                        count={3}
+                                        height="100%"
+                                        width="80%"
+                                        baseColor="#4299e1"
+                                        highlightColor="#f7fafc"
+                                        duration={0.9}
+                                    />
+                                    :
+                                    (data.rules)}</p>
                         </section>
+
                         <section className="my-2 py-2">
-                            <button
-                                className='px-5 py-3 bg-green-500 rounded-lg shadow-lg text-white hover:text-green-500 hover:bg-white hover:outline hover:outline-green-500'
-                                onClick={viewBrochure}
-                            >
-                                View Brochure
-                            </button>
+
+                            {
+                                data.ebrochurePath !== "" &&
+                                <button
+                                    className='mx-4 px-5 py-3 bg-green-500 rounded-lg shadow-lg text-white hover:text-green-500 hover:bg-white hover:outline hover:outline-green-500'
+                                    onClick={viewBrochure}
+                                >
+                                    View Brochure
+                                </button>
+                            }
+                            {
+                                data.eposterPath !== "" &&
+                                <button
+                                    className='mx-4 my-2 px-5 py-3 bg-green-500 rounded-lg shadow-lg text-white hover:text-green-500 hover:bg-white hover:outline hover:outline-green-500'
+                                    onClick={viewPoster}
+                                >
+                                    View Poster
+                                </button>
+                            }
                         </section>
+
+
+
+                        {
+
+                        }
 
 
                         {/* Conditional Rendering  for Participants -- where user is not admin */}
@@ -303,16 +404,16 @@ export default function EventDetails() {
                         {
                             (userData.role === "Admin" || userData.role === "Super Admin") &&
                             <section className="my-2 py-2 block  md:flex justify-around  items-center">
-                                
-                                    <section className='my-2'>
 
-                                        <button
-                                            className=' px-5 py-3 bg-yellow-500 rounded-lg shadow-lg text-white hover:text-yellow-500 hover:bg-white hover:outline hover:outline-yellow-500'
-                                            onClick={setOpenUpdateModal}>
-                                            Update
-                                        </button>
-                                    </section>
-                                
+                                <section className='my-2'>
+
+                                    <button
+                                        className=' px-5 py-3 bg-yellow-500 rounded-lg shadow-lg text-white hover:text-yellow-500 hover:bg-white hover:outline hover:outline-yellow-500'
+                                        onClick={setOpenUpdateModal}>
+                                        Update
+                                    </button>
+                                </section>
+
 
                                 <section className='my-2'>
                                     <button
@@ -324,7 +425,7 @@ export default function EventDetails() {
                                 </section>
 
                                 {/* to cancel event */}
-                                {( !data.isCanceled) &&
+                                {(!data.isCanceled) &&
 
                                     <section className='my-2'>
                                         <button
@@ -344,8 +445,8 @@ export default function EventDetails() {
                                         <button
                                             className='px-5 py-3 bg-green-500 rounded-lg shadow-lg text-white hover:text-green-500 hover:bg-white hover:outline hover:outline-green-500'
                                             onClick={() => {
-                                                 changeEventStatus("activate");
-                                                }}
+                                                changeEventStatus("activate");
+                                            }}
                                         >
                                             Activate  Event
                                         </button>
@@ -361,7 +462,7 @@ export default function EventDetails() {
                 </section>
             </section>
 
-            <UpdateEvent openUpdateModal={openUpdateModal} setOpenUpdateModal={setOpenUpdateModal} dataToUpdate={data} setDataUpdated={setDataUpdated}/>
+            <UpdateEvent openUpdateModal={openUpdateModal} setOpenUpdateModal={setOpenUpdateModal} dataToUpdate={data} setDataUpdated={setDataUpdated} />
             <CancelEvent openCancelCnfModal={openCancelCnfModal} setOpenCancelCnfModal={setOpenCancelCnfModal} changeEventStatus={changeEventStatus} />
         </>
     )

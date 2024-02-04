@@ -3,27 +3,44 @@ const mongoose = require("mongoose");
 const {Schema} = mongoose;
 
 const StudentSchema = new Schema({
-    name:{
-        required:true,
-        type:String
+    course: {
+        type: String,
+        required: true
     },
-    phno:{
-        required:true,
-        type:String,
-        unique:true,
+    semester: {
+        type: String,
+        required:true
     },
-    course:{
-        required:true,
-        type:String
+    division: {
+        type: String,
+        required:true
     },
-    address:{
-        type:String
+    rollno: {
+        type: String,
+        required:true
+    },
+    sid: {
+        type: String,
+        required:true
+    },
+    studentName: {
+        type: String,
+        required:true
+    },
+    phno: {
+        type: String,
+        required: true,
+    },
+    gender: {
+        type: String,
+        required:true
+    },
+    dob: {
+        type: Date
     },
     password:{
-        required:true,
         type:String
-    },
-
+    }
 });
 
 const Students = mongoose.model("Students",StudentSchema);

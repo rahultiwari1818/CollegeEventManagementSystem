@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Switch } from '@headlessui/react'
 
 export default function ToggleSwitch({headingText,hasSubEvents,updateHasSubEvents}) {
-    const [enabled, setEnabled] = useState(false)
+    const [enabled, setEnabled] = useState(hasSubEvents)
 
     useEffect(()=>{
         updateHasSubEvents(enabled);

@@ -27,7 +27,7 @@ router.get("/getSpecificEvent/:id",fetchUser,getSpecificEvent);
 
 router.patch("/changeEventStatus/:id",fetchUser,changeEventStatus);
 
-router.patch("/updateEventDetails/:id",fetchUser,updateEventDetails);
+router.patch("/updateEventDetails/:id",fetchUser,upload.fields([{ name: 'eposter' }, { name: 'ebrochure' }]),updateEventDetails);
 
 router.post("/registerInEvent",fetchUser,async()=>{
 
