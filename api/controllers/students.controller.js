@@ -44,5 +44,44 @@ const registerStudentsInBulk = async (req, res) => {
     }
 };
 
+const getStudents = async (req, res) => {
+    try {
+        const searchQuery = req.query.search || "";
+        const courseFilter = req.query.course || "";
+        const semesterFilter = req.query.semester || ""; // Extract semester filter from query parameters
 
-module.exports = { registerStudentsInBulk };
+        // Define the search criteria
+        const searchCriteria = {
+            $and: [
+                searchQuery ? {
+                    $or: [
+                        { course: { $regex: searchQuery, $options: 'i' } },
+                        { semester: { $regex: searchQuery, $options: 'i' } },
+                        { division: { $regex: searchQuery, $options: 'i' } },
+                        { rollno: { $regex: searchQuery, $options: 'i' } },
+                        { sid: { $regex: searchQuery, $options: 'i' } },
+                        { studentName: { $regex: searchQuery, $options: 'i' } },
+                        { phno: { $regex: searchQuery, $options: 'i' } },
+                        { gender: { $regex: searchQuery, $options: 'i' } }
+                    ]
+                } : {},
+                courseFilter ? { course: courseFilter } : {},
+                semesterFilter ? { semester: semesterFilter } : {} // Add semester filter to search criteria
+            ]
+        };
+
+        // Find students based on search criteria
+        const data = await Student.find(searchCriteria);
+
+        return res.status(200).json({
+            "message": "Students Data Fetched Successfully.",
+            "data": data,
+            "result": true
+        });
+    } catch (error) {
+        return res.status(400).json({ "message": "Some Error Occurred.", "result": false });
+    }
+}
+
+
+module.exports = { registerStudentsInBulk,getStudents };

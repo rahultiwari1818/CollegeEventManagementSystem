@@ -110,7 +110,7 @@ export default function EventDetails() {
     useEffect(() => {
         getEventDetails();
     }, [dataUpdated])
-
+    console.log(data)
 
 
 

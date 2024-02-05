@@ -1,41 +1,13 @@
 
-import { Fragment, forwardRef, useEffect } from 'react';
+import { Fragment } from 'react';
 import { Listbox, Transition } from '@headlessui/react';
 import { ReactComponent as UpIcon } from '../assets/Icons/up_arrow.svg';
 
-const Dropdown = forwardRef(({ dataArr, selected, setSelected, name, label }, ref) => {
+const Dropdown = ({ dataArr, selected, setSelected, name, label }) => {
 
-  useEffect(()=>{
-    // handleInputChange()
-    if(selected === "Individual"){
-      ref.current.value = 1;
-      ref.current.disabled = true;
-    }
-    else if(selected === "Group"){
-      ref.current.disabled = false;
-    }
-  },[])
 
   const handleInputChange = (e) => {
-    if (e.name === 'Individual') {
-      setSelected((oldSelected) => ({
-        ...oldSelected,
-        noOfParticipants: 1,
-      }));
-      
-      ref.current.value = 1;
-      ref.current.disabled = true;
-    } else if (e.name === 'Group') {
-      ref.current.disabled = false;
-      setSelected((oldSelected) => ({
-        ...oldSelected,
-        noOfParticipants: 1,
-      }));
-    }
-    setSelected((oldSelected) => ({
-      ...oldSelected,
-      [name]: e.name,
-    }));
+    setSelected(e.name);
   };
 
   return (
@@ -87,6 +59,6 @@ const Dropdown = forwardRef(({ dataArr, selected, setSelected, name, label }, re
       </Listbox>
     </div>
   );
-});
+};
 
 export default Dropdown;

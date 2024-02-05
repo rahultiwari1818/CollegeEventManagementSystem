@@ -35,6 +35,7 @@ export default function GenerateEvent() {
 
     const [data, setData] = useState(initialState);
     const [subEventDataToUpdate, setSubEventDataToUpdate] = useState({});
+    const noOfParticipants = useRef(null);
     const updateData = (e) => {
         const name = e.target.name;
         const value = e.target.value;
@@ -63,11 +64,34 @@ export default function GenerateEvent() {
         setOpenAddSubEventModal((old) => !old)
     }
 
+    const changeEventNature = useCallback((value)=>{
+        setData((old)=>({...old,enature:value}))
+    },[setData]);
+
+
+    const changeParticipationType = useCallback((value)=>{
+        setData((old)=>({...old,ptype:value}))
+        
+        if (value === 'Individual') {
+            
+            setData((old)=>({...old,ptype:value}));
+            
+            noOfParticipants.current.value = 1;
+            noOfParticipants.current.disabled = true;
+          } else if (value === 'Group') {
+            noOfParticipants.current.disabled = false;
+          }
+          console.log(value,noOfParticipants.current,"participant")
+    },[setData]);
+
+    const changeEventType = useCallback((value)=>{
+        setData((old)=>({...old,etype:value}))
+    },[setData]);
+
 
     const [openAddSubEventModal, setOpenAddSubEventModal] = useState(false);
 
 
-    const noOfPartcipants = useRef(null);
 
     const generateEventHandler = async (e) => {
         e.preventDefault();
@@ -154,7 +178,7 @@ export default function GenerateEvent() {
                         <Dropdown
                             dataArr={eventNatures}
                             selected={data.enature}
-                            setSelected={setData}
+                            setSelected={changeEventNature}
                             name={"enature"}
                             label={"Select Event Nature"}
                         />
@@ -165,7 +189,7 @@ export default function GenerateEvent() {
                         <Dropdown
                             dataArr={eventTypes}
                             selected={data.etype}
-                            setSelected={setData}
+                            setSelected={changeEventType}
                             name={"etype"}
                             label={"Select Event Type"}
                         />
@@ -223,10 +247,9 @@ export default function GenerateEvent() {
                             <Dropdown
                                 dataArr={[{ name: "Individual" }, { name: "Group" }]}
                                 selected={data.ptype}
-                                setSelected={setData}
+                                setSelected={changeParticipationType}
                                 name={"ptype"}
                                 label={"Select Participation Type"}
-                                ref={noOfPartcipants}
                             />
                         </section>
                         <section className='md:p-2 md:m-2 p-1 m-1'>
@@ -234,11 +257,11 @@ export default function GenerateEvent() {
                             <input type="number"
                                 name="noOfParticipants"
                                 min={1}
-                                ref={noOfPartcipants}
+                                ref={noOfParticipants}
                                 value={data.noOfParticipants}
                                 onChange={updateData}
                                 onBlur={(e) => {
-                                    if (e.target.name === "noOfPartcipants") {
+                                    if (e.target.name === "noOfParticipants") {
                                         if (e.target.value < 1) {
                                             setData({ ...data, [e.target.name]: 1 });
                                             return;

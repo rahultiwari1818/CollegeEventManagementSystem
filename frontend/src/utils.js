@@ -23,6 +23,16 @@ export const formatFileSize = (bytes) => {
   return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
 };
 
+export const debounce = (func, delay) => {
+  let timeoutId;
+  return function (...args) {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+          func.apply(this, args);
+      }, delay);
+  };
+};
+
 
 
 

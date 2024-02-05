@@ -19,7 +19,7 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
 
     const [data, setData] = useState(dataToUpdate);
     const [subEventDataToUpdate, setSubEventDataToUpdate] = useState({});
-    const noOfPartcipants = useRef(null);
+    const noOfParticipants = useRef(null);
     const token = localStorage.getItem("token");
 
     const { id } = useParams();
@@ -77,6 +77,33 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
     };
 
 
+    
+    const changeEventNature = useCallback((value)=>{
+        setData((old)=>({...old,enature:value}))
+    },[setData]);
+
+
+    const changeParticipationType = useCallback((value)=>{
+        setData((old)=>({...old,ptype:value}))
+        
+        if (value === 'Individual') {
+            
+            setData((old)=>({...old,ptype:value}));
+            
+            noOfParticipants.current.value = 1;
+            noOfParticipants.current.disabled = true;
+          } else if (value === 'Group') {
+            noOfParticipants.current.disabled = false;
+          }
+        //   console.log(value,noOfParticipants.current,"participant")
+    },[setData]);
+
+    const changeEventType = useCallback((value)=>{
+        setData((old)=>({...old,etype:value}))
+    },[setData]);
+
+
+
     const updateHasSubEvents = useCallback((value) => {
         setData(prevData => ({
             ...prevData,
@@ -122,6 +149,21 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
         setData(dataToUpdate)
     }, [dataToUpdate])
 
+  useEffect(()=>{
+    // handleInputChange()
+    if(noOfParticipants.current){
+        console.log(noOfParticipants.current,"part")
+        if(data?.ptype === "Individual"){
+          noOfParticipants.current.value = 1;
+          noOfParticipants.current.disabled = true;
+        }
+        else if(data?.ptype === "Group"){
+          noOfParticipants.current.disabled = false;
+        }
+        console.log(data,"data")
+    }
+    
+  },[data])
 
     const eventNatures = [{ name: "Cultural" }, { name: "IT" }, { name: "Management" }, { name: "Sports" }];
     const eventTypes = [{ name: "Intra-College" }, { name: "Inter-College" }];
@@ -160,7 +202,7 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
                             setSelected={setData}
                             name={"ptype"}
                             label={"Select Participation Type"}
-                            ref={noOfPartcipants}
+                            ref={noOfParticipants}
                         />
                     </section>
                 </section>
@@ -170,11 +212,11 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
                         <input type="number"
                             name="noOfParticipants"
                             min={1}
-                            ref={noOfPartcipants}
+                            ref={noOfParticipants}
                             value={data.noOfParticipants}
                             onChange={updateData}
                             onBlur={(e) => {
-                                if (e.target.name === "noOfPartcipants") {
+                                if (e.target.name === "noOfParticipants") {
                                     if (e.target.value < 1) {
                                         setData({ ...data, [e.target.name]: 1 });
                                         return;
@@ -269,7 +311,7 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
                         <Dropdown
                             dataArr={eventNatures}
                             selected={data.enature}
-                            setSelected={setData}
+                            setSelected={changeEventNature}
                             name={"enature"}
                             label={"Select Event Nature"}
                         />
@@ -280,7 +322,7 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
                         <Dropdown
                             dataArr={eventTypes}
                             selected={data.etype}
-                            setSelected={setData}
+                            setSelected={changeEventType}
                             name={"etype"}
                             label={"Select Event Type"}
                         />
@@ -338,10 +380,9 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
                             <Dropdown
                                 dataArr={[{ name: "Individual" }, { name: "Group" }]}
                                 selected={data.ptype}
-                                setSelected={setData}
+                                setSelected={changeParticipationType}
                                 name={"ptype"}
                                 label={"Select Participation Type"}
-                                ref={noOfPartcipants}
                             />
                         </section>
                         <section className='md:p-2 md:m-2 p-1 m-1'>
@@ -349,11 +390,11 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
                             <input type="number"
                                 name="noOfParticipants"
                                 min={1}
-                                ref={noOfPartcipants}
+                                ref={noOfParticipants}
                                 value={data.noOfParticipants}
                                 onChange={updateData}
                                 onBlur={(e) => {
-                                    if (e.target.name === "noOfPartcipants") {
+                                    if (e.target.name === "noOfParticipants") {
                                         if (e.target.value < 1) {
                                             setData({ ...data, [e.target.name]: 1 });
                                             return;
