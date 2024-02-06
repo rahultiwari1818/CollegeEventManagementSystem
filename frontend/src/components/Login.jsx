@@ -3,8 +3,10 @@ import React, { useState } from 'react'
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import {ReactComponent as LoginIcon} from "../assets/Icons/LoginIcon.svg";
 import { setNewUser } from '../store/UserSlice';
 import Overlay from "./Overlay"
+import ForgotPassword from './ForgotPassword';
 export default function Login() {
 
     const [data,setData] = useState({
@@ -12,6 +14,7 @@ export default function Login() {
         password:""
     });
     const [isLoading,setIsLoading] = useState(false);
+    const [openForgotPasswordModal,setOpenForgotPasswordModal] = useState(false);
 
     const dispatch = useDispatch();
 
@@ -79,8 +82,14 @@ export default function Login() {
                     <input type="submit" value="Login" className='text-red-500 cursor-pointer bg-white rounded-lg shadow-lg px-5 py-3 w-full m-2 outline outline-red-500 hover:text-white hover:bg-red-500 ' />
                 </section>
             </form>
+            <button className='text-red-500 border-none bg-white float-right mx-5 flex justify-between gap-2 items-center'
+            onClick={()=>setOpenForgotPasswordModal((old)=>!old)}
+            >Forgot Password
+                <LoginIcon/>
+            </button>
         </section>
     </section>
+    <ForgotPassword openForgotPasswordModal={openForgotPasswordModal} setOpenForgotPasswordModal={setOpenForgotPasswordModal}/>
     </>
   )
 }

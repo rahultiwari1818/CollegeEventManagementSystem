@@ -33,6 +33,20 @@ export const debounce = (func, delay) => {
   };
 };
 
+export const handleKeyDown = (event) => {
+  // Allow backspace, delete, and arrow keys
+  if (event.key === "Backspace" || event.key === "Delete" || event.key.includes("Arrow")) {
+      return;
+  }
+
+  // Allow numbers (0-9)
+  if (/[0-9]/.test(event.key)) {
+      return;
+  }
+
+  // Prevent default behavior for all other key presses
+  event.preventDefault();
+};
 
 
 

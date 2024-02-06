@@ -4,7 +4,7 @@ const fs = require("fs");
 const multer = require("multer");
 const upload = multer({dest:"uploads/"});
 const fetchUser = require("../middlewares/fetchUser.js");
-const { registerStudentsInBulk ,getStudents} = require("../controllers/students.controller.js");
+const { registerStudentsInBulk ,getStudents, getDivisions} = require("../controllers/students.controller.js");
 
 
 
@@ -16,4 +16,5 @@ router.post("/registerIndividual",fetchUser,async()=>{
 })
 
 router.get("/getStudents",fetchUser,getStudents)
+router.get("/getDivisions",fetchUser,getDivisions)
 module.exports = router;

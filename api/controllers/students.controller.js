@@ -4,6 +4,8 @@ const path = require("path");
 const csvtojson = require("csvtojson");
 
 
+
+
 const registerStudentsInBulk = async (req, res) => {
     try {
         const studentCSVFile = req.file;
@@ -48,7 +50,8 @@ const getStudents = async (req, res) => {
     try {
         const searchQuery = req.query.search || "";
         const courseFilter = req.query.course || "";
-        const semesterFilter = req.query.semester || ""; // Extract semester filter from query parameters
+        const semesterFilter = req.query.semester || ""; 
+        const divisionFilter = req.query.division || ""; // Extract division filter from query parameters
 
         // Define the search criteria
         const searchCriteria = {
@@ -66,7 +69,9 @@ const getStudents = async (req, res) => {
                     ]
                 } : {},
                 courseFilter ? { course: courseFilter } : {},
-                semesterFilter ? { semester: semesterFilter } : {} // Add semester filter to search criteria
+                semesterFilter ? { semester: semesterFilter } : {}, 
+                // Add division filter to search criteria
+                divisionFilter ? { division: divisionFilter } : {} 
             ]
         };
 
@@ -84,4 +89,32 @@ const getStudents = async (req, res) => {
 }
 
 
-module.exports = { registerStudentsInBulk,getStudents };
+
+const getDivisions = async(req,res)=>{
+    const course = req.query.course || "";
+    try {
+        // Fetch all students
+        const students = await Student.find({course:course});
+
+        // Extract unique divisions from the fetched students
+        const divisions = [...new Set(students.map(student => student.division))];
+
+        return res.status(200).json({
+            "message": "Divisions Fetched Successfully.",
+            "data": divisions,
+            "result": true
+        });
+    } catch (error) {
+        return res.status(400).json({ "message": "Some Error Occurred.", "result": false });
+    }
+}
+
+const studentForgotPassword = async(req,res)=>{
+
+}
+
+const loginStudent = async(req,res)=>{
+
+}
+
+module.exports = { registerStudentsInBulk,getStudents,getDivisions };

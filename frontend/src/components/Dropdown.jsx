@@ -3,7 +3,7 @@ import { Fragment } from 'react';
 import { Listbox, Transition } from '@headlessui/react';
 import { ReactComponent as UpIcon } from '../assets/Icons/up_arrow.svg';
 
-const Dropdown = ({ dataArr, selected, setSelected, name, label }) => {
+const Dropdown = ({ dataArr, selected, setSelected, name, label,disabled }) => {
 
 
   const handleInputChange = (e) => {
@@ -12,9 +12,9 @@ const Dropdown = ({ dataArr, selected, setSelected, name, label }) => {
 
   return (
     <div className="w-full">
-      <Listbox value={selected} onChange={handleInputChange} >
+      <Listbox value={selected} disabled={disabled} onChange={handleInputChange} >
         <div className="relative mt-1">
-          <Listbox.Button  className="relative flex gap-5 justify-between w-full cursor-default rounded-lg bg-white py-3 pl-3 pr-10 text-left shadow-lg focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 ">
+          <Listbox.Button disabled={disabled}  className="relative flex gap-5 justify-between w-full cursor-default rounded-lg bg-white py-3 pl-3 pr-10 text-left shadow-lg focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 ">
             <span className="block truncate">{selected ? selected : label}</span>
             <span>
               <UpIcon className="md:h-5 md:w-5 w-3 h-3 ui-not-open:transform ui-not-open:rotate-180 float-right" />
@@ -31,7 +31,7 @@ const Dropdown = ({ dataArr, selected, setSelected, name, label }) => {
                 <Listbox.Option
                   key={personIdx}
                   className={({ active }) =>
-                    `relative cursor-default select-none py-2 pl-10 pr-4 ${
+                    `relative cursor-default select-none py-2 px-10 ${
                       active ? 'bg-blue-500 text-red-500' : 'text-gray-900'
                     }`
                   }

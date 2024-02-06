@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import Search from './Search';
 import Dropdown from './Dropdown';
 import { debounce } from '../utils';
@@ -12,9 +12,11 @@ export default function ViewStudents() {
     const [searchParams, setSearchParams] = useState({
         search: "",
         searchCourse: "",
-        searchSemester: ""
+        searchSemester: "",
+        searchDivision:""
     });
-
+    const [disableDiv,setDisabledDiv] = useState(true);
+    const [division,setDivision] = useState([]);
 
     const changeSearch = useCallback((value) => {
         setSearchParams((old) => ({ ...old, search: value }));
@@ -22,11 +24,21 @@ export default function ViewStudents() {
 
     const changeSearchCourse = useCallback((value) => {
         setSearchParams((old) => ({ ...old, searchCourse: value }));
+        if(value==="All"){
+            setDisabledDiv((old)=>true);
+        }
+        else{
+            setDisabledDiv((old)=>false);
+        }
     }, [setSearchParams]);
 
     const changeSemesterCourse = useCallback((value) => {
         setSearchParams((old) => ({ ...old, searchSemester: value }));
     }, [setSearchParams]);
+
+    const changeSearchDivision = useCallback((value)=>{
+        setSearchParams((old)=>({...old,searchDivision:value}));
+    })
 
     // const changeSearchCourse = useCallback((value)=>{
     //     setSearchParams((old) => ({ ...old, searchCourse: value }));
@@ -36,20 +48,50 @@ export default function ViewStudents() {
     const token = localStorage.getItem("token");
     const API_URL = process.env.REACT_APP_BASE_URL;
 
+
+    const fetchDivisions = async()=>{
+
+        try {
+            
+            const course = searchParams.searchCourse;
+            if(course==="All") return ;
+            const { data } = await axios.get(`${API_URL}/api/students/getDivisions?course=${course}`, {
+                headers: {
+                    "auth-token": token
+                }
+            })
+            console.log(data?.data)
+            const divisionsArr = new Array();
+            divisionsArr.push({name:"All"});
+            data?.data.forEach(div => {
+                divisionsArr.push({name:div});
+            });
+            setDivision(()=>divisionsArr);
+        } catch (error) {
+            
+        }
+
+    }   
+
     const fetchStudentData = async () => {
 
         try {
             const search = searchParams.search;
             let course = searchParams.searchCourse;
             let semester = searchParams.searchSemester;
+            let div = searchParams.searchDivision;
+
             if (course === "All") {
                 course = "";
             }
             if (semester === "All") {
                 semester = "";
             }
-            console.log(search, course)
-            const { data } = await axios.get(`${API_URL}/api/students/getStudents?search=${search}&course=${course || ""}&semester=${semester}`, {
+            if(div==="All"){
+                div="";
+            }
+
+            const { data } = await axios.get(`${API_URL}/api/students/getStudents?search=${search}&course=${course || ""}&semester=${semester}&division=${div}`, {
                 headers: {
                     "auth-token": token
                 }
@@ -67,6 +109,7 @@ export default function ViewStudents() {
 
     useEffect(() => {
         debouncedFetchStudentData(); // Call the debounced function in useEffect
+        fetchDivisions();
     }, [searchParams]);
 
     const courses = [{ name: "All" }, { name: "BCA" }, { name: "BBA" }, { name: "BcomGujaratiMed" }, { name: "BcomEnglishMedium" }];
@@ -81,7 +124,7 @@ export default function ViewStudents() {
 
                 <Dropdown dataArr={courses} selected={searchParams.searchCourse} setSelected={changeSearchCourse} name={"searchCourse"} label={"Select Course"} />
                 <Dropdown dataArr={semesters} selected={searchParams.searchSemester} setSelected={changeSemesterCourse} name={"searchSemester"} label={"Select Semester"} />
-                <Dropdown dataArr={courses} selected={searchParams.searchCourse} setSelected={changeSearchCourse} name={"searchCourse"} label={"Select Course"} />
+                <Dropdown dataArr={division} selected={searchParams.searchDivision} setSelected={changeSearchDivision} name={"searchDivisions"} label={"Select Division"}  disabled={disableDiv}/>
             </section>
 
             <section className="overflow-x-auto">
@@ -93,9 +136,10 @@ export default function ViewStudents() {
                             <th className="px-4 py-2 min-w-[31%]">Student Name</th>
                             <th className="px-4 py-2 min-w-[10%]">Course</th>
                             <th className="px-4 py-2 min-w-[7%]">Sem</th>
-                            <th className="px-4 py-2 min-w-[7%]">Roll No</th>
+                            <th className="px-4 py-2 min-w-[5%]">Div</th>
+                            <th className="px-4 py-2 min-w-[5%]">Roll No</th>
                             <th className="px-4 py-2 min-w-[15%]">Phone Number</th>
-                            <th className="px-4 py-2 min-w-[7%]">Gender</th>
+                            <th className="px-4 py-2 min-w-[5%]">Gender</th>
                         </tr>
                     </thead>
                     <tbody className="text-gray-600">
@@ -153,7 +197,17 @@ export default function ViewStudents() {
                                                 duration={0.9}
                                             />
                                         </td>
-                                        <td className="border px-4 py-2 min-w-[7%]">
+                                        <td className="border px-4 py-2 min-w-[5%]">
+                                            <Skeleton
+                                                count={1}
+                                                height="50%"
+                                                width="100%"
+                                                baseColor="#4299e1"
+                                                highlightColor="#f7fafc"
+                                                duration={0.9}
+                                            />
+                                        </td>
+                                        <td className="border px-4 py-2 min-w-[5%]">
                                             <Skeleton
                                                 count={1}
                                                 height="50%"
@@ -173,7 +227,7 @@ export default function ViewStudents() {
                                                 duration={0.9}
                                             />
                                         </td>
-                                        <td className="border px-4 py-2 min-w-[7%]">
+                                        <td className="border px-4 py-2 min-w-[5%]">
                                             <Skeleton
                                                 count={1}
                                                 height="50%"
@@ -194,9 +248,10 @@ export default function ViewStudents() {
                                         <td className="border px-4 py-2 min-w-[31%]">{student.studentName}</td>
                                         <td className="border px-4 py-2 min-w-[10%]">{student.course}</td>
                                         <td className="border px-4 py-2 min-w-[7%]">{student.semester}</td>
-                                        <td className="border px-4 py-2 min-w-[7%]">{student.rollno}</td>
+                                        <td className="border px-4 py-2 min-w-[5%]">{student.division}</td>
+                                        <td className="border px-4 py-2 min-w-[5%]">{student.rollno}</td>
                                         <td className="border px-4 py-2 min-w-[15%]">{student.phno}</td>
-                                        <td className="border px-4 py-2 min-w-[7%]">{student.gender}</td>
+                                        <td className="border px-4 py-2 min-w-[5%]">{student.gender}</td>
                                     </tr>
                                 ))
                         }
