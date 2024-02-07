@@ -28,7 +28,7 @@ export default function AllEvents() {
         <section className='flex justify-center items-center'>
 
 
-            <section className='md:grid md:grid-cols-2 lg:grid-cols-3 gap-10 sm:block mb-5 '>
+            <section className='md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10 sm:block mb-5 '>
                 {
                     isLoading ?
                     

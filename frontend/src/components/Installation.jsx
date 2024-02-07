@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react'
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -75,13 +75,13 @@ export default function Installation() {
         
     }
 
-    useEffect(()=>{
+    useLayoutEffect(()=>{
         fetchFacultiesData();
     },[fetchFacultiesData])
 
     useEffect(()=>{
         setIsLoading(false);
-    })
+    },[])
     
 
 

@@ -77,7 +77,10 @@ export default function Navbar() {
                     <Link to="login" className='py-3 px-4 bg-red-500  text-white shadow-lg rounded-lg mx-3' onClick={logoutHandler} > Logout </Link>
                   </>
                   :
-                  <Link to="login" className='py-3 px-4 bg-red-500  text-white shadow-lg rounded-lg mx-3' > Login </Link>
+                  <section>
+
+                    {/* <Link to="login" className='py-3 px-4 bg-red-500  text-white shadow-lg rounded-lg mx-3' > Login </Link> */}
+                  </section>
               }
 
             </>
@@ -124,7 +127,10 @@ export default function Navbar() {
                       }} > Logout </Link>
                     </>
                     :
-                    <Link to="login" className='block my-3 py-3 px-4 bg-red-500  text-white shadow-lg rounded-lg mx-3' onClick={() => closeSideBar()} > Login </Link>
+                    <section>
+
+                      {/*<Link to="login" className='block my-3 py-3 px-4 bg-red-500  text-white shadow-lg rounded-lg mx-3' onClick={() => closeSideBar()} > Login </Link>*/}
+                    </section>
 
 
                 }
