@@ -8,6 +8,7 @@ import UpdateEvent from './UpdateEvent';
 import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
 import { useSelector } from 'react-redux';
+import Overlay from './Overlay';
 export default function EventDetails() {
 
     const { id } = useParams();
@@ -110,12 +111,22 @@ export default function EventDetails() {
     useEffect(() => {
         getEventDetails();
     }, [dataUpdated])
+
+    useEffect(()=>{
+        setIsLoading(false);
+    },[])
+
     console.log(data)
 
 
 
     return (
         <>
+        {
+            isLoading
+            &&
+            <Overlay/>
+        }
             <section className='m-5'>
                 <section className='flex justify-center items-center '>
 

@@ -33,7 +33,7 @@ export const debounce = (func, delay) => {
   };
 };
 
-export const handleKeyDown = (event) => {
+export const handleNumericInput = (event) => {
   // Allow backspace, delete, and arrow keys
   if (event.key === "Backspace" || event.key === "Delete" || event.key.includes("Arrow")) {
       return;

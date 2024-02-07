@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react'
 import Modal from './Modal'
 import Dropdown from './Dropdown'
-import { handleKeyDown } from '../utils';
+import { handleNumericInput } from '../utils';
 
 export default function ForgotPassword({openForgotPasswordModal,setOpenForgotPasswordModal}) {
 
@@ -34,7 +34,7 @@ export default function ForgotPassword({openForgotPasswordModal,setOpenForgotPas
             </section>
             <section className="px-3 my-4">
             <label className='mx-2'>Enter Your Mobile Number : </label>
-                <input type="text" name="phno" className='px-3 py-3 rounded-lg shadow-lg w-full' placeholder='Enter Your Registered Mobile Number' value={data?.phno} onChange={updateData} onKeyDown={handleKeyDown} />
+                <input type="text" name="phno" className='px-3 py-3 rounded-lg shadow-lg w-full' placeholder='Enter Your Registered Mobile Number' value={data?.phno} onChange={updateData} onKeyDown={handleNumericInput} />
             </section>
             <section className="px-3 my-4">
                 <button className='px-5 py-2 bg-green-500 text-white rounded-lg shadow-md'>

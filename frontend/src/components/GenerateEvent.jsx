@@ -12,6 +12,7 @@ import { toast } from 'react-toastify';
 import { formatFileSize } from '../utils';
 import ToggleSwitch from './ToggleSwitch';
 import AddSubEvents from './AddSubEvents';
+import Overlay from "./Overlay";
 
 export default function GenerateEvent() {
 
@@ -36,6 +37,7 @@ export default function GenerateEvent() {
     const [data, setData] = useState(initialState);
     const [subEventDataToUpdate, setSubEventDataToUpdate] = useState({});
     const noOfParticipants = useRef(null);
+    const [isLoading,setIsLoading] = useState(true);
     const updateData = (e) => {
         const name = e.target.name;
         const value = e.target.value;
@@ -81,7 +83,7 @@ export default function GenerateEvent() {
           } else if (value === 'Group') {
             noOfParticipants.current.disabled = false;
           }
-          console.log(value,noOfParticipants.current,"participant")
+        //   console.log(value,noOfParticipants.current,"participant")
     },[setData]);
 
     const changeEventType = useCallback((value)=>{
@@ -148,7 +150,9 @@ export default function GenerateEvent() {
         console.log(data);
     }, [data])
 
-
+    useEffect(()=>{
+        setIsLoading(false)
+    },[])
 
     const eventNatures = [{ name: "Cultural" }, { name: "IT" }, { name: "Management" }, { name: "Sports" }];
     const eventTypes = [{ name: "Intra-College" }, { name: "Inter-College" }];
@@ -156,6 +160,11 @@ export default function GenerateEvent() {
     return (
 
 <>
+{
+    isLoading
+    &&
+    <Overlay/>
+}
     <section className='flex justify-center items-center'>
         <section className='p-5 md:p-10 shadow-2xl bg-white md:outline-none outline outline-blue-500 md:mt-0 md:mb-0 mt-2 w-full max-w-4xl'>
             <p className='text-2xl text-center text-white bg-blue-500 p-2'>Generate Event</p>

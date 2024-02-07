@@ -28,25 +28,29 @@ export default function Navbar() {
 
   // console.log(isLoggedIn, "is logged in")
 
-  useLayoutEffect(()=>{
-    axios.post(`${API_URL}/api/auth/checkIsLoggedIn`,"",{
-      headers:{
-        "auth-token":token
+  useLayoutEffect(() => {
+    const fetchData = async () => {
+      try {
+        const { data } = await axios.post(`${API_URL}/api/auth/checkIsLoggedIn`, "", {
+          headers: {
+            "auth-token": token
+          }
+        });
+        setIsLoggedIn(() => true);
+        if (location?.pathname === "/login") navigate("/home");
+        dispatch(setNewUser(data.user));
+      } catch (error) {
+        setIsLoggedIn(() => false);
+        console.error(error.response);
+        if (error.response?.status === 401 && location?.pathname !== "/login") {
+          navigate("/login");
+        }
       }
-    })
-    .then(({data})=>{
-      setIsLoggedIn(()=>true);
-        if(location?.pathname==="/login") navigate("/home")  ;
-        dispatch(setNewUser(data.user))
-    })
-    .catch(({response})=>{
-      setIsLoggedIn(()=>false);
-      console.log(response)
-      if(response?.status===401){
-        if(!location?.pathname==="/login") navigate("/login")  ;
-      }
-    })
-  },[location])
+    };
+  
+    fetchData();
+  }, [location]);
+  
 
 
 

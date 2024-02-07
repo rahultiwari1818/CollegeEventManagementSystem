@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Overlay from './Overlay';
+import { handleNumericInput } from '../utils';
 export default function Installation() {
     
     const initialState = {
@@ -189,6 +190,7 @@ export default function Installation() {
                             onChange={updateData}
                             placeholder='Enter Phone Number of Super Admin'
                             className='w-full shadow-lg md:p-3 rounded-lg md:m-2 p-2 m-1'
+                            onKeyDown={handleNumericInput}
                             required
                         /> 
                    </section>

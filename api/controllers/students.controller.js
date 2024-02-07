@@ -50,8 +50,10 @@ const getStudents = async (req, res) => {
     try {
         const searchQuery = req.query.search || "";
         const courseFilter = req.query.course || "";
-        const semesterFilter = req.query.semester || ""; 
-        const divisionFilter = req.query.division || ""; // Extract division filter from query parameters
+        const semesterFilter = req.query.semester || "";
+        const divisionFilter = req.query.division || "";
+        const page = parseInt(req.query.page) || 1; // Current page, default is 1
+        const limit = parseInt(req.query.limit) || 10; // Number of items per page, default is 10
 
         // Define the search criteria
         const searchCriteria = {
@@ -69,24 +71,39 @@ const getStudents = async (req, res) => {
                     ]
                 } : {},
                 courseFilter ? { course: courseFilter } : {},
-                semesterFilter ? { semester: semesterFilter } : {}, 
-                // Add division filter to search criteria
-                divisionFilter ? { division: divisionFilter } : {} 
+                semesterFilter ? { semester: semesterFilter } : {},
+                divisionFilter ? { division: divisionFilter } : {}
             ]
         };
 
-        // Find students based on search criteria
-        const data = await Student.find(searchCriteria);
+        // Count total number of documents matching the search criteria
+        const totalDocuments = await Student.countDocuments(searchCriteria);
+
+        // Calculate the total number of pages
+        const totalPages = Math.ceil(totalDocuments / limit);
+
+        // Ensure the current page is within valid range
+        const currentPage = Math.min(Math.max(page, 1), totalPages);
+
+        // Calculate the number of documents to skip
+        const skip = (currentPage - 1) * limit;
+
+        // Find students based on search criteria with pagination
+        const data = await Student.find(searchCriteria).skip(skip).limit(limit);
 
         return res.status(200).json({
-            "message": "Students Data Fetched Successfully.",
-            "data": data,
-            "result": true
+            message: "Students Data Fetched Successfully.",
+            data: data,
+            result: true,
+            currentPage: currentPage,
+            totalPages: totalPages,
+            totalItems: totalDocuments
         });
     } catch (error) {
-        return res.status(400).json({ "message": "Some Error Occurred.", "result": false });
+        return res.status(400).json({ message: "Some Error Occurred.", result: false });
     }
-}
+};
+
 
 
 
