@@ -11,7 +11,6 @@ const checkSetUp = async(req,res)=>{
             return res.status(200).json({"message":"College Fetched Successfully","isSetUp":true})
         }
         else{
-
             return res.status(200).json({"message":"Need Set Up First.","isSetUp":false})
         }
     } catch (error) {

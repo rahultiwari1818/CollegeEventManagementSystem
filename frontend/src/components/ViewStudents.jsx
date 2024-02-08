@@ -1,15 +1,14 @@
 import axios from 'axios';
 import React, { useCallback, useEffect, useState } from 'react'
 import Search from './Search';
-import Dropdown from './Dropdown';
+import Dropdown from './Dropdown'; // Import the Dropdown component
 import { debounce } from '../utils';
 import Skeleton from 'react-loading-skeleton';
 import Overlay from './Overlay';
 
 export default function ViewStudents() {
-
     const [studentData, setStudentData] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isDataLoading, setIsDataLoading] = useState(true);
     const [searchParams, setSearchParams] = useState({
         search: "",
         searchCourse: "",
@@ -17,9 +16,10 @@ export default function ViewStudents() {
         searchdivision: ""
     });
     const [disablesection, setDisabledsection] = useState(true);
-    const [division, setdivision] = useState([]);
+    const [division, setDivision] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
+    const [selectedPage, setSelectedPage] = useState(1);
 
     const changeSearch = useCallback((value) => {
         setSearchParams((old) => ({ ...old, search: value }));
@@ -28,10 +28,9 @@ export default function ViewStudents() {
     const changeSearchCourse = useCallback((value) => {
         setSearchParams((old) => ({ ...old, searchCourse: value }));
         if (value === "All") {
-            setDisabledsection((old) => true);
-        }
-        else {
-            setDisabledsection((old) => false);
+            setDisabledsection(true);
+        } else {
+            setDisabledsection(false);
         }
     }, [setSearchParams]);
 
@@ -39,14 +38,14 @@ export default function ViewStudents() {
         setSearchParams((old) => ({ ...old, searchSemester: value }));
     }, [setSearchParams]);
 
-    const changeSearchdivision = useCallback((value) => {
+    const changeSearchDivision = useCallback((value) => {
         setSearchParams((old) => ({ ...old, searchdivision: value }));
     });
 
     const token = localStorage.getItem("token");
     const API_URL = process.env.REACT_APP_BASE_URL;
 
-    const fetchdivisions = async () => {
+    const fetchDivisions = async () => {
         try {
             const course = searchParams.searchCourse;
             if (course === "All") return;
@@ -54,41 +53,27 @@ export default function ViewStudents() {
                 headers: {
                     "auth-token": token
                 }
-            })
-            console.log(data?.data)
-            const divisionsArr = new Array();
-            divisionsArr.push({ name: "All" });
-            data?.data.forEach(section => {
-                divisionsArr.push({ name: section });
             });
-            setdivision(() => divisionsArr);
+            console.log(data?.data);
+            const divisionsArr = [{ name: "All" }, ...data?.data.map(section => ({ name: section }))];
+            setDivision(divisionsArr);
         } catch (error) {
             console.error("Error fetching divisions:", error);
         }
-    }
+    };
 
     const fetchStudentData = async () => {
         try {
-            const search = searchParams.search;
-            let course = searchParams.searchCourse;
-            let semester = searchParams.searchSemester;
-            let section = searchParams.searchdivision;
-
-            if (course === "All") {
-                course = "";
-            }
-            if (semester === "All") {
-                semester = "";
-            }
-            if (section === "All") {
-                section = "";
-            }
+            const { search, searchCourse, searchSemester, searchdivision } = searchParams;
+            const course = searchCourse === "All" ? "" : searchCourse;
+            const semester = searchSemester === "All" ? "" : searchSemester;
+            const section = searchdivision === "All" ? "" : searchdivision;
 
             const { data } = await axios.get(`${API_URL}/api/students/getStudents`, {
                 params: {
-                    search: search,
-                    course: course || "",
-                    semester: semester,
+                    search,
+                    course,
+                    semester,
                     division: section,
                     page: currentPage,
                     limit: 10 // Adjust the limit as needed
@@ -98,20 +83,19 @@ export default function ViewStudents() {
                 }
             });
             console.log(data.data);
-            setStudentData(() => data?.data);
-            setTotalPages(() => Math.ceil(data.totalItems / 10)); // Assuming 10 items per page
+            setStudentData(data?.data);
+            setTotalPages(Math.ceil(data.totalItems / 10)); // Assuming 10 items per page
         } catch (error) {
             console.error("Error fetching student data:", error);
+        } finally {
+            setIsDataLoading(false);
         }
-        finally {
-            setIsLoading(() => false);
-        }
-    }
+    };
 
     const debouncedFetchStudentData = useCallback(debounce(fetchStudentData, 800), [searchParams, currentPage]);
 
     useEffect(() => {
-        fetchdivisions();
+        fetchDivisions();
     }, [searchParams.searchCourse]);
 
     useEffect(() => {
@@ -126,30 +110,28 @@ export default function ViewStudents() {
     const semesters = [{ name: "All" }, { name: "Sem-I" }, { name: "Sem-II" }, { name: "Sem-III" }, { name: "Sem-IV" }, { name: "Sem-V" }, { name: "Sem-VI" }];
 
     const handlePageChange = (page) => {
-        setCurrentPage(() => page);
+        setCurrentPage(page);
+        setSelectedPage(page); // Update the selected page number
+    };
+
+    const handleSelectedPageChange = (selectedPage) => {
+        setSelectedPage(selectedPage);
+        setCurrentPage(selectedPage);
     };
 
     return (
         <>
-            {/* {
-                isLoading
-                &&
-                <Overlay/>
-            } */}
             <section className='mx-2 my-2 p-2'>
-
                 <section className='p-2 md:flex gap-5 '>
-
-                    <Search placeholder={"Search Student "} searchValue={searchParams?.search} changeSearch={changeSearch} />
-
-                    <Dropdown dataArr={courses} selected={searchParams.searchCourse} setSelected={changeSearchCourse} name={"searchCourse"} label={"Select Course"} />
-                    <Dropdown dataArr={semesters} selected={searchParams.searchSemester} setSelected={changeSemesterCourse} name={"searchSemester"} label={"Select Semester"} />
-                    <Dropdown dataArr={division} selected={searchParams.searchdivision} setSelected={changeSearchdivision} name={"searchdivisions"} label={"Select Division"} disabled={disablesection} />
+                    <Search placeholder="Search Student" searchValue={searchParams?.search} changeSearch={changeSearch} />
+                    <Dropdown dataArr={courses} selected={searchParams.searchCourse} setSelected={changeSearchCourse} name="searchCourse" label="Select Course" />
+                    <Dropdown dataArr={semesters} selected={searchParams.searchSemester} setSelected={changeSemesterCourse} name="searchSemester" label="Select Semester" />
+                    <Dropdown dataArr={division} selected={searchParams.searchdivision} setSelected={changeSearchDivision} name="searchdivisions" label="Select Division" disabled={disablesection} />
                 </section>
 
                 <section className="overflow-x-auto">
                     <table className="table-auto min-w-full bg-white shadow-md rounded-lg overflow-hidden">
-                        <thead className="bg-gray-200 text-gray-700">
+                        <thead className="bg-blue-500 text-white">
                             <tr>
                                 <th className="px-4 py-2 min-w-[7%]">Sr No</th>
                                 <th className="px-4 py-2 min-w-[15%]">SID</th>
@@ -163,8 +145,8 @@ export default function ViewStudents() {
                             </tr>
                         </thead>
                         <tbody className="text-gray-600">
-                            {
-                                isLoading ?
+                        {
+                                isDataLoading ?
                                     [1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12].map((skeleton, idx) => {
                                         return <tr key={idx}>
                                             <td className="border px-4 py-2 min-w-[7%]">
@@ -278,42 +260,33 @@ export default function ViewStudents() {
                         </tbody>
                     </table>
                 </section>
-                <section className="flex justify-center mt-4">
-    {/* Previous page button */}
-    <button
-        className={`mx-1 px-3 py-1 rounded-md ${currentPage === 1 ? 'bg-blue-500 text-white cursor-not-allowed' : 'bg-blue-500 hover:text-blue-500 hover:bg-white hover:outline hover:outline-blue-500 text-white'}`}
-        onClick={() => handlePageChange(currentPage - 1)}
-        disabled={currentPage === 1}
-    >
-        Previous
-    </button>
 
-    {/* Starting pages */}
-    {Array.from({ length: Math.min(5, totalPages) }, (_, index) => index + 1).map((page) => (
-        <button
-            key={page}
-            className={`mx-1 px-3 py-1 rounded-md ${currentPage === page ? 'bg-gray-400 text-white' : 'bg-blue-500 hover:text-blue-500 hover:bg-white hover:outline hover:outline-blue-500 text-white'}`}
-            onClick={() => handlePageChange(page)}
-        >
-            {page}
-        </button>
-    ))}
+                <section className="flex justify-center gap-3 mt-4 md:w-[30vw] float-right pb-3">
+                    <button
+                        className={`mx-1 px-3 py-1 rounded-md ${currentPage === 1 ? 'bg-blue-500 text-white cursor-not-allowed' : 'bg-blue-500 hover:text-blue-500 hover:bg-white hover:outline hover:outline-blue-500 text-white'}`}
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        disabled={currentPage === 1}
+                    >
+                        Previous
+                    </button>
 
-    {/* Next page button */}
-    <button
-        className={`mx-1 px-3 py-1 rounded-md ${currentPage === totalPages ? 'bg-blue-500 text-white cursor-not-allowed' : 'bg-blue-500 hover:text-blue-500 hover:bg-white hover:outline hover:outline-blue-500 text-white'}`}
-        onClick={() => handlePageChange(currentPage + 1)}
-        disabled={currentPage === totalPages}
-    >
-        Next
-    </button>
-</section>
+                    <Dropdown
+                        dataArr={Array.from({ length: totalPages }, (_, idx) => ({ name: idx + 1 }))}
+                        selected={selectedPage.toString()}
+                        setSelected={handleSelectedPageChange}
+                        name="pageDropdown"
+                        label="Go to Page"
+                    />
 
-
-
-
+                    <button
+                        className={`mx-1 px-3 py-1 rounded-md ${currentPage === totalPages ? 'bg-blue-500 text-white cursor-not-allowed' : 'bg-blue-500 hover:text-blue-500 hover:bg-white hover:outline hover:outline-blue-500 text-white'}`}
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                    >
+                        Next
+                    </button>
+                </section>
             </section>
         </>
-
-    )
+    );
 }

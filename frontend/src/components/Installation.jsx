@@ -34,9 +34,10 @@ export default function Installation() {
             
             const response = await axios.get(`${API_URL}/api/faculties/isSetUpDone`);
                 console.log(response)
-            if(response.data.isSetUp  ){
+            if(response.data.isSetUp){
                 navigate("/login");
             }
+            setIsLoading(false);
 
         } catch (error) {
             
@@ -80,9 +81,6 @@ export default function Installation() {
         fetchFacultiesData();
     },[fetchFacultiesData])
 
-    useEffect(()=>{
-        setIsLoading(false);
-    },[])
     
 
 
