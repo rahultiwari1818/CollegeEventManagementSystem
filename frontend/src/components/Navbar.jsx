@@ -1,4 +1,4 @@
-import React, {  useLayoutEffect, useState } from 'react'
+import React, { useCallback, useLayoutEffect, useState } from 'react'
 import CollegeLogo from "../assets/images/CollegeLogo.png";
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ReactComponent as HamburgerIcon } from "../assets/Icons/HamburgerIcon.svg";
@@ -6,19 +6,23 @@ import { ReactComponent as CloseIcon } from "../assets/Icons/CloseIcon.svg";
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import { logoutUser, setNewUser } from '../store/UserSlice';
+import Popover from './Popover';
 export default function Navbar() {
 
   const [openSideBar, setOpenSideBar] = useState(false);
   const { pathname } = useLocation();
-  const [isLoggedIn,setIsLoggedIn] = useState(undefined);
+  const [isLoggedIn, setIsLoggedIn] = useState(undefined);
   const API_URL = process.env.REACT_APP_BASE_URL;
   const token = localStorage.getItem("token");
   const location = useLocation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+
+
   const closeSideBar = () => {
     setOpenSideBar(() => !openSideBar);
-  }
+  };
 
 
   const logoutHandler = () => {
@@ -29,7 +33,7 @@ export default function Navbar() {
   // console.log(isLoggedIn, "is logged in")
 
   useLayoutEffect(() => {
-    if(location.pathname==="/") return;
+    if (location.pathname === "/") return;
 
     const fetchData = async () => {
       try {
@@ -49,12 +53,21 @@ export default function Navbar() {
         }
       }
     };
-  
+
     fetchData();
   }, [location]);
-  
 
 
+  const studentsRoutes = [
+    {
+      to: "addstudents",
+      label: "Add Students ",
+    },
+    {
+      to: "viewstudents",
+      label: "View Students",
+    }
+  ];
 
   return (
 
@@ -71,22 +84,22 @@ export default function Navbar() {
 
               {
                 isLoggedIn === undefined
-                ?
-                <>
-                </>
-                :
-                isLoggedIn ?
+                  ?
                   <>
-                    <Link to="/home" className='py-3 px-4 bg-green-500  text-white shadow-lg rounded-lg mx-3' > Home </Link>
-                    <Link to="generateevent" className='py-3 px-4 bg-green-500  text-white shadow-lg rounded-lg mx-3' > Generate Event </Link>
-                    <Link to="addstudents" className='py-3 px-4 bg-green-500  text-white shadow-lg rounded-lg mx-3' > Add Students </Link>
-                    <Link to="login" className='py-3 px-4 bg-red-500  text-white shadow-lg rounded-lg mx-3' onClick={logoutHandler} > Logout </Link>
                   </>
                   :
-                  <section>
+                  isLoggedIn ?
+                    <>
+                      <Link to="/home" className='py-3 px-4 bg-green-500  text-white shadow-lg rounded-lg mx-3' > Home </Link>
+                      <Link to="generateevent" className='py-3 px-4 bg-green-500  text-white shadow-lg rounded-lg mx-3' > Generate Event </Link>
+                      <Popover options={studentsRoutes} label="Students" />
+                      <Link to="login" className='py-3 px-4 bg-red-500  text-white shadow-lg rounded-lg mx-3' onClick={logoutHandler} > Logout </Link>
+                    </>
+                    :
+                    <section>
 
-                    {/* <Link to="login" className='py-3 px-4 bg-red-500  text-white shadow-lg rounded-lg mx-3' > Login </Link> */}
-                  </section>
+                      {/* <Link to="login" className='py-3 px-4 bg-red-500  text-white shadow-lg rounded-lg mx-3' > Login </Link> */}
+                    </section>
               }
 
             </>
@@ -117,26 +130,27 @@ export default function Navbar() {
               <section className='m-5 absolute bottom-[10vh]'>
 
                 {
-                                  isLoggedIn === undefined
-                                  ?
-                                  <>
-                                  </>
-                                  :
-                  isLoggedIn ?
+                  isLoggedIn === undefined
+                    ?
                     <>
-                      <Link to="/home" className='py-3 px-4 bg-green-500  text-white shadow-lg rounded-lg mx-3' onClick={() => closeSideBar()} > Home </Link>
-                      <Link to="generateevent" className=' block my-3 py-3 px-4 bg-green-500  text-white shadow-lg rounded-lg mx-3' onClick={() => closeSideBar()}> Generate Event </Link>
-                      <Link to="addstudents" className=' block my-3 py-3 px-4 bg-green-500  text-white shadow-lg rounded-lg mx-3' onClick={() => closeSideBar()}> Add Students </Link>
-                      <Link to="login" className='py-3 px-4 bg-red-500  text-white shadow-lg rounded-lg mx-3' onClick={() => {
-                        logoutHandler();
-                        closeSideBar();
-                      }} > Logout </Link>
                     </>
                     :
-                    <section>
+                    isLoggedIn ?
+                      <>
+                        <Link to="/home" className='py-3 px-4 bg-green-500  text-white shadow-lg rounded-lg mx-3' onClick={() => closeSideBar()} > Home </Link>
+                        <Link to="generateevent" className=' block my-3 py-3 px-4 bg-green-500  text-white shadow-lg rounded-lg mx-3' onClick={() => closeSideBar()}> Generate Event </Link>
+                        <Popover options={studentsRoutes} label="Students" closeSideBar={closeSideBar}/>
 
-                      {/*<Link to="login" className='block my-3 py-3 px-4 bg-red-500  text-white shadow-lg rounded-lg mx-3' onClick={() => closeSideBar()} > Login </Link>*/}
-                    </section>
+                        <Link to="login" className='py-3 px-4 bg-red-500  text-white shadow-lg rounded-lg mx-3' onClick={() => {
+                          logoutHandler();
+                          closeSideBar();
+                        }} > Logout </Link>
+                      </>
+                      :
+                      <section>
+
+                        {/*<Link to="login" className='block my-3 py-3 px-4 bg-red-500  text-white shadow-lg rounded-lg mx-3' onClick={() => closeSideBar()} > Login </Link>*/}
+                      </section>
 
 
                 }

@@ -1,6 +1,6 @@
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
-import { Navigate, useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { formatMongoDate } from '../utils';
 import { toast } from 'react-toastify';
 import CancelEvent from './CancelEvent';
@@ -9,6 +9,8 @@ import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
 import { useSelector } from 'react-redux';
 import Overlay from './Overlay';
+import {ReactComponent as View} from "../assets/Icons/View.svg";
+import Modal from './Modal';
 export default function EventDetails() {
 
     const { id } = useParams();
@@ -22,7 +24,8 @@ export default function EventDetails() {
     const [openUpdateModal, setOpenUpdateModal] = useState(false);
     const [openCancelCnfModal, setOpenCancelCnfModal] = useState(false);
     const userData = useSelector((state) => state.UserSlice);
-
+    const [openDetailsModel,setOpenDetailsModel] = useState(false);
+    const [subEventDataToShow,setSubEventDataToShow] = useState({});
     console.log(userData)
 
 
@@ -34,7 +37,7 @@ export default function EventDetails() {
                     "auth-token": token,
                 }
             });
-            if(data.data.length==0){
+            if(data.data.length===0){
                 navigate("/home");
             }
             setData(data.data[0]);
@@ -100,7 +103,10 @@ export default function EventDetails() {
     }
 
 
-
+    const viewSubEventDetails= (event)=>{
+        setOpenDetailsModel((old)=>true);
+        setSubEventDataToShow((old)=>event);
+    }
 
 
     console.log(userData)
@@ -229,6 +235,7 @@ export default function EventDetails() {
                                                 <th className="py-2 px-4 border-b text-blue-500">Sub Event Name</th>
                                                 <th className="py-2 px-4 border-b text-blue-500">Participation Type</th>
                                                 <th className="py-2 px-4 border-b text-blue-500">No Of Participant Allowed</th>
+                                                <th className="py-2 px-4 border-b text-blue-500">View Details</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -281,6 +288,7 @@ export default function EventDetails() {
                                                             <td className="py-2 px-4 border-b">{event.subEventName}</td>
                                                             <td className="py-2 px-4 border-b">{event.ptype}</td>
                                                             <td className="py-2 px-4 border-b">{event.noOfParticipants}</td>
+                                                            <td className="py-2 px-4 border-b"><View className="cursor-pointer" onClick={()=>viewSubEventDetails(event)}/></td>
                                                         </tr>
                                                     })
                                             }
@@ -475,6 +483,52 @@ export default function EventDetails() {
 
             <UpdateEvent openUpdateModal={openUpdateModal} setOpenUpdateModal={setOpenUpdateModal} dataToUpdate={data} setDataUpdated={setDataUpdated} />
             <CancelEvent openCancelCnfModal={openCancelCnfModal} setOpenCancelCnfModal={setOpenCancelCnfModal} changeEventStatus={changeEventStatus} />
+            <ViewSubEventDetails openDetailsModel={openDetailsModel} setOpenDetailsModel={setOpenDetailsModel} eventData={subEventDataToShow}/>
         </>
+    )
+}
+
+
+const ViewSubEventDetails = ({ openDetailsModel, setOpenDetailsModel, eventData }) => {
+    // console.log(openDetailsModel,setOpenDetailsModel,eventData,"cl")
+    return (
+        <Modal isOpen={openDetailsModel} close={setOpenDetailsModel} heading={"Details of Sub Event"}>
+            <section className='px-5 py-4'>
+                <section className='md:p-2 md:m-2 p-1 m-1'>
+                    <label htmlFor="ename">Event Name:</label>
+                    <output
+                        className='w-full block  shadow-lg md:p-3 rounded-lg md:m-2 p-2 m-1'
+                    >{eventData.subEventName}</output>
+                </section>
+
+                <section className='md:p-2 md:m-2 p-1 m-1'>
+                    <label htmlFor="ptype">Participation Type:</label>
+                    <output
+                        className='w-full block  shadow-lg md:p-3 rounded-lg md:m-2 p-2 m-1'
+                    >{eventData.ptype}</output>
+                </section>
+
+                <section className='md:p-2 md:m-2 p-1 m-1'>
+                    <label htmlFor="nop">Max No Of Team Members:</label>
+                    <output
+                        className='block shadow-lg md:p-3 rounded-lg md:m-2 p-2 m-1'
+                    >{eventData.noOfParticipants}</output>
+                </section>
+
+                <section className='md:p-2 md:m-2 p-1 m-1'>
+                    <label htmlFor="details">Event Details:</label><br />
+                    <output
+                        className='w-full block  shadow-lg md:p-3 rounded-lg md:m-2 p-2 m-1'
+                    >{eventData.subEventDetail}</output>
+                </section>
+
+                <section className='md:p-2 md:m-2 p-1 m-1'>
+                    <label htmlFor="rules">Rules For Events:</label><br />
+                    <output
+                        className='w-full  block shadow-lg md:p-3 rounded-lg md:m-2 p-2 m-1'
+                    >{eventData.subEventRules}</output>
+                </section>
+            </section>
+        </Modal>
     )
 }
