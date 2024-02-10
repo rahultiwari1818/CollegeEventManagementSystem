@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const fs = require("fs");
 const multer = require("multer");
-const upload = multer({dest:"uploads/"});
 const {
     generateEvent,
     getAllEvents,
@@ -12,6 +11,9 @@ const {
 } = require("../controllers/events.controller.js");
 const fetchUser = require("../middlewares/fetchUser.js");
 const checkIsAdmin = require("../middlewares/checkIsAdmin.js");
+const { storage } = require("../utils.js");
+const upload = multer({ storage: storage }); 
+
 
 
 

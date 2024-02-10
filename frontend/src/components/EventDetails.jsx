@@ -54,11 +54,11 @@ export default function EventDetails() {
 
 
     const viewBrochure = () => {
-        window.open(`${API_URL}/${data.ebrochurePath}`, "_blank")
+        window.open(`${data?.ebrochurePath}`, "_blank")
     }
 
     const viewPoster = () => {
-        window.open(`${API_URL}/${data.eposterPath}`, "_blank")
+        window.open(`${data?.eposterPath}`, "_blank")
     }
 
     const redirectToRegister = () => {

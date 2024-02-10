@@ -1,26 +1,45 @@
 const Event = require("../models/Events.js");
 const fs = require("fs").promises;
-const path = require("path")
+const path = require("path");
+const { uploadToCloudinary } = require("../utils.js");
+
+
+
+
 const generateEvent = async (req, res) => {
-    const { ename, etype, ptype, noOfParticipants, edate, edetails, rules, rcdate, hasSubEvents,enature } = req.body;
-    const brochure = req.files["ebrochure"][0]; // Accessing the first file uploaded for "ebrochure" field
-    const poster = req.files["eposter"][0]; // Accessing the first file uploaded for "eposter" field
-    const originalBrochureName = brochure.originalname;
-    const originalPosterName = poster.originalname;
-    const current_time = Date.now();
-    const newBrochurePath = `uploads/${ename}_brochure_${current_time}${path.extname(originalBrochureName)}`;
-    const newPosterPath = `uploads/${ename}_poster_${current_time}${path.extname(originalPosterName)}`;
-
+    const { ename, etype, ptype, noOfParticipants, edate, edetails, rules, rcdate, hasSubEvents, enature } = req.body;
+    let brochure, poster;
     try {
-        await fs.rename(brochure.path, newBrochurePath);
-        await fs.rename(poster.path, newPosterPath);
+        if (req.files["ebrochure"]) {
+            brochure = req.files["ebrochure"][0]; // Accessing the first file uploaded for "ebrochure" field
+        }
+        if (req.files["eposter"]) {
+            poster = req.files["eposter"][0]; // Accessing the first file uploaded for "eposter" field
+        }
 
-        const subEvents = JSON.parse(req.body.subEvents); // Parse subEvents JSON string
+
+        const originalBrochureName = brochure ? brochure.originalname : "";
+        const originalPosterName = poster ? poster.originalname : "";
+        const current_time = Date.now();
+        let newBrochurePath="",newPosterPath="";
+        
+        if (brochure) {
+            var result = await uploadToCloudinary(brochure.path,"pdf"); 
+            newBrochurePath = result.url;
+            
+        }
+        if (poster) {
+            var result = await uploadToCloudinary(poster.pathm,"image"); 
+             newPosterPath = result.url;
+
+        }
+
+        const subEvents = JSON.parse(req.body.subEvents || "[]"); // Parse subEvents JSON string, default to empty array if not provided
         const genEvent = await Event.create({
             ename: ename.trim(),
             etype: etype.trim(),
             ptype: ptype.trim(),
-            enature:enature.trim(),
+            enature: enature.trim(),
             noOfParticipants: noOfParticipants,
             edate: edate,
             edetails: edetails.trim(),
@@ -38,9 +57,16 @@ const generateEvent = async (req, res) => {
         return res.status(200).json({ "message": "Event Generated Successfully", "result": true });
     } catch (err) {
         console.error('Error:', err.message);
+        if (brochure) {
+            await fs.unlink(brochure.path); // Delete brochure file if an error occurs
+        }
+        if (poster) {
+            await fs.unlink(poster.path); // Delete poster file if an error occurs
+        }
         return res.status(500).json({ "message": "Failed to generate event", "result": false });
     }
 };
+
 
 
 const getAllEvents = async(req,res)=>{

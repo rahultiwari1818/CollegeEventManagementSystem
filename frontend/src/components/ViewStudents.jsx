@@ -20,6 +20,8 @@ export default function ViewStudents() {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [selectedPage, setSelectedPage] = useState(1);
+    const [entriesPerPage, setEntriesPerPage] = useState(10); // State for selected entries per page
+    const [totalEntries, setTotalEntries] = useState(0); // State for total number of entries
 
     const changeSearch = useCallback((value) => {
         setSearchParams((old) => ({ ...old, search: value }));
@@ -54,7 +56,6 @@ export default function ViewStudents() {
                     "auth-token": token
                 }
             });
-            console.log(data?.data);
             const divisionsArr = [{ name: "All" }, ...data?.data.map(section => ({ name: section }))];
             setDivision(divisionsArr);
         } catch (error) {
@@ -76,15 +77,15 @@ export default function ViewStudents() {
                     semester,
                     division: section,
                     page: currentPage,
-                    limit: 10 // Adjust the limit as needed
+                    limit: entriesPerPage // Use selected entries per page
                 },
                 headers: {
                     "auth-token": token
                 }
             });
-            console.log(data.data);
             setStudentData(data?.data);
-            setTotalPages(Math.ceil(data.totalItems / 10)); // Assuming 10 items per page
+            setTotalPages(Math.ceil(data.totalItems / entriesPerPage));
+            setTotalEntries(data.totalItems);  // Update total pages based on selected entries per page
         } catch (error) {
             console.error("Error fetching student data:", error);
         } finally {
@@ -92,7 +93,7 @@ export default function ViewStudents() {
         }
     };
 
-    const debouncedFetchStudentData = useCallback(debounce(fetchStudentData, 800), [searchParams, currentPage]);
+    const debouncedFetchStudentData = useCallback(debounce(fetchStudentData, 800), [searchParams, currentPage, entriesPerPage]);
 
     useEffect(() => {
         fetchDivisions();
@@ -104,7 +105,7 @@ export default function ViewStudents() {
 
     useEffect(() => {
         debouncedFetchStudentData(); // Call the debounced function in useEffect
-    }, [searchParams, currentPage]);
+    }, [searchParams, currentPage, entriesPerPage]);
 
     const courses = [{ name: "All" }, { name: "BCA" }, { name: "BBA" }, { name: "BcomGujaratiMed" }, { name: "BcomEnglishMedium" }];
     const semesters = [{ name: "All" }, { name: "Sem-I" }, { name: "Sem-II" }, { name: "Sem-III" }, { name: "Sem-IV" }, { name: "Sem-V" }, { name: "Sem-VI" }];
@@ -118,6 +119,20 @@ export default function ViewStudents() {
         setSelectedPage(selectedPage);
         setCurrentPage(selectedPage);
     };
+
+    const handleEntriesPerPageChange = (value) => {
+        setEntriesPerPage(value);
+        setCurrentPage(1); // Reset current page when entries per page changes
+    };
+    const getStartIndex = () => {
+        return (currentPage - 1) * entriesPerPage + 1;
+    };
+
+    const getEndIndex = () => {
+        const endIndex = currentPage * entriesPerPage;
+        return Math.min(endIndex, totalEntries);
+    };
+
 
     return (
         <>
@@ -145,7 +160,7 @@ export default function ViewStudents() {
                             </tr>
                         </thead>
                         <tbody className="text-gray-600">
-                        {
+                            {
                                 isDataLoading ?
                                     [1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12].map((skeleton, idx) => {
                                         return <tr key={idx}>
@@ -261,31 +276,51 @@ export default function ViewStudents() {
                     </table>
                 </section>
 
-                <section className="flex justify-center gap-3 mt-4 md:w-[30vw] float-right pb-3">
-                    <button
-                        className={`mx-1 px-3 py-1 rounded-md ${currentPage === 1 ? 'bg-blue-500 text-white cursor-not-allowed' : 'bg-blue-500 hover:text-blue-500 hover:bg-white hover:outline hover:outline-blue-500 text-white'}`}
-                        onClick={() => handlePageChange(currentPage - 1)}
-                        disabled={currentPage === 1}
-                    >
-                        Previous
-                    </button>
+                <section className='md:flex justify-between items-center gap-5 '>
+                    <section className='flex justify-between items-center'>
+                        <p className='text-nowrap mx-2'>No of Entries : </p>
+                        <Dropdown
+                            dataArr={[{ name: 10 }, { name: 20 }, { name: 50 }]} // Options for entries per page
+                            selected={entriesPerPage.toString()}
+                            setSelected={(value) => handleEntriesPerPageChange(Number(value))} // Convert value to number before setting
+                            name="entriesPerPage"
+                            label="Entries Per Page"
+                        />
+                    </section>
+                    <section>
+                    {totalEntries > 0 && (
+                            <p className=" text-nowrap my-3">
+                                Showing {getStartIndex()} - {getEndIndex()} of {totalEntries} Entries
+                            </p>
+                        )}
+                    </section>
+                    <section className="flex justify-center gap-3 mt-4 md:w-[30vw] float-right pb-3">
+                        <button
+                            className={`mx-1 px-3 py-1 rounded-md ${currentPage === 1 ? 'bg-blue-500 text-white cursor-not-allowed' : 'bg-blue-500 hover:text-blue-500 hover:bg-white hover:outline hover:outline-blue-500 text-white'}`}
+                            onClick={() => handlePageChange(currentPage - 1)}
+                            disabled={currentPage === 1}
+                        >
+                            Previous
+                        </button>
 
-                    <Dropdown
-                        dataArr={Array.from({ length: totalPages }, (_, idx) => ({ name: idx + 1 }))}
-                        selected={selectedPage.toString()}
-                        setSelected={handleSelectedPageChange}
-                        name="pageDropdown"
-                        label="Go to Page"
-                    />
+                        <Dropdown
+                            dataArr={Array.from({ length: totalPages }, (_, idx) => ({ name: idx + 1 }))}
+                            selected={selectedPage.toString()}
+                            setSelected={handleSelectedPageChange}
+                            name="pageDropdown"
+                            label="Go to Page"
+                        />
 
-                    <button
-                        className={`mx-1 px-3 py-1 rounded-md ${currentPage === totalPages ? 'bg-blue-500 text-white cursor-not-allowed' : 'bg-blue-500 hover:text-blue-500 hover:bg-white hover:outline hover:outline-blue-500 text-white'}`}
-                        onClick={() => handlePageChange(currentPage + 1)}
-                        disabled={currentPage === totalPages}
-                    >
-                        Next
-                    </button>
+                        <button
+                            className={`mx-1 px-3 py-1 rounded-md ${currentPage === totalPages ? 'bg-blue-500 text-white cursor-not-allowed' : 'bg-blue-500 hover:text-blue-500 hover:bg-white hover:outline hover:outline-blue-500 text-white'}`}
+                            onClick={() => handlePageChange(currentPage + 1)}
+                            disabled={currentPage === totalPages}
+                        >
+                            Next
+                        </button>
+                    </section>
                 </section>
+
             </section>
         </>
     );
