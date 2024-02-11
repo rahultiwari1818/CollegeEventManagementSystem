@@ -60,7 +60,7 @@ export default function AddStudents() {
                             <section className="flex flex-col items-center justify-center pt-5 pb-6">
                                 <FileUploadIcon className="h-10 w-10" />
                                 <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                                    <span className="font-semibold">Click to Upload</span> or Drag and Drop Student CSV or XLS File
+                                    <span className="font-semibold">Click to Upload</span> or Drag and Drop Student CSV  File
                                 </p>
                             </section>
                             <section className="mt-2">
@@ -84,7 +84,7 @@ export default function AddStudents() {
                                     const file = e.target.files[0];
                                     setFileToUpload(file);
                                 }}
-                                accept=".csv, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                                accept=".csv"
                                 aria-required="true"
                             />
                         </label>
@@ -93,6 +93,8 @@ export default function AddStudents() {
                         <button type="submit" className='text-red-500 bg-white rounded-lg shadow-lg px-5 py-3 w-full m-2 outline outline-red-500 hover:text-white hover:bg-red-500'>Upload File</button>
                     </section>
                 </form>
+
+                
             </section>
 
         </>

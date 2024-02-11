@@ -13,7 +13,7 @@ import { ReactComponent as FileUploadIcon } from "../assets/Icons/FileUploadIcon
 import { ReactComponent as AddIcon } from "../assets/Icons/add_icon.svg";
 import { ReactComponent as EditIcon } from "../assets/Icons/edit_icon.svg";
 import { ReactComponent as DeleteIcon } from "../assets/Icons/DeleteIcon.svg";
-import { formatFileSize } from '../utils';
+import { formatFileSize, handleNumericInput } from '../utils';
 
 export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataToUpdate, setDataUpdated }) {
 
@@ -387,7 +387,7 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
                         </section>
                         <section className='md:p-2 md:m-2 p-1 m-1'>
                             <label htmlFor="nop">Max No Of Team Members:</label>
-                            <input type="number"
+                            <input type="text"
                                 name="noOfParticipants"
                                 min={1}
                                 ref={noOfParticipants}
@@ -403,6 +403,7 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
                                 }}
                                 placeholder='Enter No Of Participants'
                                 className='block shadow-lg md:p-3 rounded-lg p-2'
+                                onKeyDown={handleNumericInput}
                                 required
                             />
                         </section>

@@ -9,7 +9,7 @@ import { ReactComponent as EditIcon } from "../assets/Icons/edit_icon.svg";
 import { ReactComponent as DeleteIcon } from "../assets/Icons/DeleteIcon.svg";
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { formatFileSize } from '../utils';
+import { formatFileSize, handleNumericInput } from '../utils';
 import ToggleSwitch from './ToggleSwitch';
 import AddSubEvents from './AddSubEvents';
 import Overlay from "./Overlay";
@@ -263,7 +263,7 @@ export default function GenerateEvent() {
                         </section>
                         <section className='md:p-2 md:m-2 p-1 m-1'>
                             <label htmlFor="nop">Max No Of Team Members:</label>
-                            <input type="number"
+                            <input type="text"
                                 name="noOfParticipants"
                                 min={1}
                                 ref={noOfParticipants}
@@ -279,6 +279,7 @@ export default function GenerateEvent() {
                                 }}
                                 placeholder='Enter No Of Participants'
                                 className='block shadow-lg md:p-3 rounded-lg p-2'
+                                onKeyDown={handleNumericInput}
                                 required
                             />
                         </section>

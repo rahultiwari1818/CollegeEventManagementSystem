@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import Modal from './Modal'
 import Dropdown from './Dropdown';
+import { handleNumericInput } from '../utils';
 
 export default function AddSubEvents({ openUpdateModal, setOpenUpdateModal, heading, setData, setSubEventDataToUpdate, dataToBeUpdated }) {
     const initialState = {
@@ -122,7 +123,7 @@ export default function AddSubEvents({ openUpdateModal, setOpenUpdateModal, head
                     </section>
                     <section className='md:p-2 md:m-2  p-1 m-1'>
                         <label htmlFor="nop">Max No Of Team Members:</label>
-                        <input type="number"
+                        <input type="text"
                             name="noOfParticipants"
                             min={1}
                             ref={noOfPartcipants}
@@ -138,6 +139,7 @@ export default function AddSubEvents({ openUpdateModal, setOpenUpdateModal, head
                             }}
                             placeholder='Enter No Of Participants'
                             className='block shadow-lg md:p-3 rounded-lg md:m-2 p-2 m-1'
+                            onKeyDown={handleNumericInput}
                             required
                         />
                     </section>

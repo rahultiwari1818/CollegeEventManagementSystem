@@ -7,7 +7,7 @@ const router = express.Router();
 
 
 router.post("/register",checkIsAdmin, registerFaculties);
-router.post("/login",checkIsAdmin,loginFaculty)
+router.post("/login",loginFaculty)
 router.get("/isSetUpDone",checkSetUp)
 router.get("/getfaculties",checkIsAdmin,getFaculties);
 

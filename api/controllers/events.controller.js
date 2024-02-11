@@ -10,6 +10,34 @@ const generateEvent = async (req, res) => {
     const { ename, etype, ptype, noOfParticipants, edate, edetails, rules, rcdate, hasSubEvents, enature } = req.body;
     let brochure, poster;
     try {
+
+        const trimmedFields = {
+            ename: ename.trim(),
+            etype: etype.trim(),
+            edetails: edetails.trim(),
+            rules: rules.trim(),
+            enature: enature.trim()
+        };
+
+        // Check if any required field is empty after trimming
+        const requiredFields = ['ename', 'etype', 'edetails','rules', 'enature'];
+        for (const field of requiredFields) {
+            if (!trimmedFields[field]) {
+                return res.status(400).json({ message: `${field} cannot be empty.` });
+            }
+        }
+
+        // Additional validation for specific fields if needed
+        if (!hasSubEvents) {
+            if(isNaN(parseInt(noOfParticipants))){
+                return res.status(400).json({ message: "Number of participants should be a valid number." });
+            }
+            if(ptype.trim()===""){
+                return res.status(400).json({ message: "Participation Type  is a Required Field." });
+            }
+        }
+
+
         if (req.files["ebrochure"]) {
             brochure = req.files["ebrochure"][0]; // Accessing the first file uploaded for "ebrochure" field
         }

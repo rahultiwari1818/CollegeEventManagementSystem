@@ -1,16 +1,17 @@
 // Filename - public/worker.js
- 
+// import axios from "axios"; 
+
 let STATIC_CACHE_NAME = "collegeEventPWA";
 let DYNAMIC_CACHE_NAME = "dynamicCollegeEventPwa";
  
 // Add Routes and pages using React Browser Router
-let urlsToCache = ["/", "/generateevent", "/login",`/eventdetails/`,'/home',"/installation"];
+let urlsToCache = ["/", "/generateevent", "/login",`/eventdetails/`,'/home',"/viewstudents","/addstudents"];
  
 // Install a service worker
 self.addEventListener("install", (event) => {
     // Perform install steps
     event.waitUntil(
-        cachesrun
+        caches
             .open(STATIC_CACHE_NAME)
             .then(function (cache) {
                 console.log("Opened cache");
@@ -78,8 +79,8 @@ self.addEventListener("activate", (event) => {
     );
 });
 
-axios.interceptors.request.use((config) => {
-    // Modify config to use the service worker URL
-    config.url = '/worker' + config.url;
-    return config;
-});
+// axios.interceptors.request.use((config) => {
+//     // Modify config to use the service worker URL
+//     config.url = '/worker' + config.url;
+//     return config;
+// });
