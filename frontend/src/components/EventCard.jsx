@@ -15,12 +15,12 @@ export default function EventCard({ data, isLoading }) {
   return (
     <section className='card-bg-image text-white  p-5 mt-3 rounded-lg shadow-lg bg-white h-[250px] w-[350px] outline outline-blue-400 sm:mt-5 flex justify-between'>
       <section className="flex-1 flex flex-col justify-between">
-        <p className='text-base font-bold self-start text-nowrap'>
+        <p className={`${!isLoading ? '' :'self-start'}text-base font-bold  text-nowrap`}>
           {isLoading ? (
             <Skeleton
               count={1}
-              height="50%"
-              width="50%"
+              height="100%"
+              width="100%"
               baseColor="#4299e1"
               highlightColor="#f7fafc"
               duration={0.9}

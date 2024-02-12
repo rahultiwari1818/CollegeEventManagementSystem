@@ -8,6 +8,7 @@ import Installation from './Installation';
 import Error from './Error';
 import AddStudents from './AddStudents';
 import ViewStudents from "./ViewStudents";
+import RegisterInEvent from './RegisterInEvent';
 export default function Router() {
 	return (
 		<Routes>
@@ -16,6 +17,8 @@ export default function Router() {
 			<Route path="/login" element={<Login />} />
 			<Route path="/home" element={<AllEvents />} />
 			<Route path="/eventdetails/:id" element={<EventDetails />} />
+			<Route path="/registerInEvent/:eid" element={<RegisterInEvent />} />
+			<Route path="/registerInEvent/:eid/:sid" element={<RegisterInEvent />} />
 			<Route path="/addstudents" element={<AddStudents />} />
 			<Route path="/viewstudents" element={<ViewStudents />} />
 			<Route path="*" element={<Error/>}/>

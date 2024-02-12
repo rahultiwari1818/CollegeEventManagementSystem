@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react'
+import React, { useEffect } from 'react'
 
 import { useDispatch,useSelector } from 'react-redux';
 import { fetchAllEvents } from '../store/EventSlice';
@@ -21,7 +21,7 @@ export default function AllEvents() {
     useEffect(() => {
         // fetchEvents();
         dispatch(fetchAllEvents());
-    }, [])
+    }, [dispatch])
 
 
     return (
@@ -32,7 +32,7 @@ export default function AllEvents() {
                 {
                     isLoading ?
                     
-                        [1,2,3,4,5,6].map((event,idx)=>{
+                        [1,2,3,4,5,6,7,8].map((event,idx)=>{
                             return <EventCard key={idx} isLoading={isLoading}/>
                         })
                         :

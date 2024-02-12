@@ -9,7 +9,7 @@ import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
 import { useSelector } from 'react-redux';
 import Overlay from './Overlay';
-import {ReactComponent as View} from "../assets/Icons/View.svg";
+import { ReactComponent as View } from "../assets/Icons/View.svg";
 import Modal from './Modal';
 export default function EventDetails() {
 
@@ -24,8 +24,8 @@ export default function EventDetails() {
     const [openUpdateModal, setOpenUpdateModal] = useState(false);
     const [openCancelCnfModal, setOpenCancelCnfModal] = useState(false);
     const userData = useSelector((state) => state.UserSlice);
-    const [openDetailsModel,setOpenDetailsModel] = useState(false);
-    const [subEventDataToShow,setSubEventDataToShow] = useState({});
+    const [openDetailsModel, setOpenDetailsModel] = useState(false);
+    const [subEventDataToShow, setSubEventDataToShow] = useState({});
     console.log(userData)
 
 
@@ -37,7 +37,7 @@ export default function EventDetails() {
                     "auth-token": token,
                 }
             });
-            if(data.data.length===0){
+            if (data.data.length === 0) {
                 navigate("/home");
             }
             setData(data.data[0]);
@@ -61,8 +61,13 @@ export default function EventDetails() {
         window.open(`${data?.eposterPath}`, "_blank")
     }
 
-    const redirectToRegister = () => {
+    const handleRegisterEvent = () => {
+        navigate(`/registerInEvent/${data?._id}`);
+        
+    }
 
+    const handleSubEventRegister = (subEventId) =>{
+        navigate(`/registerInEvent/${data?._id}/${subEventId}`);
     }
 
     const changeEventStatus = async (status) => {
@@ -103,13 +108,13 @@ export default function EventDetails() {
     }
 
 
-    const viewSubEventDetails= (event)=>{
-        setOpenDetailsModel((old)=>true);
-        setSubEventDataToShow((old)=>event);
+    const viewSubEventDetails = (event) => {
+        setOpenDetailsModel((old) => true);
+        setSubEventDataToShow((old) => event);
     }
 
 
-    console.log(userData)
+    // console.log(userData)
 
     const curDate = new Date();
 
@@ -118,9 +123,9 @@ export default function EventDetails() {
         getEventDetails();
     }, [dataUpdated])
 
-    useEffect(()=>{
+    useEffect(() => {
         setIsLoading(false);
-    },[])
+    }, [])
 
     console.log(data)
 
@@ -128,11 +133,11 @@ export default function EventDetails() {
 
     return (
         <>
-        {
-            isLoading
-            &&
-            <Overlay/>
-        }
+            {
+                isLoading
+                &&
+                <Overlay />
+            }
             <section className='m-5'>
                 <section className='flex justify-center items-center '>
 
@@ -236,6 +241,7 @@ export default function EventDetails() {
                                                 <th className="py-2 px-4 border-b text-blue-500">Participation Type</th>
                                                 <th className="py-2 px-4 border-b text-blue-500">No Of Participant Allowed</th>
                                                 <th className="py-2 px-4 border-b text-blue-500">View Details</th>
+                                                <th className="py-2 px-4 border-b text-blue-500">Register</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -288,7 +294,16 @@ export default function EventDetails() {
                                                             <td className="py-2 px-4 border-b">{event.subEventName}</td>
                                                             <td className="py-2 px-4 border-b">{event.ptype}</td>
                                                             <td className="py-2 px-4 border-b">{event.noOfParticipants}</td>
-                                                            <td className="py-2 px-4 border-b"><View className="cursor-pointer" onClick={()=>viewSubEventDetails(event)}/></td>
+                                                            <td className="py-2 px-4 border-b"><View className="cursor-pointer" onClick={() => viewSubEventDetails(event)} /></td>
+                                                            <td className="py-2 px-4 border-b">
+                                                                <button
+                                                                    className='px-5 py-3 bg-blue-500 rounded-lg shadow-lg text-white hover:text-blue-500 hover:bg-white hover:outline hover:outline-blue-500'
+                                                                    onClick={()=>handleSubEventRegister(event?.sId)}
+
+                                                                >
+                                                                    Register
+                                                                </button>
+                                                            </td>
                                                         </tr>
                                                     })
                                             }
@@ -406,11 +421,11 @@ export default function EventDetails() {
 
                         {/* Conditional Rendering  for Participants -- where user is not admin */}
                         {
-                            (true && !data.isCanceled && curDate <= new Date(data.rcdate)) &&
+                            (!data?.hasSubEvents && !data.isCanceled && curDate <= new Date(data.rcdate)) &&
                             <section className="my-2 py-2">
                                 <button
                                     className='px-5 py-3 bg-blue-500 rounded-lg shadow-lg text-white hover:text-blue-500 hover:bg-white hover:outline hover:outline-blue-500'
-                                    onClick={redirectToRegister}
+                                    onClick={handleRegisterEvent}
 
                                 >
                                     Register
@@ -483,7 +498,7 @@ export default function EventDetails() {
 
             <UpdateEvent openUpdateModal={openUpdateModal} setOpenUpdateModal={setOpenUpdateModal} dataToUpdate={data} setDataUpdated={setDataUpdated} />
             <CancelEvent openCancelCnfModal={openCancelCnfModal} setOpenCancelCnfModal={setOpenCancelCnfModal} changeEventStatus={changeEventStatus} />
-            <ViewSubEventDetails openDetailsModel={openDetailsModel} setOpenDetailsModel={setOpenDetailsModel} eventData={subEventDataToShow}/>
+            <ViewSubEventDetails openDetailsModel={openDetailsModel} setOpenDetailsModel={setOpenDetailsModel} eventData={subEventDataToShow} />
         </>
     )
 }
