@@ -62,7 +62,7 @@ export default function Example({options,label,closeSideBar}) {
                     onClick={handleCloseSideBar}
                     key={item.to}
                   >
-                    <section className="">
+                    <section className="w-full">
                       <p className="py-3 px-4 bg-green-500 text-white shadow-lg text-nowrap ">
                         {item.label}
                       </p>

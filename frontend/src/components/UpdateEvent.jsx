@@ -28,7 +28,6 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
 
     const updateEvent = async (e) => {
         e.preventDefault();
-        // const dataObject = {
             const formData = new FormData();
             formData.append("ename", data.ename.trim());
             formData.append("etype", data.etype.trim());
@@ -43,7 +42,6 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
             formData.append("eposter", data.eposter);
             formData.append("hasSubEvents",data.hasSubEvents);
             formData.append("subEvents",JSON.stringify(data.subEvents));
-        // };
 
         try {
             const { data } = await axios.patch(`${API_URL}/api/events/updateEventDetails/${id}`, formData,

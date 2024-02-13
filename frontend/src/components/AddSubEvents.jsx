@@ -40,7 +40,7 @@ export default function AddSubEvents({ openUpdateModal, setOpenUpdateModal, head
                 ...old,
                 subEvents: [...old.subEvents,
                 {
-                    sId: old.subEvents.length + 1,
+                    sId: old.subEvents.length===0?1: old.subEvents.at(-1).sId + 1,
                     subEventName: subEventData.subEventName,
                     ptype: subEventData.ptype,
                     noOfParticipants: subEventData.noOfParticipants,
