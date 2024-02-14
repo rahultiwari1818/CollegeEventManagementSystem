@@ -126,6 +126,33 @@ const getDivisions = async(req,res)=>{
     }
 }
 
+const getIndividualStudents = async(req,res)=>{
+    const sid = req.params.id;
+    try {
+        // Fetch all students
+        const student = await Student.find({sid:sid});
+
+        // Extract unique divisions from the fetched students]
+        if(student){
+            return res.status(200).json({
+                "message": "Student Data Fetched Successfully.",
+                "data": student,
+                "result": true
+            });
+        }
+        else{
+            return res.status(200).json({
+                "message": "Student Not Found.",
+                "data": {},
+                "result": false
+            });
+        }
+
+    } catch (error) {
+        return res.status(400).json({ "message": "Some Error Occurred.", "result": false });
+    }
+}
+
 const studentForgotPassword = async(req,res)=>{
 
 }
@@ -134,4 +161,4 @@ const loginStudent = async(req,res)=>{
 
 }
 
-module.exports = { registerStudentsInBulk,getStudents,getDivisions };
+module.exports = { registerStudentsInBulk,getStudents,getDivisions,getIndividualStudents };

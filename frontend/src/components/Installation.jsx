@@ -33,7 +33,7 @@ export default function Installation() {
         try {
             
             const response = await axios.get(`${API_URL}/api/faculties/isSetUpDone`);
-                console.log(response)
+                // console.log(response)
             if(response.data.isSetUp){
                 navigate("/login");
             }
