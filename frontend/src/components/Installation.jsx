@@ -37,10 +37,13 @@ export default function Installation() {
             if(response.data.isSetUp){
                 navigate("/login");
             }
-            setIsLoading(false);
+            // setIsLoading(false);
 
         } catch (error) {
             
+        }
+        finally{
+            setIsLoading(false);
         }
     },[])
 
