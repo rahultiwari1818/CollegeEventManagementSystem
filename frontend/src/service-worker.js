@@ -82,18 +82,18 @@ self.addEventListener('message', (event) => {
 
 // Any other custom service worker logic can go here.
 
-registerRoute(
-  /^\/eventdetails\//,
-  new CacheFirst({
-    cacheName: 'event-details-cache',
-    plugins: [
-      new CacheableResponsePlugin({
-        statuses: [0, 200],
-      }),
-      new ExpirationPlugin({
-        maxEntries: 50,
-        maxAgeSeconds: 7 * 24 * 60 * 60, // 7 days
-      }),
-    ],
-  })
-);
+// registerRoute(
+//   /^\/eventdetails\//,
+//   new CacheFirst({
+//     cacheName: 'event-details-cache',
+//     plugins: [
+//       new CacheableResponsePlugin({
+//         statuses: [0, 200],
+//       }),
+//       new ExpirationPlugin({
+//         maxEntries: 50,
+//         maxAgeSeconds: 7 * 24 * 60 * 60, // 7 days
+//       }),
+//     ],
+//   })
+// );
