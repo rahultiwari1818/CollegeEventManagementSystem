@@ -38,6 +38,10 @@ export default function GenerateEvent() {
     const [subEventDataToUpdate, setSubEventDataToUpdate] = useState({});
     const noOfParticipants = useRef(null);
     const [isLoading,setIsLoading] = useState(true);
+    const [fileErrors,setFileErrors] = useState({
+        posterError:"",
+        brochureError:""
+    })
     const updateData = (e) => {
         const name = e.target.name;
         const value = e.target.value;
@@ -96,6 +100,7 @@ export default function GenerateEvent() {
 
 
     const generateEventHandler = async (e) => {
+        setIsLoading((old)=>true);
         e.preventDefault();
         const formData = new FormData();
         formData.append("ename", data.ename.trim());
@@ -126,7 +131,7 @@ export default function GenerateEvent() {
             console.error('Request failed:', error);
         }
         finally {
-
+            setIsLoading((old)=>!old);
         }
 
 
@@ -377,11 +382,25 @@ export default function GenerateEvent() {
                                         onChange={(e) => {
                                             const file = e.target.files[0];
                                             // console.log("poster",file);
-                                            setData({ ...data, eposter: file });
+                                            if (file && file.size > 10485760) {
+                                                setFileErrors((old)=>({...old,posterError:"Poster Size Should be less than 10 Mb."}))
+                                                setData({ ...data, eposter: null });
+                                            }
+                                            else{
+                                                setData({ ...data, eposter: file });
+                                                setFileErrors((old)=>({...old,posterError:""}));
+                                            }
                                         }}
 
                                     />
+                                    {
+                                    fileErrors &&
+                                    <p className='text-red-500 py-2'>
+                                        {fileErrors.posterError}
+                                    </p> 
+                                }
                                 </label>
+                                
                             </section>
                 </section>
 
@@ -421,15 +440,29 @@ export default function GenerateEvent() {
                                         onChange={(e) => {
                                             const file = e.target.files[0];
                                             // console.log("brochure",file);
+                                            if (file && file.size > 10485760) {
+                                                setFileErrors((old)=>({...old,brochureError:"Brochure Size Should be less than 10 Mb."}))
+                                                setData({ ...data, ebrochure: null });
+                                            }
+                                            else{
                                             setData({ ...data, ebrochure: file });
+                                            setFileErrors((old)=>({...old,brochureError:""}))
+                                            }
                                         }}
 
                                     />
+                                    {
+                                    fileErrors &&
+                                    <p className='text-red-500 py-2'>
+                                        {fileErrors.brochureError}
+                                    </p> 
+                                }
                                 </label>
+                                
                             </section>                </section>
 
                 <section className='md:p-2 md:m-2 p-1 m-1'>
-                    <input type="submit" value="Generate Event" className='text-red-500 bg-white rounded-lg shadow-lg px-5 py-3 w-full m-2 outline outline-red-500 hover:text-white hover:bg-red-500 ' />
+                    <input type="submit" value="Generate Event" className='text-red-500 cursor-pointer bg-white rounded-lg shadow-lg px-5 py-3 w-full m-2 outline outline-red-500 hover:text-white hover:bg-red-500 ' />
                 </section>
             </form>
         </section>

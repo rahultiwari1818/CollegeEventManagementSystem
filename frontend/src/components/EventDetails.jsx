@@ -54,6 +54,7 @@ export default function EventDetails() {
 
 
     const viewBrochure = () => {
+        console.log("path",data.ebrochurePath)
         window.open(`${data?.ebrochurePath}`, "_blank")
     }
 
@@ -393,7 +394,7 @@ export default function EventDetails() {
                         <section className="my-2 py-2">
 
                             {
-                                data.ebrochurePath !== "" &&
+                                data?.ebrochurePath && data.ebrochurePath !== "" &&
                                 <button
                                     className='mx-4 px-5 py-3 bg-green-500 rounded-lg shadow-lg text-white hover:text-green-500 hover:bg-white hover:outline hover:outline-green-500'
                                     onClick={viewBrochure}
@@ -402,7 +403,7 @@ export default function EventDetails() {
                                 </button>
                             }
                             {
-                                data.eposterPath !== "" &&
+                               data?.eposterPath && data?.eposterPath !== "" &&
                                 <button
                                     className='mx-4 my-2 px-5 py-3 bg-green-500 rounded-lg shadow-lg text-white hover:text-green-500 hover:bg-white hover:outline hover:outline-green-500'
                                     onClick={viewPoster}

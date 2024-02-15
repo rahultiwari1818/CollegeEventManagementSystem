@@ -21,7 +21,10 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
     const [subEventDataToUpdate, setSubEventDataToUpdate] = useState({});
     const noOfParticipants = useRef(null);
     const token = localStorage.getItem("token");
-
+    const [fileErrors,setFileErrors] = useState({
+        posterError:"",
+        brochureError:""
+    })
     const { id } = useParams();
 
     const API_URL = process.env.REACT_APP_BASE_URL;
@@ -495,13 +498,26 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
                                         id="dropzoneFileForPoster"
                                         name="eposter"
                                         className="hidden"
+                                        accept="image/*" 
                                         onChange={(e) => {
                                             const file = e.target.files[0];
-                                            // console.log("poster",file);
-                                            setData({ ...data, eposter: file });
+                                            if (file && file.size > 10485760) {
+                                                setFileErrors((old)=>({...old,posterError:"Poster Size Should be less than 10 Mb."}))
+                                                setData({ ...data, eposter: null });
+                                            }
+                                            else{
+                                                setData({ ...data, eposter: file });
+                                                setFileErrors((old)=>({...old,posterError:""}));
+                                            }
                                         }}
 
                                     />
+                                    {
+                                    fileErrors &&
+                                    <p className='text-red-500 py-2'>
+                                        {fileErrors.posterError}
+                                    </p> 
+                                }
                                 </label>
                             </section>
                 </section>
@@ -538,18 +554,31 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
                                         id="dropzoneFileForBrochure"
                                         name="ebrochure"
                                         className="hidden"
+                                        accept=".pdf,.docx" 
                                         onChange={(e) => {
                                             const file = e.target.files[0];
-                                            // console.log("brochure",file);
+                                            if (file && file.size > 10485760) {
+                                                setFileErrors((old)=>({...old,brochureError:"Brochure Size Should be less than 10 Mb."}))
+                                                setData({ ...data, ebrochure: null });
+                                            }
+                                            else{
                                             setData({ ...data, ebrochure: file });
+                                            setFileErrors((old)=>({...old,brochureError:""}))
+                                            }
                                         }}
 
                                     />
+                                    {
+                                    fileErrors &&
+                                    <p className='text-red-500 py-2'>
+                                        {fileErrors.brochureError}
+                                    </p> 
+                                }   
                                 </label>
                             </section>                </section>
 
                 <section className='md:p-2 md:m-2 p-1 m-1'>
-                    <input type="submit" value="Update Event" className='text-red-500 bg-white rounded-lg shadow-lg px-5 py-3 w-full m-2 outline outline-red-500 hover:text-white hover:bg-red-500 ' />
+                    <input type="submit" value="Update Event" className='text-red-500 cursor-pointer bg-white rounded-lg shadow-lg px-5 py-3 w-full m-2 outline outline-red-500 hover:text-white hover:bg-red-500 ' />
                 </section>
             </form>
             <AddSubEvents openUpdateModal={openAddSubEventModal} setOpenUpdateModal={setOpenAddSubEventModal} heading={"Update Sub Event"} setData={setData} dataToBeUpdated={subEventDataToUpdate} setSubEventDataToUpdate={setSubEventDataToUpdate} />

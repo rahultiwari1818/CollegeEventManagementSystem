@@ -31,7 +31,7 @@ export default function Example({options,label,closeSideBar}) {
     }
 
   return (
-    <section className=" my-3 md:my-0">
+    <section className=" my-3 md:my-0 ">
       <Popover className="relative">
         {({ open }) => (
           <>
@@ -63,7 +63,7 @@ export default function Example({options,label,closeSideBar}) {
                     key={item.to}
                   >
                     <section className="w-full">
-                      <p className="py-3 px-4 bg-green-500 text-white shadow-lg text-nowrap ">
+                      <p className="py-3 px-4 hover:text-green-500 hover:bg-white bg-green-500 text-white shadow-lg text-nowrap ">
                         {item.label}
                       </p>
                     </section>

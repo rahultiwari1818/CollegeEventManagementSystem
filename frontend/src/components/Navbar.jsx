@@ -1,4 +1,4 @@
-import React, { useCallback, useLayoutEffect, useState } from 'react'
+import React, {  useLayoutEffect, useState } from 'react'
 import CollegeLogo from "../assets/images/CollegeLogo.png";
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ReactComponent as HamburgerIcon } from "../assets/Icons/HamburgerIcon.svg";
@@ -69,6 +69,17 @@ export default function Navbar() {
     }
   ];
 
+  const facultiesRoutes= [
+    {
+      to :"addfaculties",
+      label:"Add Faculties"
+    },
+    {
+      to :"viewfaculties",
+      label:"View Faculties"
+    }
+  ];
+
   return (
 
 
@@ -93,6 +104,7 @@ export default function Navbar() {
                       <Link to="/home" className='py-3 px-4 bg-green-500  text-white shadow-lg rounded-lg mx-3' > Home </Link>
                       <Link to="generateevent" className='py-3 px-4 bg-green-500  text-white shadow-lg rounded-lg mx-3' > Generate Event </Link>
                       <Popover options={studentsRoutes} label="Students" />
+                      <Popover options={facultiesRoutes} label="Faculties" />
                       <Link to="login" className='py-3 px-4 bg-red-500  text-white shadow-lg rounded-lg mx-3' onClick={logoutHandler} > Logout </Link>
                     </>
                     :
@@ -137,9 +149,10 @@ export default function Navbar() {
                     :
                     isLoggedIn ?
                       <>
-                        <Link to="/home" className='py-3 px-4 bg-green-500  text-white shadow-lg rounded-lg mx-3' onClick={() => closeSideBar()} > Home </Link>
-                        <Link to="generateevent" className=' block my-3 py-3 px-4 bg-green-500  text-white shadow-lg rounded-lg mx-3' onClick={() => closeSideBar()}> Generate Event </Link>
+                        <Link to="/home" className=' w-full block py-3 px-4 bg-green-500  text-white shadow-lg rounded-lg mx-3' onClick={() => closeSideBar()} > Home </Link>
+                        <Link to="generateevent" className='w-full block my-3 py-3 px-4 bg-green-500  text-white shadow-lg rounded-lg mx-3' onClick={() => closeSideBar()}> Generate Event </Link>
                         <Popover options={studentsRoutes} label="Students" closeSideBar={closeSideBar}/>
+                        <Popover options={facultiesRoutes} label="Faculties" closeSideBar={closeSideBar}/>
 
                         <Link to="login" className='py-3 px-4 bg-red-500  text-white shadow-lg rounded-lg mx-3' onClick={() => {
                           logoutHandler();

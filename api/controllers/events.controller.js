@@ -1,7 +1,7 @@
 const Event = require("../models/Events.js");
 const fs = require("fs").promises;
 const path = require("path");
-const { uploadToCloudinary } = require("../utils.js");
+const { uploadToCloudinary, deleteFromCloudinary } = require("../utils.js");
 
 
 
@@ -57,7 +57,7 @@ const generateEvent = async (req, res) => {
             
         }
         if (poster) {
-            var result = await uploadToCloudinary(poster.pathm,"image"); 
+            var result = await uploadToCloudinary(poster.path,"image"); 
              newPosterPath = result.url;
 
         }
@@ -117,81 +117,90 @@ const changeEventStatus = async(req,res)=>{
     return res.status(200).json({"message":message,"result":true})
 }
 
-const updateEventDetails = async(req,res)=>{
+const updateEventDetails = async (req, res) => {
     const id = req.params.id;
     const current_time = Date.now();
-    const data = await Event.find({_id:id});
+    const data = await Event.findById(id);
 
-    try{
+    try {
+        const { ename, etype, ptype, noOfParticipants, edate, edetails, rules, rcdate, hasSubEvents, enature } = req.body;
 
+        const trimmedFields = {
+            ename: ename.trim(),
+            etype: etype.trim(),
+            edetails: edetails.trim(),
+            rules: rules.trim(),
+            enature: enature.trim()
+        };
 
-    const { ename, etype, ptype, noOfParticipants, edate, edetails, rules, rcdate, hasSubEvents,enature } = req.body;
-    let originalBrochureName,originalPosterName,newBrochurePath,newPosterPath;
-    if(req.files["ebrochure"]){
-        const brochure = req.files["ebrochure"]; // Accessing the first file uploaded for "ebrochure" field
-         originalBrochureName = brochure.originalname;
-         newBrochurePath = `uploads/${ename}_brochure_${current_time}${path.extname(originalBrochureName)}`;
-
-        if(data?.ebrochurePath !== ""){
-            await fs.unlink(data?.ebrochurePath)
+        // Check if any required field is empty after trimming
+        const requiredFields = ['ename', 'etype', 'edetails','rules', 'enature'];
+        for (const field of requiredFields) {
+            if (!trimmedFields[field]) {
+                return res.status(400).json({ message: `${field} cannot be empty.` });
+            }
         }
 
-        await fs.rename(brochure.path, newBrochurePath);
-
-    }
-    else{
-        console.log("called");
-         originalBrochureName = data?.ebrochureName;
-         newBrochurePath = data?.ebrochurePath;
-    }
-
-    if(req.files["eposter"]){
-        const poster = req.files["eposter"][0]; // Accessing the first file uploaded for "eposter" field
-         originalPosterName = poster.originalname;
-         newPosterPath = `uploads/${ename}_poster_${current_time}${path.extname(originalPosterName)}`;
-
-        if(data?.eposterPath !== ""){
-            await fs.unlink(data?.eposterPath)
+        // Additional validation for specific fields if needed
+        if (!hasSubEvents) {
+            if(isNaN(parseInt(noOfParticipants))){
+                return res.status(400).json({ message: "Number of participants should be a valid number." });
+            }
+            if(ptype.trim()===""){
+                return res.status(400).json({ message: "Participation Type  is a Required Field." });
+            }
         }
-        await fs.rename(poster.path, newPosterPath);
-    }
-    else{
-
-         originalPosterName = data?.eposterName;
-         newPosterPath = data?.eposterPath;
-    }
 
 
 
+        let originalBrochureName, originalPosterName, newBrochurePath, newPosterPath;
 
-        const subEvents = JSON.parse(req.body.subEvents); // Parse subEvents JSON string
+        // Upload new brochure file to Cloudinary
+        if (req.files["ebrochure"]) {
+            const brochure = req.files["ebrochure"][0];
+            const result = await uploadToCloudinary(brochure.path, "pdf");
+            originalBrochureName = brochure.originalname;
+            newBrochurePath = result.url;
 
-    const dataToUpdate = {
-        ename: ename.trim(),
-        etype: etype.trim(),
-        ptype: ptype.trim(),
-        enature:enature.trim(),
-        noOfParticipants: noOfParticipants,
-        edate: edate,
-        edetails: edetails.trim(),
-        rules: rules.trim(),
-        rcdate: rcdate,
-        ebrochureName: originalBrochureName,
-        ebrochurePath: newBrochurePath,
-        eposterName: originalPosterName,
-        eposterPath: newPosterPath,
-        hasSubEvents: hasSubEvents,
-        subEvents: subEvents,
-    };
-    const result = await Event.updateOne({ _id: id },{ $set: dataToUpdate});
-    return res.status(200).json({"message":"Event Updated Successfully","result":true})
+            // Delete previous brochure file from Cloudinary
+            if (data?.ebrochurePath) {
+                const publicId = data.ebrochurePath.split('/').slice(-1)[0].split('.')[0];
+                await deleteFromCloudinary(publicId);
+            }
+        } else {
+            originalBrochureName = data?.ebrochureName;
+            newBrochurePath = data?.ebrochurePath;
+        }
 
+        // Upload new poster file to Cloudinary
+        if (req.files["eposter"]) {
+            const poster = req.files["eposter"][0];
+            const result = await uploadToCloudinary(poster.path, "image");
+            originalPosterName = poster.originalname;
+            newPosterPath = result.url;
+
+            // Delete previous poster file from Cloudinary
+            if (data?.eposterPath) {
+                const publicId = data.eposterPath.split('/').slice(-1)[0].split('.')[0];
+                await deleteFromCloudinary(publicId);
+            }
+        } else {
+            originalPosterName = data?.eposterName;
+            newPosterPath = data?.eposterPath;
+        }
+
+        // Update event details in the database
+        const subEvents = JSON.parse(req.body.subEvents);
+        const dataToUpdate = { ename, etype, ptype, enature, noOfParticipants, edate, edetails, rules, rcdate, ebrochureName: originalBrochureName, ebrochurePath: newBrochurePath, eposterName: originalPosterName, eposterPath: newPosterPath, hasSubEvents, subEvents };
+        await Event.updateOne({ _id: id }, { $set: dataToUpdate });
+
+        return res.status(200).json({ "message": "Event Updated Successfully", "result": true });
     } catch (error) {
-        console.log(error);
-
+        console.error(error);
+        return res.status(500).json({ "message": "Failed to update event", "result": false });
     }
-
 }
+
 
 
 module.exports = {

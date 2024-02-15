@@ -24,16 +24,12 @@ async function uploadToCloudinary(locaFilePath,resource_type) {
     // locaFilePath: path of image which was just 
     // uploaded to "uploads" folder 
   
-    var mainFolderName = "main"; 
-    // filePathOnCloudinary: path of image we want 
-    // to set when it is uploaded to cloudinary 
-    var filePathOnCloudinary =  
-        mainFolderName + "/" + locaFilePath; 
+    
   
     return cloudinary.uploader 
         .upload(locaFilePath, {
-            folder: filePathOnCloudinary,
-            resource_type: resource_type // Automatically detect the resource type
+            folder: "main",
+            resource_type: "auto" // Automatically detect the resource type
         }) 
         .then((result) => { 
   
@@ -49,11 +45,22 @@ async function uploadToCloudinary(locaFilePath,resource_type) {
             }; 
         }) 
         .catch((error) => { 
-            console.log(error)
+            console.log(error,"res",resource_type)
             // Remove file from local uploads folder 
             // fs.unlink(locaFilePath); 
             return { message: "Fail" }; 
         }); 
 } 
 
-module.exports = {storage,uploadToCloudinary};
+async function deleteFromCloudinary(publicId) {
+    try {
+        const result = await cloudinary.uploader.destroy("main/"+publicId);
+        return true;
+    } catch (error) {
+        console.error('Error deleting file from Cloudinary:', error);
+        return false;
+    }
+}
+
+
+module.exports = {storage,uploadToCloudinary,deleteFromCloudinary};
