@@ -11,6 +11,7 @@ import ViewStudents from "./ViewStudents";
 import RegisterInEvent from './RegisterInEvent';
 import AddFaculties from './AddFaculties';
 import ViewFaculties from './ViewFaculties';
+import Profile from './Profile';
 export default function Router() {
 	return (
 		<Routes>
@@ -25,6 +26,7 @@ export default function Router() {
 			<Route path="/viewstudents" element={<ViewStudents />} />
 			<Route path="/addfaculties" element={<AddFaculties/>} />
 			<Route path='/viewfaculties' element={<ViewFaculties/>} />
+			<Route path='/profile' element={<Profile/>} />
 			<Route path="*" element={<Error/>}/>
 		</Routes>
 	)

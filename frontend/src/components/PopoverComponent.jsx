@@ -3,23 +3,6 @@ import { Fragment } from 'react'
 import { Link } from 'react-router-dom'
 import { ReactComponent as UpIcon } from '../assets/Icons/up_arrow.svg';
 
-// const solutions = [
-//   {
-//     name: 'Insights',
-//     description: 'Measure actions your users take',
-//     href: '##',
-//   },
-//   {
-//     name: 'Automations',
-//     description: 'Create your own targeted content',
-//     href: '##',
-//   },
-//   {
-//     name: 'Reports',
-//     description: 'Keep track of your growth',
-//     href: '##',
-//   },
-// ]
 
 
 export default function Example({options,label,closeSideBar}) {
@@ -31,14 +14,14 @@ export default function Example({options,label,closeSideBar}) {
     }
 
   return (
-    <section className=" my-3 md:my-0 ">
+    <section className=" my-3 mx-3  ">
       <Popover className="relative">
         {({ open }) => (
           <>
             <Popover.Button
               className={`
                 ${open ? 'text-white' : 'text-white/90'}
-                py-3 px-4 bg-green-500  text-white shadow-lg rounded-lg mx-3`}
+                py-3 px-4 bg-green-500  text-white shadow-lg rounded-lg mx-3 w-full flex justify-between items-center`}
             >
               <span>{label}</span>
               <UpIcon className={`md:h-5 md:w-5 w-3 h-3 ${!open ? 'transform rotate-180' : ''} float-right mx-3`} />

@@ -1,12 +1,18 @@
-import React, {  useLayoutEffect, useState } from 'react'
+import React, { useLayoutEffect, useState } from 'react'
 import CollegeLogo from "../assets/images/CollegeLogo.png";
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ReactComponent as HamburgerIcon } from "../assets/Icons/HamburgerIcon.svg";
 import { ReactComponent as CloseIcon } from "../assets/Icons/CloseIcon.svg";
+import { ReactComponent as ProfileIcon } from "../assets/Icons/Profile.svg"
+import { ReactComponent as LoginIcon } from "../assets/Icons/LoginIcon.svg";
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import { logoutUser, setNewUser } from '../store/UserSlice';
-import Popover from './Popover';
+import PopoverComponent from './PopoverComponent';
+
+import { Popover, Transition } from '@headlessui/react'
+import { Fragment } from 'react'
+
 export default function Navbar() {
 
   const [openSideBar, setOpenSideBar] = useState(false);
@@ -30,7 +36,6 @@ export default function Navbar() {
     dispatch(logoutUser());
   }
 
-  // console.log(isLoggedIn, "is logged in")
 
   useLayoutEffect(() => {
     if (location.pathname === "/") return;
@@ -69,14 +74,14 @@ export default function Navbar() {
     }
   ];
 
-  const facultiesRoutes= [
+  const facultiesRoutes = [
     {
-      to :"addfaculties",
-      label:"Add Faculties"
+      to: "addfaculties",
+      label: "Add Faculties"
     },
     {
-      to :"viewfaculties",
-      label:"View Faculties"
+      to: "viewfaculties",
+      label: "View Faculties"
     }
   ];
 
@@ -86,8 +91,8 @@ export default function Navbar() {
 
     <nav className='bg-blue-500 p-2  top-0 sticky z-10 '>
       <section className='lg:flex items-center  lg:justify-around '>
-        <img src={CollegeLogo} alt="logo" className='w-20 h-20 md:h-24 md:w-24 lg:h-32 lg:w-32' />
-        <section className='hidden lg:flex'>
+        <img src={CollegeLogo} alt="logo" className='w-20 h-20 md:h-24 md:w-24 lg:h-32 lg:w-32 lg:m-0 mx-5' />
+        <section className='hidden lg:flex items-center'>
           {
             pathname !== "/"
             &&
@@ -101,11 +106,15 @@ export default function Navbar() {
                   :
                   isLoggedIn ?
                     <>
-                      <Link to="/home" className='py-3 px-4 bg-green-500  text-white shadow-lg rounded-lg mx-3' > Home </Link>
-                      <Link to="generateevent" className='py-3 px-4 bg-green-500  text-white shadow-lg rounded-lg mx-3' > Generate Event </Link>
-                      <Popover options={studentsRoutes} label="Students" />
-                      <Popover options={facultiesRoutes} label="Faculties" />
-                      <Link to="login" className='py-3 px-4 bg-red-500  text-white shadow-lg rounded-lg mx-3' onClick={logoutHandler} > Logout </Link>
+                      <Link to="/home" className='py-3 px-4 hover:text-green-500 hover:bg-white bg-green-500 text-white shadow-lg rounded-lg mx-3' > Home </Link>
+                      <Link to="generateevent" className='py-3 px-4 hover:text-green-500 hover:bg-white bg-green-500 text-white shadow-lg rounded-lg mx-3' > Generate Event </Link>
+                      <PopoverComponent options={studentsRoutes} label="Students" />
+                      <PopoverComponent options={facultiesRoutes} label="Faculties" />
+
+                      <ProfilePopOver logoutHandler={logoutHandler} />
+                      {/* <section className='bg-white p-2 rounded-full cursor-pointer'>
+                        <ProfileIcon />
+                      </section> */}
                     </>
                     :
                     <section>
@@ -139,7 +148,7 @@ export default function Navbar() {
             {
               pathname !== "/"
               &&
-              <section className='m-5 absolute bottom-[10vh]'>
+              <section className='m-5 '>
 
                 {
                   isLoggedIn === undefined
@@ -149,15 +158,21 @@ export default function Navbar() {
                     :
                     isLoggedIn ?
                       <>
-                        <Link to="/home" className=' w-full block py-3 px-4 bg-green-500  text-white shadow-lg rounded-lg mx-3' onClick={() => closeSideBar()} > Home </Link>
+                        <section className='bg-white p-2 rounded-full cursor-pointer w-fit my-36 ml-16'>
+                          <ProfileIcon />
+                        </section>
+                        <Link to="/home" className=' w-full block py-3 px-4 hover:text-green-500 hover:bg-white bg-green-500 text-white shadow-lg rounded-lg mx-3' onClick={() => closeSideBar()} > Home </Link>
                         <Link to="generateevent" className='w-full block my-3 py-3 px-4 bg-green-500  text-white shadow-lg rounded-lg mx-3' onClick={() => closeSideBar()}> Generate Event </Link>
-                        <Popover options={studentsRoutes} label="Students" closeSideBar={closeSideBar}/>
-                        <Popover options={facultiesRoutes} label="Faculties" closeSideBar={closeSideBar}/>
+                        <PopoverComponent options={studentsRoutes} label="Students" closeSideBar={closeSideBar} />
+                        <PopoverComponent options={facultiesRoutes} label="Faculties" closeSideBar={closeSideBar} />
 
-                        <Link to="login" className='py-3 px-4 bg-red-500  text-white shadow-lg rounded-lg mx-3' onClick={() => {
+                        <Link to="login" className='py-3 px-4 hover:text-red-500 hover:bg-white bg-red-500  text-white shadow-lg rounded-lg mx-3 flex justify-between items-center gap-3' onClick={() => {
                           logoutHandler();
                           closeSideBar();
-                        }} > Logout </Link>
+                        }} >
+                          <p>Logout</p>
+                          <LoginIcon className="outline outline-white  bg-white" />
+                        </Link>
                       </>
                       :
                       <section>
@@ -181,3 +196,61 @@ export default function Navbar() {
     </nav>
   )
 }
+
+
+const ProfilePopOver = ({logoutHandler}) => {
+
+
+  return (
+    <>
+
+      <div className="mx-3">
+        <Popover className="relative">
+          {({ open }) => (
+            <>
+              <Popover.Button className={'bg-white p-2 rounded-full cursor-pointer'}>
+                <ProfileIcon />
+              </Popover.Button>
+              <Transition
+                as={Fragment}
+                enter="transition ease-out duration-200"
+                enterFrom="opacity-0 translate-y-1"
+                enterTo="opacity-100 translate-y-0"
+                leave="transition ease-in duration-150"
+                leaveFrom="opacity-100 translate-y-0"
+                leaveTo="opacity-0 translate-y-1"
+              >
+                <Popover.Panel className="absolute left-1/2 z-10 mt-3   -translate-x-1/2 transform px-2 ">
+                  <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black/5">
+                  <div className="relative bg-white">
+  <Link
+    to="profile"
+    className="block w-full py-3 px-4 bg-blue-500 text-white hover:text-blue-500 hover:bg-white  hover:border shadow-lg"
+  >
+    View Profile
+  </Link>
+  <Link
+    to="login"
+    className=" w-full py-3 px-4 bg-red-500 text-white hover:text-red-500 hover:bg-white  hover:border shadow-lg flex items-center justify-between gap-3"
+    onClick={logoutHandler}
+  >
+    <p>Logout</p>
+    <LoginIcon className="outline-white bg-white" />
+  </Link>
+</div>
+
+                  </div>
+                </Popover.Panel>
+              </Transition>
+            </>
+          )}
+        </Popover>
+      </div>
+    </>
+  )
+}
+
+
+
+
+
