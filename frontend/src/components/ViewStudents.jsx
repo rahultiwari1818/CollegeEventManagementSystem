@@ -281,7 +281,7 @@ export default function ViewStudents() {
                     <section className='flex justify-between items-center'>
                         <p className='text-nowrap mx-2'>No of Entries : </p>
                         <Dropdown
-                            dataArr={[{ name: 10 }, { name: 20 }, { name: 50 }]} // Options for entries per page
+                            dataArr={[{ name: 15 }, { name: 30 }, { name: 50 }]} // Options for entries per page
                             selected={entriesPerPage.toString()}
                             setSelected={(value) => handleEntriesPerPageChange(Number(value))} // Convert value to number before setting
                             name="entriesPerPage"
