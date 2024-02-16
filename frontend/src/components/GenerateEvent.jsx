@@ -35,6 +35,10 @@ export default function GenerateEvent() {
     }
 
     const [data, setData] = useState(initialState);
+    const [errors,setErrors] = useState({
+        edateErr:"",
+        rcdateErr:""
+    })
     const [subEventDataToUpdate, setSubEventDataToUpdate] = useState({});
     const noOfParticipants = useRef(null);
     const [isLoading,setIsLoading] = useState(true);
@@ -297,7 +301,20 @@ export default function GenerateEvent() {
                                 <DatePicker
                                     name='rcdate'
                                     selected={data.rcdate}
-                                    onChange={(date) => setData({ ...data, rcdate: date })}
+                                    onChange={(date) =>{ 
+                                        
+                                        if(date>data.edate){
+                                            setErrors((old)=>({...old,"edateErr":"Event Date Should be Greater Than Registration Closing Date"}))
+                                        }
+                                        else{
+                                            setErrors((old)=>({...old,"edateErr":""}))
+                                        }
+
+                                        setData({ ...data, rcdate: date })
+                            
+                            
+                                    }
+                                    }
                                     dateFormat="dd-MM-yyyy"
                                     minDate={new Date().setDate(new Date().getDate() - 1)}
                                     className="w-full shadow-lg md:p-3 rounded-lg md:m-2 p-2 m-1"
@@ -310,14 +327,28 @@ export default function GenerateEvent() {
                                 <DatePicker
                                     name='edate'
                                     selected={data.edate}
-                                    onChange={(date) => setData({ ...data, edate: date })}
+                                    onChange={(date) => {
+                                        if(date<data.rcdate){
+                                            setErrors((old)=>({edateErr:"Event Date Should be Greater Than Registration Closing Date"}))
+                                        }
+                                        else{                                            
+                                            setData({ ...data, edate: date })
+                                            setErrors((old)=>({edateErr:""}))
+                                        }
+                                    }}
                                     dateFormat="dd-MM-yyyy"
                                     minDate={new Date()}
                                     className=" w-full shadow-lg md:p-3 rounded-lg md:m-2 p-2 m-1"
                                     icon={<CalanderIcon />}
                                     showIcon
                                 />
-
+                                {
+                                    errors && errors.edateErr !== ""
+                                    &&
+                                    <p className="text-red-500">
+                                        {errors.edateErr}
+                                    </p>
+                                }
                             </section>
                 </section>
 

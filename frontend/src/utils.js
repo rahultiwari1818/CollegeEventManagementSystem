@@ -49,6 +49,10 @@ export const handleNumericInput = (event) => {
 };
 
 
+export const validatePhno = (phno)=>{
+  return phno?.length===10?true:false ;
+}
+
 
 
 

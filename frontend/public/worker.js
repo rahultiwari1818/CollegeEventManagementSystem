@@ -5,7 +5,7 @@ let STATIC_CACHE_NAME = "collegeEventPWA";
 let DYNAMIC_CACHE_NAME = "dynamicCollegeEventPwa";
  
 // Add Routes and pages using React Browser Router
-let urlsToCache = ["/", "/generateevent", "/login",`/eventdetails/`,'/home',"/viewstudents","/addstudents"];
+let urlsToCache = ["/", "/generateevent", "/login",`/eventdetails/`,'/home',"/viewstudents","/addstudents","/profile","/addfaculties","/viewfaculties"];
  
 // Install a service worker
 self.addEventListener("install", (event) => {

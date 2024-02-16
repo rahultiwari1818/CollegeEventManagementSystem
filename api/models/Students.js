@@ -21,7 +21,8 @@ const StudentSchema = new Schema({
     },
     sid: {
         type: String,
-        required:true
+        required:true,
+        unique:true
     },
     studentName: {
         type: String,

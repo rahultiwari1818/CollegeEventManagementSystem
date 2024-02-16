@@ -42,7 +42,10 @@ const registerStudentsInBulk = async (req, res) => {
         res.status(200).json({ success: true, message: "Students registered successfully." });
     } catch (error) {
         // console.error("Error registering students:", error);
-        res.status(500).json({ success: false, message: "An error occurred while registering students.",error:error });
+        res.status(500).json({ success: false, message: "An error occurred while registering students. Please Check Your CSV File format",error:error });
+    }
+    finally{
+        fs.unlink(newStudentCSVFilePath);
     }
 };
 
@@ -109,9 +112,10 @@ const getStudents = async (req, res) => {
 
 const getDivisions = async(req,res)=>{
     const course = req.query.course || "";
+    const semester = req.query.semester || ""; 
     try {
         // Fetch all students
-        const students = await Student.find({course:course});
+        const students = await Student.find({course:course,semester:semester});
 
         // Extract unique divisions from the fetched students
         const divisions = [...new Set(students.map(student => student.division))];

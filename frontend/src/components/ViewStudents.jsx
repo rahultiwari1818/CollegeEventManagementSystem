@@ -20,7 +20,7 @@ export default function ViewStudents() {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [selectedPage, setSelectedPage] = useState(1);
-    const [entriesPerPage, setEntriesPerPage] = useState(10); // State for selected entries per page
+    const [entriesPerPage, setEntriesPerPage] = useState(15); // State for selected entries per page
     const [totalEntries, setTotalEntries] = useState(0); // State for total number of entries
 
     const changeSearch = useCallback((value) => {
@@ -28,7 +28,8 @@ export default function ViewStudents() {
     }, [setSearchParams]);
 
     const changeSearchCourse = useCallback((value) => {
-        setSearchParams((old) => ({ ...old, searchCourse: value }));
+        setSearchParams((old) => ({ ...old, searchCourse: value,searchSemester: "" ,searchdivision: "" }));
+        
         if (value === "All") {
             setDisabledsection(true);
         } else {
@@ -37,7 +38,7 @@ export default function ViewStudents() {
     }, [setSearchParams]);
 
     const changeSemesterCourse = useCallback((value) => {
-        setSearchParams((old) => ({ ...old, searchSemester: value }));
+        setSearchParams((old) => ({ ...old, searchSemester: value ,searchdivision: ""}));
     }, [setSearchParams]);
 
     const changeSearchDivision = useCallback((value) => {
@@ -50,8 +51,9 @@ export default function ViewStudents() {
     const fetchDivisions = async () => {
         try {
             const course = searchParams.searchCourse;
+            const semester = searchParams.searchSemester;
             if (course === "All") return;
-            const { data } = await axios.get(`${API_URL}/api/students/getDivisions?course=${course}`, {
+            const { data } = await axios.get(`${API_URL}/api/students/getDivisions?course=${course}&semester=${semester}`, {
                 headers: {
                     "auth-token": token
                 }
@@ -98,7 +100,7 @@ export default function ViewStudents() {
 
     useEffect(() => {
         fetchDivisions();
-    }, [searchParams.searchCourse]);
+    }, [searchParams.searchCourse,searchParams.searchSemester]);
 
     useEffect(() => {
         setCurrentPage(1); // Reset current page when search parameters change
@@ -138,12 +140,13 @@ export default function ViewStudents() {
     return (
         <>
             <section className='mx-2 my-2 p-2'>
-                <section className='p-2 md:flex gap-5 '>
+                <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-3 lg:gap-5 p-2">
                     <Search placeholder="Search Student" searchValue={searchParams?.search} changeSearch={changeSearch} />
                     <Dropdown dataArr={courses} selected={searchParams.searchCourse} setSelected={changeSearchCourse} name="searchCourse" label="Select Course" />
                     <Dropdown dataArr={semesters} selected={searchParams.searchSemester} setSelected={changeSemesterCourse} name="searchSemester" label="Select Semester" />
                     <Dropdown dataArr={division} selected={searchParams.searchdivision} setSelected={changeSearchDivision} name="searchdivisions" label="Select Division" disabled={disablesection} />
                 </section>
+
 
                 <section className="overflow-x-auto h-[57vh] overflow-y-auto border border-blue-500 border-solid rounded-t-lg">
                     <table className="table-auto min-w-full bg-white shadow-md rounded-lg overflow-hidden ">
@@ -289,13 +292,13 @@ export default function ViewStudents() {
                         />
                     </section>
                     <section>
-                    {totalEntries > 0 && (
+                        {totalEntries > 0 && (
                             <p className=" text-nowrap my-3">
                                 Showing {getStartIndex()} - {getEndIndex()} of {totalEntries} Entries
                             </p>
                         )}
                     </section>
-                    <section className="flex justify-center gap-3 mt-4 md:w-[30vw] float-right pb-3">
+                    <section className="flex justify-center gap-3 mt-4 md:w-[30vw] float-right pb-8">
                         <button
                             className={`mx-1 px-3 py-1 rounded-md ${currentPage === 1 ? 'bg-blue-500 text-white cursor-not-allowed' : 'bg-blue-500 hover:text-blue-500 hover:bg-white hover:outline hover:outline-blue-500 text-white'}`}
                             onClick={() => handlePageChange(currentPage - 1)}

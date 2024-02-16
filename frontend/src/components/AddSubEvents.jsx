@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import Modal from './Modal'
 import Dropdown from './Dropdown';
 import { handleNumericInput } from '../utils';
@@ -30,6 +30,19 @@ export default function AddSubEvents({ openUpdateModal, setOpenUpdateModal, head
         }
         // console.log("data", subEventData, dataToBeUpdated)
     }, [dataToBeUpdated])
+
+    const changeParticipationType = useCallback((value)=>{
+        
+        setSubEventData((old)=>({...old,ptype:value}))
+        if(value==="Individual"){
+            noOfPartcipants.current.value = 1;
+            noOfPartcipants.current.disabled = true;
+        }
+        else{
+            noOfPartcipants.current.disabled = false;
+            noOfPartcipants.current.value = 1;
+        }
+    },[setSubEventData])
 
     const addSubEventHandler = (e) => {
 
@@ -115,10 +128,9 @@ export default function AddSubEvents({ openUpdateModal, setOpenUpdateModal, head
                         <Dropdown
                             dataArr={[{ name: "Individual" }, { name: "Group" }]}
                             selected={subEventData.ptype}
-                            setSelected={setSubEventData}
+                            setSelected={changeParticipationType}
                             name={"ptype"}
                             label={"Select Participation Type"}
-                            ref={noOfPartcipants}
                         />
                     </section>
                     <section className='md:p-2 md:m-2  p-1 m-1'>

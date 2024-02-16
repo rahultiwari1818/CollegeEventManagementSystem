@@ -3,6 +3,10 @@ const mongoose = require("mongoose");
 const {Schema} = mongoose;
 
 const FacultySchema = new Schema({
+    salutation:{
+        required: true,
+        type:String,
+    },
     name:{
         required:true,
         type:String
@@ -18,6 +22,10 @@ const FacultySchema = new Schema({
         unique:true,
     },
     role:{
+        required:true,
+        type:String
+    },
+    course:{
         required:true,
         type:String
     },

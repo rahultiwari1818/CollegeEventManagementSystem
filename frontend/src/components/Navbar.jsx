@@ -39,7 +39,7 @@ export default function Navbar() {
 
   useLayoutEffect(() => {
     if (location.pathname === "/") return;
-
+    console.log("location",location.pathname)
     const fetchData = async () => {
       try {
         const { data } = await axios.post(`${API_URL}/api/auth/checkIsLoggedIn`, "", {
@@ -158,7 +158,7 @@ export default function Navbar() {
                     :
                     isLoggedIn ?
                       <>
-                      <section className="flex justify-center items-center w-full mt-[20vh] mb-[15vh]">
+                      <section className="flex justify-center items-center w-full mt-[20vh] mb-[10vh]">
                         <section className='bg-white p-2 rounded-full cursor-pointer w-fit'>
                           <ProfileIcon />
                         </section>
