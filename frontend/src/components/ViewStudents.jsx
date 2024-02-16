@@ -65,7 +65,7 @@ export default function ViewStudents() {
 
     const fetchStudentData = async () => {
         try {
-            setIsDataLoading(true)
+            setIsDataLoading(true);
             const { search, searchCourse, searchSemester, searchdivision } = searchParams;
             const course = searchCourse === "All" ? "" : searchCourse;
             const semester = searchSemester === "All" ? "" : searchSemester;
@@ -145,8 +145,8 @@ export default function ViewStudents() {
                     <Dropdown dataArr={division} selected={searchParams.searchdivision} setSelected={changeSearchDivision} name="searchdivisions" label="Select Division" disabled={disablesection} />
                 </section>
 
-                <section className="overflow-x-auto">
-                    <table className="table-auto min-w-full bg-white shadow-md rounded-lg overflow-hidden">
+                <section className="overflow-x-auto h-[57vh] overflow-y-auto border border-blue-500 border-solid rounded-t-lg">
+                    <table className="table-auto min-w-full bg-white shadow-md rounded-lg overflow-hidden ">
                         <thead className="bg-blue-500 text-white">
                             <tr>
                                 <th className="px-4 py-2 min-w-[7%]">Sr No</th>
@@ -295,7 +295,7 @@ export default function ViewStudents() {
                             </p>
                         )}
                     </section>
-                    <section className="flex justify-center gap-3 mt-4 md:w-[30vw]  pb-3">
+                    <section className="flex justify-center gap-3 mt-4 md:w-[30vw] float-right pb-3">
                         <button
                             className={`mx-1 px-3 py-1 rounded-md ${currentPage === 1 ? 'bg-blue-500 text-white cursor-not-allowed' : 'bg-blue-500 hover:text-blue-500 hover:bg-white hover:outline hover:outline-blue-500 text-white'}`}
                             onClick={() => handlePageChange(currentPage - 1)}

@@ -158,9 +158,11 @@ export default function Navbar() {
                     :
                     isLoggedIn ?
                       <>
-                        <section className='bg-white p-2 rounded-full cursor-pointer w-fit my-36 ml-16'>
+                      <section className="flex justify-center items-center w-full mt-[20vh] mb-[15vh]">
+                        <section className='bg-white p-2 rounded-full cursor-pointer w-fit'>
                           <ProfileIcon />
                         </section>
+                      </section>
                         <Link to="/home" className=' w-full block py-3 px-4 hover:text-green-500 hover:bg-white bg-green-500 text-white shadow-lg rounded-lg mx-3' onClick={() => closeSideBar()} > Home </Link>
                         <Link to="generateevent" className='w-full block my-3 py-3 px-4 bg-green-500  text-white shadow-lg rounded-lg mx-3' onClick={() => closeSideBar()}> Generate Event </Link>
                         <PopoverComponent options={studentsRoutes} label="Students" closeSideBar={closeSideBar} />
@@ -198,7 +200,7 @@ export default function Navbar() {
 }
 
 
-const ProfilePopOver = ({logoutHandler}) => {
+const ProfilePopOver = ({ logoutHandler }) => {
 
 
   return (
@@ -222,22 +224,22 @@ const ProfilePopOver = ({logoutHandler}) => {
               >
                 <Popover.Panel className="absolute left-1/2 z-10 mt-3   -translate-x-1/2 transform px-2 ">
                   <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black/5">
-                  <div className="relative bg-white">
-  <Link
-    to="profile"
-    className="block w-full py-3 px-4 bg-blue-500 text-white hover:text-blue-500 hover:bg-white  hover:border shadow-lg"
-  >
-    View Profile
-  </Link>
-  <Link
-    to="login"
-    className=" w-full py-3 px-4 bg-red-500 text-white hover:text-red-500 hover:bg-white  hover:border shadow-lg flex items-center justify-between gap-3"
-    onClick={logoutHandler}
-  >
-    <p>Logout</p>
-    <LoginIcon className="outline-white bg-white" />
-  </Link>
-</div>
+                    <div className="relative bg-white">
+                      <Link
+                        to="profile"
+                        className="block w-full py-3 px-4 bg-blue-500 text-white hover:text-blue-500 hover:bg-white  hover:border shadow-lg"
+                      >
+                        View Profile
+                      </Link>
+                      <Link
+                        to="login"
+                        className=" w-full py-3 px-4 bg-red-500 text-white hover:text-red-500 hover:bg-white  hover:border shadow-lg flex items-center justify-between gap-3"
+                        onClick={logoutHandler}
+                      >
+                        <p>Logout</p>
+                        <LoginIcon className="outline-white bg-white" />
+                      </Link>
+                    </div>
 
                   </div>
                 </Popover.Panel>
