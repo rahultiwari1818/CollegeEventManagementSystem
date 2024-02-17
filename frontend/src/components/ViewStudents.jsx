@@ -140,7 +140,7 @@ export default function ViewStudents() {
     return (
         <>
             <section className='mx-2 my-2 p-2'>
-                <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-3 lg:gap-5 p-2">
+                <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-3 lg:gap-5 p-2">
                     <Search placeholder="Search Student" searchValue={searchParams?.search} changeSearch={changeSearch} />
                     <Dropdown dataArr={courses} selected={searchParams.searchCourse} setSelected={changeSearchCourse} name="searchCourse" label="Select Course" />
                     <Dropdown dataArr={semesters} selected={searchParams.searchSemester} setSelected={changeSemesterCourse} name="searchSemester" label="Select Semester" />
@@ -148,7 +148,7 @@ export default function ViewStudents() {
                 </section>
 
 
-                <section className="overflow-x-auto h-[57vh] overflow-y-auto border border-blue-500 border-solid rounded-t-lg">
+                <section className="overflow-x-auto max-h-[57vh] overflow-y-auto border border-blue-500 border-solid rounded-t-lg">
                     <table className="table-auto min-w-full bg-white shadow-md rounded-lg overflow-hidden ">
                         <thead className="bg-blue-500 text-white">
                             <tr>

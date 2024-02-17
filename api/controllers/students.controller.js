@@ -2,15 +2,19 @@ const Student = require("../models/Students.js");
 const fs = require("fs").promises;
 const path = require("path");
 const csvtojson = require("csvtojson");
+const { vonage } = require("../config/vonage.js");
+const { generateOTP } = require("../utils.js");
+const { client } = require("../config/redisConfig.js");
 
 
 
 
 const registerStudentsInBulk = async (req, res) => {
+    let newStudentCSVFilePath = "";
     try {
         const studentCSVFile = req.file;
-        const newStudentCSVFilePath = `uploads/${studentCSVFile.originalname}${path.extname(studentCSVFile.originalname)}`
-         await fs.rename(studentCSVFile.path,newStudentCSVFilePath)
+        newStudentCSVFilePath = `uploads/${studentCSVFile.originalname}${path.extname(studentCSVFile.originalname)}`
+        await fs.rename(studentCSVFile.path, newStudentCSVFilePath)
 
         const source = await csvtojson().fromFile(`./uploads/${studentCSVFile.originalname}${path.extname(studentCSVFile.originalname)}`); // await the csvtojson promise
 
@@ -24,7 +28,7 @@ const registerStudentsInBulk = async (req, res) => {
                 // Default date when Date Of Birth is empty or null
                 dob = new Date("1/1/2001");
             }
-            
+
             return {
                 course: entry["Course"],
                 semester: entry["Semester"],
@@ -42,9 +46,9 @@ const registerStudentsInBulk = async (req, res) => {
         res.status(200).json({ success: true, message: "Students registered successfully." });
     } catch (error) {
         // console.error("Error registering students:", error);
-        res.status(500).json({ success: false, message: "An error occurred while registering students. Please Check Your CSV File format",error:error });
+        res.status(500).json({ success: false, message: "An error occurred while registering students. Please Check Your CSV File format", error: error });
     }
-    finally{
+    finally {
         fs.unlink(newStudentCSVFilePath);
     }
 };
@@ -110,12 +114,12 @@ const getStudents = async (req, res) => {
 
 
 
-const getDivisions = async(req,res)=>{
+const getDivisions = async (req, res) => {
     const course = req.query.course || "";
-    const semester = req.query.semester || ""; 
+    const semester = req.query.semester || "";
     try {
         // Fetch all students
-        const students = await Student.find({course:course,semester:semester});
+        const students = await Student.find({ course: course, semester: semester });
 
         // Extract unique divisions from the fetched students
         const divisions = [...new Set(students.map(student => student.division))];
@@ -130,21 +134,21 @@ const getDivisions = async(req,res)=>{
     }
 }
 
-const getIndividualStudents = async(req,res)=>{
+const getIndividualStudents = async (req, res) => {
     const sid = req.params.id;
     try {
         // Fetch all students
-        const student = await Student.find({sid:sid});
+        const student = await Student.find({ sid: sid });
 
         // Extract unique divisions from the fetched students]
-        if(student){
+        if (student) {
             return res.status(200).json({
                 "message": "Student Data Fetched Successfully.",
                 "data": student,
                 "result": true
             });
         }
-        else{
+        else {
             return res.status(200).json({
                 "message": "Student Not Found.",
                 "data": {},
@@ -157,12 +161,89 @@ const getIndividualStudents = async(req,res)=>{
     }
 }
 
-const studentForgotPassword = async(req,res)=>{
+const studentForgotPassword = async (req, res) => {
+    try {
+        const sid = req.body.sid;
+
+        // Assuming Student is a Mongoose model
+        const studentData = await Student.find({ sid: sid });
+
+        // Check if studentData is empty
+        if (!studentData || studentData.length === 0) {
+            return res.status(200).json({
+                message: "Student not found. Enter Correct Sid",
+                result: false
+            });
+        }
+        const phno = studentData[0].phno;
+
+        const otp = generateOTP();
+
+        client.set(sid, otp);
+
+
+        const from = "Vonage APIs";
+        const to = studentData[0].phno;
+        const text = `Your OTP is ${otp}.`;
+
+        async function sendSMS() {
+            await vonage.sms.send({ to, from, text })
+                .then(resp => { console.log('Message sent successfully'); console.log(resp); })
+                .catch(err => { console.log('There was an error sending the messages.'); console.error(err); });
+        }
+
+        sendSMS();
+
+        return res.status(200).json({
+            message: `OTP sent to your mobile number ending with ${phno.slice(6, phno.length)}`,
+            result: true
+        });
+
+
+
+    } catch (error) {
+        console.error("Error fetching student data:", error);
+        return res.status(500).json({
+            message: "Internal Server Error.",
+            result: false
+        });
+    }
+
+
+
+
 
 }
 
-const loginStudent = async(req,res)=>{
+const verifyOTP = async(req,res)=>{
+    try {
+        const userOTP = req.body.otp;
+        const sid = req.body.sid;
+
+        const generatedOTP = await client.get(sid);
+        if(generatedOTP === userOTP){
+            return res.status(200)
+            .json({
+                message:"User Authenticated Successfully",
+                result:true
+            })
+        }
+        else{
+            return res.status(200)
+            .json({
+                message:"Incorrect OTP Provided",
+                result:false
+            })
+        }
+
+    } catch (error) {
+        
+    }
+}
+
+
+const loginStudent = async (req, res) => {
 
 }
 
-module.exports = { registerStudentsInBulk,getStudents,getDivisions,getIndividualStudents };
+module.exports = { registerStudentsInBulk, getStudents, getDivisions, getIndividualStudents, studentForgotPassword,verifyOTP };

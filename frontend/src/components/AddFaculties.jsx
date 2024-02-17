@@ -21,7 +21,7 @@ export default function AddFaculties() {
         e.preventDefault();
         setShowOverLay((old) => !old);
         const formData = new FormData();
-        formData.append("studentcsv", fileToUpload);
+        formData.append("facultycsv", fileToUpload);
         try {
 
             const { data } = await axios.post(`${API_URL}/api/faculties/registerInBulk`, formData, {
@@ -81,7 +81,7 @@ export default function AddFaculties() {
                             <input
                                 type="file"
                                 id="dropzone-file"
-                                name="studentcsv"
+                                name="facultycsv"
                                 className="hidden"
                                 onChange={(e) => {
                                     const file = e.target.files[0];

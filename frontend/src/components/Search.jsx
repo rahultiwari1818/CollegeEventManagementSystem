@@ -8,12 +8,12 @@ export default function Search({placeholder,searchValue,changeSearch}) {
         changeSearch(search)
     },[search])
   return (
-<section class="relative">
-    <input type="search" name="search" value={search} onChange={(e)=>{setSearch(()=>e.target.value)}} placeholder={placeholder} class="md:mx-2  px-4 py-3 my-1 rounded-md shadow-md w-full "/>
+<section className="relative">
+    <input type="search" name="search" value={search} onChange={(e)=>{setSearch(()=>e.target.value)}} placeholder={placeholder} className="md:mx-2  px-4 py-3 my-1 rounded-md shadow-md w-full "/>
     {
       search == "" 
       &&
-    <section class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none px-5">
+    <section className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none px-5">
       <SearchIcon/>
     </section>
     }

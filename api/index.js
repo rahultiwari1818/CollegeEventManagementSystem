@@ -4,7 +4,9 @@ const app = express();
 const cors = require("cors");
 const port = process.env.PORT;
 const connectToMongo = require("./config/database")
+const {connectToRedis} = require("./config/redisConfig.js")
 connectToMongo();
+connectToRedis();
 app.use(express.json());
 app.use(cors());
 
@@ -19,3 +21,4 @@ app.use("/api/students",require("./routes/students.js"))
 app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);
 });
+
