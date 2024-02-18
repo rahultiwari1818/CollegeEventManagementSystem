@@ -6,7 +6,7 @@ import { ReactComponent as CloseIcon } from "../assets/Icons/CloseIcon.svg";
 import { ReactComponent as ProfileIcon } from "../assets/Icons/Profile.svg"
 import { ReactComponent as LoginIcon } from "../assets/Icons/LoginIcon.svg";
 import axios from 'axios';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { logoutUser, setNewUser } from '../store/UserSlice';
 import PopoverComponent from './PopoverComponent';
 
@@ -24,7 +24,9 @@ export default function Navbar() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-
+  const userData = useSelector((state)=>state.UserSlice);
+  console.log(userData)
+  
 
   const closeSideBar = () => {
     setOpenSideBar(() => !openSideBar);
@@ -48,6 +50,7 @@ export default function Navbar() {
           }
         });
         setIsLoggedIn(() => true);
+        console.log(data.user)
         if (location?.pathname === "/login") navigate("/home");
         dispatch(setNewUser(data.user));
       } catch (error) {
@@ -106,15 +109,20 @@ export default function Navbar() {
                   :
                   isLoggedIn ?
                     <>
+                   
                       <Link to="/home" className='py-3 px-4 hover:text-green-500 hover:bg-white bg-green-500 text-white shadow-lg rounded-lg mx-3' > Home </Link>
+                      
+                      {
+                      userData.role !== "Student" 
+                      &&
+                      <>
                       <Link to="generateevent" className='py-3 px-4 hover:text-green-500 hover:bg-white bg-green-500 text-white shadow-lg rounded-lg mx-3' > Generate Event </Link>
                       <PopoverComponent options={studentsRoutes} label="Students" />
                       <PopoverComponent options={facultiesRoutes} label="Faculties" />
-
+                      </>
+                    }
                       <ProfilePopOver logoutHandler={logoutHandler} />
-                      {/* <section className='bg-white p-2 rounded-full cursor-pointer'>
-                        <ProfileIcon />
-                      </section> */}
+                      
                     </>
                     :
                     <section>
@@ -164,11 +172,16 @@ export default function Navbar() {
                         </section>
                       </section>
                         <Link to="/home" className=' w-full block py-3 px-4 hover:text-green-500 hover:bg-white bg-green-500 text-white shadow-lg rounded-lg mx-3' onClick={() => closeSideBar()} > Home </Link>
-                        <Link to="generateevent" className='w-full block my-3 py-3 px-4 bg-green-500  text-white shadow-lg rounded-lg mx-3' onClick={() => closeSideBar()}> Generate Event </Link>
-                        <PopoverComponent options={studentsRoutes} label="Students" closeSideBar={closeSideBar} />
-                        <PopoverComponent options={facultiesRoutes} label="Faculties" closeSideBar={closeSideBar} />
-
-                        <Link to="login" className='py-3 px-4 hover:text-red-500 hover:bg-white bg-red-500  text-white shadow-lg rounded-lg mx-3 flex justify-between items-center gap-3' onClick={() => {
+                        {
+                      userData.role !== "Student" 
+                      &&
+                      <>
+                      <Link to="generateevent" className='py-3 px-4 hover:text-green-500 hover:bg-white bg-green-500 text-white shadow-lg rounded-lg mx-3' > Generate Event </Link>
+                      <PopoverComponent options={studentsRoutes} label="Students" />
+                      <PopoverComponent options={facultiesRoutes} label="Faculties" />
+                      </>
+                    }
+                        <Link to="login" className={`py-3 px-4 hover:text-red-500 hover:bg-white bg-red-500  text-white shadow-lg rounded-lg mx-3 flex justify-between items-center gap-3 ${userData.role==="Student"?"my-4":""}`} onClick={() => {
                           logoutHandler();
                           closeSideBar();
                         }} >

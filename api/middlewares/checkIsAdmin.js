@@ -6,21 +6,21 @@ const checkIsAdmin = async(req,res,next) =>{
     const authToken = req.header("auth-token");
 
     if(!authToken){
-        return res.status(401).json({"message":"Unauthorized User.","error":true});
+        return res.status(401).json({"message":"Unauthorized User.","result":false});
     }
 
     try {
         
         const data = jwtToken.verify(authToken,SECRET_KEY);
-        if(data.user.type!=="Super Admin" && data.user.type !== "Admin"){
-            return res.status(401).json({"message":"Unauthorized User.","error":true});
+        if(data.user.role!=="Super Admin" && data.user.role !== "Admin"){
+            return res.status(401).json({"message":"Unauthorized User.","result":false});
         }
         
         req.user = data.user;
         next();
 
     } catch (error) {
-        return res.status(401).json({"message":"Invalid Token.!","error":true});
+        return res.status(401).json({"message":"Unauthorized User.!","result":false});
     }
 
 };

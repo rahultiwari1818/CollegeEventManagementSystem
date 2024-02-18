@@ -19,7 +19,8 @@ export default function ForgotPassword({ openForgotPasswordModal, setOpenForgotP
         setErrors({
             sidErr: "",
             emailErr: "",
-            otpErr: ""
+            otpErr: "",
+            roleErr:""
         })
 
           setDisableRole(false);
@@ -39,7 +40,8 @@ export default function ForgotPassword({ openForgotPasswordModal, setOpenForgotP
     const [errors, setErrors] = useState({
         sidErr: "",
         emailErr: "",
-        otpErr: ""
+        otpErr: "",
+        roleErr:""
     })
     const [disableRole, setDisableRole] = useState(false);
     const [otpSent, setOtpSent] = useState(false);
@@ -53,9 +55,15 @@ export default function ForgotPassword({ openForgotPasswordModal, setOpenForgotP
 
 
     const API_URL = process.env.REACT_APP_BASE_URL;
-    const token = localStorage.getItem("token");
 
     const sendOTPHandler = async () => {
+        if(data.role === ""){
+            setErrors((old)=>({...old,roleErr:"Select Your Role."}));
+            return;
+        }
+        else{
+            setErrors((old)=>({...old,roleErr:""}));
+        }
         if (data?.role === "Faculty") {
             emailRef.current.disabled = true;
         }
@@ -188,6 +196,15 @@ export default function ForgotPassword({ openForgotPasswordModal, setOpenForgotP
                         <section className="px-3 my-2">
                             <label className='mx-2'>Select Your Role : </label>
                             <Dropdown dataArr={roles} selected={data?.role} setSelected={changeRole} label={"Select Your Role"} disabled={disableRole} />
+                            {
+                                errors.roleErr !== ""
+                                &&
+                                <p className="text-red-500 my-2">
+                                    {
+                                        errors.roleErr
+                                    }
+                                </p>
+                            }
                         </section>
                         {
                             data && data?.role === "Student" &&

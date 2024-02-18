@@ -6,14 +6,14 @@ import { createSlice } from "@reduxjs/toolkit";
 export const UserSlice = createSlice({
     name:"UserSlice",
     initialState:{
-        id:"",
+        _id:"",
         name:"",
         role:""
     },
     reducers:{
         setNewUser:(state,action)=>{
             state._id=action.payload.id
-            state.role = action.payload.type
+            state.role = action.payload.role
             state.name = action.payload.name
         } ,
         logoutUser:(state,action)=>{

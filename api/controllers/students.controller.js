@@ -299,7 +299,7 @@ const loginStudent = async (req, res) => {
             user:{
                 id:user._id,
                 role:"Student",
-                name:user.name,
+                name:user.studentName,
             }
          };
 
