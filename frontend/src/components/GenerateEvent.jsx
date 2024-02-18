@@ -35,16 +35,20 @@ export default function GenerateEvent() {
     }
 
     const [data, setData] = useState(initialState);
-    const [errors,setErrors] = useState({
-        edateErr:"",
-        rcdateErr:""
-    })
+    const initialErrorState = {
+        edateErr: "",
+        rcdateErr: "",
+        etypeErr: "",
+        ptypeErr: "",
+        enatureErr: ""
+    };
+    const [errors, setErrors] = useState(initialErrorState)
     const [subEventDataToUpdate, setSubEventDataToUpdate] = useState({});
     const noOfParticipants = useRef(null);
-    const [isLoading,setIsLoading] = useState(true);
-    const [fileErrors,setFileErrors] = useState({
-        posterError:"",
-        brochureError:""
+    const [isLoading, setIsLoading] = useState(true);
+    const [fileErrors, setFileErrors] = useState({
+        posterError: "",
+        brochureError: ""
     })
     const updateData = (e) => {
         const name = e.target.name;
@@ -74,38 +78,62 @@ export default function GenerateEvent() {
         setOpenAddSubEventModal((old) => !old)
     }
 
-    const changeEventNature = useCallback((value)=>{
-        setData((old)=>({...old,enature:value}))
-    },[setData]);
+    const changeEventNature = useCallback((value) => {
+        setData((old) => ({ ...old, enature: value }))
+    }, [setData]);
 
 
-    const changeParticipationType = useCallback((value)=>{
-        setData((old)=>({...old,ptype:value}))
-        
+    const changeParticipationType = useCallback((value) => {
+        setData((old) => ({ ...old, ptype: value }))
+
         if (value === 'Individual') {
-            
-            setData((old)=>({...old,ptype:value}));
-            
+
+            setData((old) => ({ ...old, ptype: value }));
+
             noOfParticipants.current.value = 1;
             noOfParticipants.current.disabled = true;
-          } else if (value === 'Group') {
+        } else if (value === 'Group') {
             noOfParticipants.current.disabled = false;
-          }
+        }
         //   console.log(value,noOfParticipants.current,"participant")
-    },[setData]);
+    }, [setData]);
 
-    const changeEventType = useCallback((value)=>{
-        setData((old)=>({...old,etype:value}))
-    },[setData]);
+    const changeEventType = useCallback((value) => {
+        setData((old) => ({ ...old, etype: value }))
+    }, [setData]);
 
 
     const [openAddSubEventModal, setOpenAddSubEventModal] = useState(false);
 
 
+    const validateDropDowns = () => {
+        let isValidated = true;
+        if (data.etype === "") {
+            setErrors((old) => ({ ...old, etypeErr: "Event Type is Required" }));
+            isValidated = false;
+        }
+        if (data.ptype === "" && !data.hasSubEvents) {
+            setErrors((old) => ({ ...old, ptypeErr: "Participation Type is Required" }));
+            isValidated = false;
+        }
+        if (data.enature === "") {
+            setErrors((old) => ({ ...old, enatureErr: "Event Nature is Required" }));
+            isValidated = false;
+        }
+
+        console.log(errors)
+        return isValidated;
+
+    }
 
     const generateEventHandler = async (e) => {
-        setIsLoading((old)=>true);
         e.preventDefault();
+
+        if (!validateDropDowns()) {
+            return;
+        }
+
+        setIsLoading((old) => true);
         const formData = new FormData();
         formData.append("ename", data.ename.trim());
         formData.append("etype", data.etype.trim());
@@ -118,8 +146,8 @@ export default function GenerateEvent() {
         formData.append("rules", (data.rules.trim()));
         formData.append("ebrochure", data.ebrochure);
         formData.append("eposter", data.eposter);
-        formData.append("hasSubEvents",data.hasSubEvents);
-        formData.append("subEvents",JSON.stringify(data.subEvents));
+        formData.append("hasSubEvents", data.hasSubEvents);
+        formData.append("subEvents", JSON.stringify(data.subEvents));
         try {
             const { data } = await axios.post(`${API_URL}/api/events/generateevent`, formData, {
                 headers: {
@@ -130,12 +158,13 @@ export default function GenerateEvent() {
             if (data.result) {
                 toast.success(data.message);
                 setData(initialState)
+                setErrors(initialErrorState)
             }
         } catch (error) {
             console.error('Request failed:', error);
         }
         finally {
-            setIsLoading((old)=>!old);
+            setIsLoading((old) => !old);
         }
 
 
@@ -155,164 +184,182 @@ export default function GenerateEvent() {
     };
 
 
-    useEffect(() => {
-        console.log(data);
-    }, [data])
 
-    useEffect(()=>{
+    useEffect(() => {
         setIsLoading(false)
-    },[])
+    }, [])
 
     const eventNatures = [{ name: "Cultural" }, { name: "IT" }, { name: "Management" }, { name: "Sports" }];
     const eventTypes = [{ name: "Intra-College" }, { name: "Inter-College" }];
 
     return (
 
-<>
-{
-    isLoading
-    &&
-    <Overlay/>
-}
-    <section className='flex justify-center items-center'>
-        <section className='p-5 md:p-10 shadow-2xl bg-white md:outline-none outline outline-blue-500 md:mt-0 md:mb-0 mt-2 w-full max-w-4xl'>
-            <p className='text-2xl text-center text-white bg-blue-500 p-2'>Generate Event</p>
-            <form method="post" className='p-4' onSubmit={generateEventHandler}>
-                <section className='md:p-2 md:m-2 p-1 m-1'>
-                    <label htmlFor="ename">Event Name:</label>
-                    <input
-                        type="text"
-                        name="ename"
-                        value={data.ename}
-                        onChange={updateData}
-                        placeholder='Enter Event Name'
-                        className='w-full shadow-lg md:p-3 rounded-lg p-2'
-                        required
-                    />
-                </section>
-                <section className='md:flex md:justify-start gap-10 md:items-center'>
-                    <section className='md:p-2 md:m-2 p-1 m-1'>
-                        <label htmlFor="etype">Event Nature:</label>
-                        <Dropdown
-                            dataArr={eventNatures}
-                            selected={data.enature}
-                            setSelected={changeEventNature}
-                            name={"enature"}
-                            label={"Select Event Nature"}
-                        />
-                    </section>
-
-                    <section className='md:p-2 md:m-2 p-1 m-1'>
-                        <label htmlFor="nop">Event Type:</label>
-                        <Dropdown
-                            dataArr={eventTypes}
-                            selected={data.etype}
-                            setSelected={changeEventType}
-                            name={"etype"}
-                            label={"Select Event Type"}
-                        />
-                    </section>
-                </section>
-
-                <section className='md:p-2 md:m-2 p-1 m-1'>
-                    <ToggleSwitch headingText={"Has Sub Event?"} updateHasSubEvents={updateHasSubEvents} hasSubEvents={data.hasSubEvents} />
-                </section>
-
-                {data?.hasSubEvents && (
-                    <section className='md:p-2 md:m-2 p-1 m-1'>
-                        <p className='flex gap-5 items-center'>
-                            Add Sub Events   <span className='rounded-lg  outline outline-blue-500'>
-                                <AddIcon className='cursor-pointer' onClick={setOpenAddSubEventModal} />
-                            </span>
-                        </p>
-                        <section className='max-w-full overflow-auto'>
-                            <table className="w-full md:w-[90vh] lg:w-[90vh] border-collapse border border-blue-500 my-3 rounded-lg">
-                                <thead className="">
-                                    <tr>
-                                        <th className="py-2 px-4 border border-blue-500">Sr No</th>
-                                        <th className="py-2 px-4 border border-blue-500">Event Name</th>
-                                        <th className="py-2 px-4 border border-blue-500">Participation Type</th>
-                                        <th className="py-2 px-4 border border-blue-500">No Of Participants</th>
-                                        <th className="py-2 px-4 border border-blue-500">Update</th>
-                                        <th className="py-2 px-4 border border-blue-500">Delete</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {data?.subEvents?.map((event, idx) => (
-                                        <tr className="p-2" key={event?.sId}>
-                                            <td className="py-2 px-4 border border-blue-500">{idx + 1}</td>
-                                            <td className="py-2 px-4 border border-blue-500">{event.subEventName}</td>
-                                            <td className="py-2 px-4 border border-blue-500">{event.ptype}</td>
-                                            <td className="py-2 px-4 border border-blue-500">{event.noOfParticipants}</td>
-                                            <td className="py-2 px-4 border border-blue-500">
-                                                <EditIcon className="cursor-pointer" onClick={() => updateAddSubEvent(event.sId)} />
-                                            </td>
-                                            <td className="py-2 px-4 border border-blue-500">
-                                                <DeleteIcon className="cursor-pointer" onClick={() => removeSubEvent(event.sId)} />
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </section>
-                    </section>
-                )}
-
-                {!data?.hasSubEvents && (
-                    <section className='md:flex md:justify-start gap-10 md:items-center'>
+        <>
+            {
+                isLoading
+                &&
+                <Overlay />
+            }
+            <section className='flex justify-center items-center'>
+                <section className='p-5 md:p-10 shadow-2xl bg-white md:outline-none outline outline-blue-500 md:mt-0 md:mb-0 mt-2 w-full max-w-4xl'>
+                    <p className='text-2xl text-center text-white bg-blue-500 p-2'>Generate Event</p>
+                    <form method="post" className='p-4' onSubmit={generateEventHandler}>
                         <section className='md:p-2 md:m-2 p-1 m-1'>
-                            <label htmlFor="ptype">Participation  Type:</label>
-                            <Dropdown
-                                dataArr={[{ name: "Individual" }, { name: "Group" }]}
-                                selected={data.ptype}
-                                setSelected={changeParticipationType}
-                                name={"ptype"}
-                                label={"Select Participation Type"}
-                            />
-                        </section>
-                        <section className='md:p-2 md:m-2 p-1 m-1'>
-                            <label htmlFor="nop">Max No Of Team Members:</label>
-                            <input type="text"
-                                name="noOfParticipants"
-                                min={1}
-                                ref={noOfParticipants}
-                                value={data.noOfParticipants}
+                            <label htmlFor="ename">Event Name:</label>
+                            <input
+                                type="text"
+                                name="ename"
+                                value={data.ename}
                                 onChange={updateData}
-                                onBlur={(e) => {
-                                    if (e.target.name === "noOfParticipants") {
-                                        if (e.target.value < 1) {
-                                            setData({ ...data, [e.target.name]: 1 });
-                                            return;
-                                        }
-                                    }
-                                }}
-                                placeholder='Enter No Of Participants'
-                                className='block shadow-lg md:p-3 rounded-lg p-2'
-                                onKeyDown={handleNumericInput}
+                                placeholder='Enter Event Name'
+                                className='w-full shadow-lg md:p-3 rounded-lg p-2'
                                 required
                             />
                         </section>
-                    </section>
-                )}
+                        <section className='md:flex md:justify-start gap-10 md:items-center'>
+                            <section className='md:p-2 md:m-2 p-1 m-1'>
+                                <label htmlFor="etype">Event Nature:</label>
+                                <Dropdown
+                                    dataArr={eventNatures}
+                                    selected={data.enature}
+                                    setSelected={changeEventNature}
+                                    name={"enature"}
+                                    label={"Select Event Nature"}
+                                />
+                                {
+                                    errors && errors.enatureErr !== ""
+                                    &&
+                                    <p className="text-red-500 my-2">
+                                        {errors.enatureErr}
+                                    </p>
+                                }
+                            </section>
 
-                <section className='md:flex md:justify-start gap-10 md:items-center'>
-                <section className='md:p-2 md:m-2  p-1 m-1'>
+                            <section className='md:p-2 md:m-2 p-1 m-1'>
+                                <label htmlFor="nop">Event Type:</label>
+                                <Dropdown
+                                    dataArr={eventTypes}
+                                    selected={data.etype}
+                                    setSelected={changeEventType}
+                                    name={"etype"}
+                                    label={"Select Event Type"}
+                                />
+                                {
+                                    errors && errors.etypeErr !== ""
+                                    &&
+                                    <p className="text-red-500 my-2">
+                                        {errors.etypeErr}
+                                    </p>
+                                }
+                            </section>
+                        </section>
+
+                        <section className='md:p-2 md:m-2 p-1 m-1'>
+                            <ToggleSwitch headingText={"Has Sub Event?"} updateHasSubEvents={updateHasSubEvents} hasSubEvents={data.hasSubEvents} />
+                        </section>
+
+                        {data?.hasSubEvents && (
+                            <section className='md:p-2 md:m-2 p-1 m-1'>
+                                <p className='flex gap-5 items-center'>
+                                    Add Sub Events   <span className='rounded-lg  outline outline-blue-500'>
+                                        <AddIcon className='cursor-pointer' onClick={setOpenAddSubEventModal} />
+                                    </span>
+                                </p>
+                                <section className='max-w-full overflow-auto'>
+                                    <table className="w-full md:w-[90vh] lg:w-[90vh] border-collapse border border-blue-500 my-3 rounded-lg">
+                                        <thead className="">
+                                            <tr>
+                                                <th className="py-2 px-4 border border-blue-500">Sr No</th>
+                                                <th className="py-2 px-4 border border-blue-500">Event Name</th>
+                                                <th className="py-2 px-4 border border-blue-500">Participation Type</th>
+                                                <th className="py-2 px-4 border border-blue-500">No Of Participants</th>
+                                                <th className="py-2 px-4 border border-blue-500">Update</th>
+                                                <th className="py-2 px-4 border border-blue-500">Delete</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {data?.subEvents?.map((event, idx) => (
+                                                <tr className="p-2" key={event?.sId}>
+                                                    <td className="py-2 px-4 border border-blue-500">{idx + 1}</td>
+                                                    <td className="py-2 px-4 border border-blue-500">{event.subEventName}</td>
+                                                    <td className="py-2 px-4 border border-blue-500">{event.ptype}</td>
+                                                    <td className="py-2 px-4 border border-blue-500">{event.noOfParticipants}</td>
+                                                    <td className="py-2 px-4 border border-blue-500">
+                                                        <EditIcon className="cursor-pointer" onClick={() => updateAddSubEvent(event.sId)} />
+                                                    </td>
+                                                    <td className="py-2 px-4 border border-blue-500">
+                                                        <DeleteIcon className="cursor-pointer" onClick={() => removeSubEvent(event.sId)} />
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </section>
+                            </section>
+                        )}
+
+                        {!data?.hasSubEvents && (
+                            <section className='md:flex md:justify-start gap-10 md:items-center'>
+                                <section className='md:p-2 md:m-2 p-1 m-1'>
+                                    <label htmlFor="ptype">Participation  Type:</label>
+                                    <Dropdown
+                                        dataArr={[{ name: "Individual" }, { name: "Group" }]}
+                                        selected={data.ptype}
+                                        setSelected={changeParticipationType}
+                                        name={"ptype"}
+                                        label={"Select Participation Type"}
+                                    />
+                                    {
+                                        errors && errors.ptypeErr !== ""
+                                        &&
+                                        <p className="text-red-500 my-2">
+                                            {errors.ptypeErr}
+                                        </p>
+                                    }
+                                </section>
+                                <section className='md:p-2 md:m-2 p-1 m-1'>
+                                    <label htmlFor="nop">Max No Of Team Members:</label>
+                                    <input type="text"
+                                        name="noOfParticipants"
+                                        min={1}
+                                        ref={noOfParticipants}
+                                        value={data.noOfParticipants}
+                                        onChange={updateData}
+                                        onBlur={(e) => {
+                                            if (e.target.name === "noOfParticipants") {
+                                                if (e.target.value < 1) {
+                                                    setData({ ...data, [e.target.name]: 1 });
+                                                    return;
+                                                }
+                                            }
+                                        }}
+                                        placeholder='Enter No Of Participants'
+                                        className='block shadow-lg md:p-3 rounded-lg p-2'
+                                        onKeyDown={handleNumericInput}
+                                        required
+                                    />
+                                </section>
+                            </section>
+                        )}
+
+                        <section className='md:flex md:justify-start gap-10 md:items-center'>
+                            <section className='md:p-2 md:m-2  p-1 m-1'>
                                 <label htmlFor="rcdate">Registration Closing  Date:</label><br />
                                 <DatePicker
                                     name='rcdate'
                                     selected={data.rcdate}
-                                    onChange={(date) =>{ 
-                                        
-                                        if(date>data.edate){
-                                            setErrors((old)=>({...old,"edateErr":"Event Date Should be Greater Than Registration Closing Date"}))
+                                    onChange={(date) => {
+
+                                        if (date > data.edate) {
+                                            setErrors((old) => ({ ...old, "edateErr": "Event Date Should be Greater Than Registration Closing Date" }))
                                         }
-                                        else{
-                                            setErrors((old)=>({...old,"edateErr":""}))
+                                        else {
+                                            setErrors((old) => ({ ...old, "edateErr": "" }))
                                         }
 
                                         setData({ ...data, rcdate: date })
-                            
-                            
+
+
                                     }
                                     }
                                     dateFormat="dd-MM-yyyy"
@@ -328,12 +375,12 @@ export default function GenerateEvent() {
                                     name='edate'
                                     selected={data.edate}
                                     onChange={(date) => {
-                                        if(date<data.rcdate){
-                                            setErrors((old)=>({edateErr:"Event Date Should be Greater Than Registration Closing Date"}))
+                                        if (date < data.rcdate) {
+                                            setErrors((old) => ({ edateErr: "Event Date Should be Greater Than Registration Closing Date" }))
                                         }
-                                        else{                                            
+                                        else {
                                             setData({ ...data, edate: date })
-                                            setErrors((old)=>({edateErr:""}))
+                                            setErrors((old) => ({ edateErr: "" }))
                                         }
                                     }}
                                     dateFormat="dd-MM-yyyy"
@@ -345,40 +392,40 @@ export default function GenerateEvent() {
                                 {
                                     errors && errors.edateErr !== ""
                                     &&
-                                    <p className="text-red-500">
+                                    <p className="text-red-500 my-2">
                                         {errors.edateErr}
                                     </p>
                                 }
                             </section>
-                </section>
+                        </section>
 
-                <section className='md:p-2 md:m-2 p-1 m-1'>
-                    <label htmlFor="details">Event Details:</label><br />
-                    <textarea
-                        name="edetails"
-                        value={data.edetails}
-                        onChange={updateData}
-                        className='w-full shadow-lg md:p-3 rounded-lg p-2'
-                        placeholder="Enter Event Details "
-                        required
-                    ></textarea>
-                </section>
-                <section className='md:p-2 md:m-2 p-1 m-1'>
-                    <label htmlFor="rules">Rules For Events:</label><br />
-                    <textarea
-                        name="rules"
-                        value={data.rules}
-                        onChange={updateData}
-                        className='w-full shadow-lg md:p-3 rounded-lg p-2'
-                        placeholder="Enter Rules "
-                        required
-                    ></textarea>
-                </section>
+                        <section className='md:p-2 md:m-2 p-1 m-1'>
+                            <label htmlFor="details">Event Details:</label><br />
+                            <textarea
+                                name="edetails"
+                                value={data.edetails}
+                                onChange={updateData}
+                                className='w-full shadow-lg md:p-3 rounded-lg p-2'
+                                placeholder="Enter Event Details "
+                                required
+                            ></textarea>
+                        </section>
+                        <section className='md:p-2 md:m-2 p-1 m-1'>
+                            <label htmlFor="rules">Rules For Events:</label><br />
+                            <textarea
+                                name="rules"
+                                value={data.rules}
+                                onChange={updateData}
+                                className='w-full shadow-lg md:p-3 rounded-lg p-2'
+                                placeholder="Enter Rules "
+                                required
+                            ></textarea>
+                        </section>
 
-                {/* File upload sections */}
+                        {/* File upload sections */}
 
-                <section className='md:p-2 md:m-2 p-1 m-1'>
-                <section className="flex items-center justify-center w-full">
+                        <section className='md:p-2 md:m-2 p-1 m-1'>
+                            <section className="flex items-center justify-center w-full">
                                 <label
                                     htmlFor="dropzoneFileForPoster"
                                     className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
@@ -408,35 +455,35 @@ export default function GenerateEvent() {
                                         type="file"
                                         id="dropzoneFileForPoster"
                                         name="eposter"
-                                        accept="image/*" 
+                                        accept="image/*"
                                         className="hidden"
                                         onChange={(e) => {
                                             const file = e.target.files[0];
                                             // console.log("poster",file);
                                             if (file && file.size > 10485760) {
-                                                setFileErrors((old)=>({...old,posterError:"Poster Size Should be less than 10 Mb."}))
+                                                setFileErrors((old) => ({ ...old, posterError: "Poster Size Should be less than 10 Mb." }))
                                                 setData({ ...data, eposter: null });
                                             }
-                                            else{
+                                            else {
                                                 setData({ ...data, eposter: file });
-                                                setFileErrors((old)=>({...old,posterError:""}));
+                                                setFileErrors((old) => ({ ...old, posterError: "" }));
                                             }
                                         }}
 
                                     />
                                     {
-                                    fileErrors &&
-                                    <p className='text-red-500 py-2'>
-                                        {fileErrors.posterError}
-                                    </p> 
-                                }
+                                        fileErrors &&
+                                        <p className='text-red-500 py-2'>
+                                            {fileErrors.posterError}
+                                        </p>
+                                    }
                                 </label>
-                                
-                            </section>
-                </section>
 
-                <section className='md:p-2 md:m-2 p-1 m-1'>
-                <section className="flex items-center justify-center w-full">
+                            </section>
+                        </section>
+
+                        <section className='md:p-2 md:m-2 p-1 m-1'>
+                            <section className="flex items-center justify-center w-full">
                                 <label
                                     htmlFor="dropzoneFileForBrochure"
                                     className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
@@ -467,39 +514,39 @@ export default function GenerateEvent() {
                                         id="dropzoneFileForBrochure"
                                         name="ebrochure"
                                         className="hidden"
-                                        accept=".pdf,.docx" 
+                                        accept=".pdf,.docx"
                                         onChange={(e) => {
                                             const file = e.target.files[0];
                                             // console.log("brochure",file);
                                             if (file && file.size > 10485760) {
-                                                setFileErrors((old)=>({...old,brochureError:"Brochure Size Should be less than 10 Mb."}))
+                                                setFileErrors((old) => ({ ...old, brochureError: "Brochure Size Should be less than 10 Mb." }))
                                                 setData({ ...data, ebrochure: null });
                                             }
-                                            else{
-                                            setData({ ...data, ebrochure: file });
-                                            setFileErrors((old)=>({...old,brochureError:""}))
+                                            else {
+                                                setData({ ...data, ebrochure: file });
+                                                setFileErrors((old) => ({ ...old, brochureError: "" }))
                                             }
                                         }}
 
                                     />
                                     {
-                                    fileErrors &&
-                                    <p className='text-red-500 py-2'>
-                                        {fileErrors.brochureError}
-                                    </p> 
-                                }
+                                        fileErrors &&
+                                        <p className='text-red-500 py-2'>
+                                            {fileErrors.brochureError}
+                                        </p>
+                                    }
                                 </label>
-                                
+
                             </section>                </section>
 
-                <section className='md:p-2 md:m-2 p-1 m-1'>
-                    <input type="submit" value="Generate Event" className='text-red-500 cursor-pointer bg-white rounded-lg shadow-lg px-5 py-3 w-full m-2 outline outline-red-500 hover:text-white hover:bg-red-500 ' />
+                        <section className='md:p-2 md:m-2 p-1 m-1'>
+                            <input type="submit" value="Generate Event" className='text-red-500 cursor-pointer bg-white rounded-lg shadow-lg px-5 py-3 w-full m-2 outline outline-red-500 hover:text-white hover:bg-red-500 ' />
+                        </section>
+                    </form>
                 </section>
-            </form>
-        </section>
-    </section>
-    <AddSubEvents openUpdateModal={openAddSubEventModal} setOpenUpdateModal={setOpenAddSubEventModal} heading={"Add Sub Event"} setData={setData} dataToBeUpdated={subEventDataToUpdate} setSubEventDataToUpdate={setSubEventDataToUpdate} />
-</>
+            </section>
+            <AddSubEvents openUpdateModal={openAddSubEventModal} setOpenUpdateModal={setOpenAddSubEventModal} heading={"Add Sub Event"} setData={setData} dataToBeUpdated={subEventDataToUpdate} setSubEventDataToUpdate={setSubEventDataToUpdate} />
+        </>
     )
 }
 

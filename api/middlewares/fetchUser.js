@@ -4,7 +4,6 @@ const SECRET_KEY = process.env.SECRET_KEY;
 const fetchUser = async(req,res,next) =>{
 
     const authToken = req.header("auth-token");
-
     if(!authToken){
         return res.status(401).json({"message":"Unauthorized User.","error":true});
     }

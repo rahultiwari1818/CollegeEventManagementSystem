@@ -25,12 +25,50 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
         posterError:"",
         brochureError:""
     })
+
+
+    const initialErrorState = {
+        edateErr: "",
+        rcdateErr: "",
+        etypeErr: "",
+        ptypeErr: "",
+        enatureErr: ""
+    };
+    const [errors, setErrors] = useState(initialErrorState)
+
     const { id } = useParams();
 
     const API_URL = process.env.REACT_APP_BASE_URL;
 
+
+    const validateDropDowns = () => {
+        let isValidated = true;
+        if (data.etype === "") {
+            setErrors((old) => ({ ...old, etypeErr: "Event Type is Required" }));
+            isValidated = false;
+        }
+        if (data.ptype === "" && !data.hasSubEvents) {
+            setErrors((old) => ({ ...old, ptypeErr: "Participation Type is Required" }));
+            isValidated = false;
+        }
+        if (data.enature === "") {
+            setErrors((old) => ({ ...old, enatureErr: "Event Nature is Required" }));
+            isValidated = false;
+        }
+
+        console.log(errors)
+        return isValidated;
+
+    }
+
+
+
     const updateEvent = async (e) => {
         e.preventDefault();
+        if (!validateDropDowns()) {
+            return;
+        }
+
             const formData = new FormData();
             formData.append("ename", data.ename.trim());
             formData.append("etype", data.etype.trim());
@@ -170,6 +208,7 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
     const eventTypes = [{ name: "Intra-College" }, { name: "Inter-College" }];
 
     return (
+        
         <Modal isOpen={openUpdateModal} close={setOpenUpdateModal} heading={"Update Event"}>
             {/* <form method="post" className='p-4' onSubmit={updateEvent}>
                 <section className='md:p-2 md:m-2 p-1 m-1' >
@@ -316,6 +355,13 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
                             name={"enature"}
                             label={"Select Event Nature"}
                         />
+                        {
+                                    errors && errors.enatureErr !== ""
+                                    &&
+                                    <p className="text-red-500 my-2">
+                                        {errors.enatureErr}
+                                    </p>
+                                }
                     </section>
 
                     <section className='md:p-2 md:m-2 p-1 m-1'>
@@ -327,6 +373,13 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
                             name={"etype"}
                             label={"Select Event Type"}
                         />
+{
+                                    errors && errors.etypeErr !== ""
+                                    &&
+                                    <p className="text-red-500 my-2">
+                                        {errors.etypeErr}
+                                    </p>
+                                }
                     </section>
                 </section>
 
@@ -385,6 +438,13 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
                                 name={"ptype"}
                                 label={"Select Participation Type"}
                             />
+                            {
+                                    errors && errors.ptypeErr !== ""
+                                    &&
+                                    <p className="text-red-500 my-2">
+                                        {errors.ptypeErr}
+                                    </p>
+                                }
                         </section>
                         <section className='md:p-2 md:m-2 p-1 m-1'>
                             <label htmlFor="nop">Max No Of Team Members:</label>
@@ -416,8 +476,21 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
                                 <label htmlFor="rcdate">Registration Closing  Date:</label><br />
                                 <DatePicker
                                     name='rcdate'
-                                    selected={new Date(data.rcdate)}
-                                    onChange={(date) => setData({ ...data, rcdate: date })}
+                                    selected={data.rcdate}
+                                    onChange={(date) => {
+
+                                        if (date > data.edate) {
+                                            setErrors((old) => ({ ...old, "edateErr": "Event Date Should be Greater Than Registration Closing Date" }))
+                                        }
+                                        else {
+                                            setErrors((old) => ({ ...old, "edateErr": "" }))
+                                        }
+
+                                        setData({ ...data, rcdate: date })
+
+
+                                    }
+                                    }
                                     dateFormat="dd-MM-yyyy"
                                     minDate={new Date().setDate(new Date().getDate() - 1)}
                                     className="w-full shadow-lg md:p-3 rounded-lg md:m-2 p-2 m-1"
@@ -429,17 +502,31 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
                                 <label htmlFor="edate">Event Date:</label><br />
                                 <DatePicker
                                     name='edate'
-                                    selected={new Date(data.edate)}
-                                    onChange={(date) => setData({ ...data, edate: date })}
+                                    selected={data.edate}
+                                    onChange={(date) => {
+                                        if (date < data.rcdate) {
+                                            setErrors((old) => ({ edateErr: "Event Date Should be Greater Than Registration Closing Date" }))
+                                        }
+                                        else {
+                                            setData({ ...data, edate: date })
+                                            setErrors((old) => ({ edateErr: "" }))
+                                        }
+                                    }}
                                     dateFormat="dd-MM-yyyy"
                                     minDate={new Date()}
                                     className=" w-full shadow-lg md:p-3 rounded-lg md:m-2 p-2 m-1"
                                     icon={<CalanderIcon />}
                                     showIcon
                                 />
-
+                                {
+                                    errors && errors.edateErr !== ""
+                                    &&
+                                    <p className="text-red-500 my-2">
+                                        {errors.edateErr}
+                                    </p>
+                                }
                             </section>
-                </section>
+                        </section>
 
                 <section className='md:p-2 md:m-2 p-1 m-1'>
                     <label htmlFor="details">Event Details:</label><br />

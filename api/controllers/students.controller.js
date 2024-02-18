@@ -5,6 +5,9 @@ const csvtojson = require("csvtojson");
 const { vonage } = require("../config/vonage.js");
 const { generateOTP } = require("../utils.js");
 const { client } = require("../config/redisConfig.js");
+const jwtToken = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
+const SECRET_KEY = process.env.SECRET_KEY;
 
 
 
@@ -183,7 +186,7 @@ const studentForgotPassword = async (req, res) => {
 
 
         const from = "Vonage APIs";
-        const to = studentData[0].phno;
+        const to = "91" + studentData[0].phno;
         const text = `Your OTP is ${otp}.`;
 
         async function sendSMS() {
@@ -215,35 +218,99 @@ const studentForgotPassword = async (req, res) => {
 
 }
 
-const verifyOTP = async(req,res)=>{
+const verifyOTP = async (req, res) => {
     try {
         const userOTP = req.body.otp;
         const sid = req.body.sid;
 
         const generatedOTP = await client.get(sid);
-        if(generatedOTP === userOTP){
+        if (generatedOTP === userOTP) {
+
+            const studentData = await Student.findOne({ sid });
+
+            const data = {
+                user: {
+                    _id: studentData._id
+                }
+            };
+            const token = jwtToken.sign(data, SECRET_KEY);
+
+            await client.del(sid);
+
             return res.status(200)
-            .json({
-                message:"User Authenticated Successfully",
-                result:true
-            })
+                .json({
+                    message: "User Authenticated Successfully",
+                    token: token,
+                    result: true
+                })
         }
-        else{
+        else {
             return res.status(200)
-            .json({
-                message:"Incorrect OTP Provided",
-                result:false
-            })
+                .json({
+                    message: "Incorrect OTP Provided",
+                    result: false
+                })
         }
 
     } catch (error) {
-        
+        console.log(error)
     }
 }
 
+const resetPassword = async (req, res) => {
+    try {
 
-const loginStudent = async (req, res) => {
+        const userId = req.user._id;
+        // console.log(req.user)
+        const newPassword = req.body.newPassword;
 
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+        // Update the password for the user with the specified userId
+        await Student.updateOne({ _id: userId }, { password: hashedPassword });
+
+        return res.status(200).json({
+            message: "Password Reset Successfully",
+            result: true
+        })
+
+    } catch (error) {
+        console.log(error)
+    }
 }
 
-module.exports = { registerStudentsInBulk, getStudents, getDivisions, getIndividualStudents, studentForgotPassword,verifyOTP };
+const loginStudent = async (req, res) => {
+    const {sid,password} = req.body;
+    try {
+        
+        const user = await Student.findOne({sid:sid})
+
+        if(!user){
+            return res.status(400).json({"message":"Incorrect SID.!",result:false});
+        }
+
+        const comparedPassword = await bcrypt.compare(password,user.password);
+         if(!comparedPassword){
+            return res.status(400).json({"message":"Invalid Password",result:false});
+         }
+         
+         const data = {
+            user:{
+                id:user._id,
+                role:"Student",
+                name:user.name,
+            }
+         };
+
+         const token = jwtToken.sign(data,SECRET_KEY);
+
+         return res.status(200).json({"message":"Logged in Successfully",data:user,result:true,token});
+
+    } catch (error) {
+        
+        return res.status(400).json({"message":"Error Occured",result:false});
+    }
+}
+
+module.exports = { registerStudentsInBulk, getStudents, getDivisions, getIndividualStudents, studentForgotPassword, verifyOTP, resetPassword ,loginStudent};

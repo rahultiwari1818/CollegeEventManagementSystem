@@ -1,5 +1,5 @@
 const jwtToken = require("jsonwebtoken");
-const bycrypt = require("bcrypt");
+const bcrypt = require("bcrypt");
 const Faculties = require("../models/Faculties");
 const College = require("../models/College");
 const fs = require("fs").promises;
@@ -17,8 +17,8 @@ const registerIndividualFaculties = async(req,res)=>{
             return res.status(400).json({"message":"Email Already registered.!","result":false});
         }
 
-        const salt = await bycrypt.genSalt(10);
-        const secPass = await bycrypt.hash(req.body.password,salt);
+        const salt = await bcrypt.genSalt(10);
+        const secPass = await bcrypt.hash(req.body.password,salt);
 
         user = await Faculties.create({
             name:req.body.name.trim(),
@@ -79,18 +79,18 @@ const loginFaculty = async(req,res)=>{
         const user = await Faculties.findOne({email:email})
 
         if(!user){
-            return res.status(400).json({"message":"Email Does Not Exists.!"});
+            return res.status(400).json({"message":"Email Does Not Exists.!",result:false});
         }
 
-        const comparedPassword = await bycrypt.compare(password,user.password);
+        const comparedPassword = await bcrypt.compare(password,user.password);
          if(!comparedPassword){
-            return res.status(400).json({"message":"Invalid Password"});
+            return res.status(400).json({"message":"Invalid Password",result:false});
          }
          
          const data = {
             user:{
                 id:user._id,
-                type:user.role,
+                role:user.role,
                 name:user.name,
             }
          };
@@ -101,7 +101,7 @@ const loginFaculty = async(req,res)=>{
 
     } catch (error) {
         
-        return res.status(400).json({"message":"Error Occured"});
+        return res.status(400).json({"message":"Error Occured",result:false});
     }
 }
 
@@ -172,8 +172,8 @@ const setUpSystem =  async(req,res)=>{
     try {
 
 
-        const salt = await bycrypt.genSalt(10);
-        const secPass = await bycrypt.hash(req.body.sadminpassword,salt);
+        const salt = await bcrypt.genSalt(10);
+        const secPass = await bcrypt.hash(req.body.sadminpassword,salt);
 
         college = await College.create({
             collegename:req.body.collegename.trim()

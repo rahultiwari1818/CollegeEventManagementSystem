@@ -1,5 +1,5 @@
 const jwtToken = require("jsonwebtoken");
-const bycrypt = require("bcrypt");
+const bcrypt = require("bcrypt");
 const College = require("../models/College");
 
 const SECRET_KEY = process.env.SECRET_KEY;

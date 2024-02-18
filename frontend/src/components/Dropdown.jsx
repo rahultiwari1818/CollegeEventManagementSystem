@@ -27,10 +27,13 @@ const Dropdown = ({ dataArr, selected, setSelected, name, label, disabled }) => 
 
   return (
     <div className="w-full relative" ref={dropdownRef}>
-      <Listbox value={selected} disabled={disabled} onChange={handleInputChange}>
+      <Listbox value={selected} disabled={disabled} onChange={handleInputChange}
+      
+      >
         {({ open }) => (
           <div className="relative mt-1">
-            <Listbox.Button className="relative flex gap-5 justify-between w-full cursor-default rounded-lg bg-white py-3 pl-3 pr-10 text-left shadow-lg focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300">
+            <Listbox.Button className="relative flex gap-5 justify-between w-full cursor-default rounded-lg bg-white py-3 pl-3 pr-10 text-left shadow-lg focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300"
+            >
               <span className="block truncate">{selected ? selected : label}</span>
               <span>
                 <UpIcon className={`md:h-5 md:w-5 w-3 h-3 ${!open ? 'transform rotate-180' : ''} float-right`} />
