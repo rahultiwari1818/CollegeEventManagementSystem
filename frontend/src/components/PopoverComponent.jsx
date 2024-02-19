@@ -35,7 +35,7 @@ export default function Example({options,label,closeSideBar}) {
               leaveFrom="opacity-100 translate-y-0"
               leaveTo="opacity-0 translate-y-1"
             >
-              <Popover.Panel className="md:absolute left-1/2 z-10 mt-3 w-screen max-w-fit -translate-x-1/2 transform px-4 sm:px-0 ">
+              <Popover.Panel className="lg:absolute left-1/2 z-10 mt-3 w-screen max-w-fit -translate-x-1/2 transform px-4 sm:px-0 ">
                 <section className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black/5">
                   <section className="relative   bg-white  ">
                     {options?.map((item) => (

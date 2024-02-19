@@ -159,11 +159,25 @@ const getFaculties = async (req, res) => {
     
 };
 
-const getSpecificFacultyDetail =  async(req,res)=>{
+const getIndividualFaculty =  async(req,res)=>{
     try {
-        return res.status(200).json({"message":"Faculty Data Fetched Successfully.","data":req.user,"result":true})
+
+        const id = req.user.id;
+
+        const data = await Faculties.findOne({_id:id})
+
+        const user = {
+            _id:data._id,
+            salutation:data.salutation,
+            name:data.name,
+            course:data.course,
+            phno:data.phno,
+            email:data.email
+        }
+
+        return res.status(200).json({"message":"Faculty Data Fetched Successfully.","data":user,"result":true})
     } catch (error) {
-        
+        console.log(error)
     }
 }
 
@@ -204,5 +218,6 @@ module.exports = {
     registerFacultiesInBulk,
     loginFaculty,
     getFaculties,
-    setUpSystem
+    setUpSystem,
+    getIndividualFaculty
 };

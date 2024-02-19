@@ -137,7 +137,7 @@ const getDivisions = async (req, res) => {
     }
 }
 
-const getIndividualStudents = async (req, res) => {
+const getIndividualStudentsFromSid = async (req, res) => {
     const sid = req.params.id;
     try {
         // Fetch all students
@@ -164,6 +164,45 @@ const getIndividualStudents = async (req, res) => {
     }
 }
 
+
+const getIndividualStudentsFromId = async (req, res) => {
+    const id = req.params.id;
+    try {
+        // Fetch all students
+        const student = await Student.findOne({ _id: id });
+
+        // Extract unique divisions from the fetched students]
+        if (student) {
+            return res.status(200).json({
+                "message": "Student Data Fetched Successfully.",
+                "data": {
+                    course:student.course ,
+                    division: student.division ,
+                    dob: student.dob ,
+                    gender: student.gender ,
+                    phno: student.phno ,
+                    rollno: student.rollno ,
+                    semester: student.semester ,
+                    sid : student.sid ,
+                    name: student.studentName,
+                    _id: student._id
+                },
+                "result": true
+            });
+        }
+        else {
+            return res.status(200).json({
+                "message": "Student Not Found.",
+                "data": {},
+                "result": false
+            });
+        }
+
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({ "message": "Some Error Occurred.", "result": false });
+    }
+}
 const studentForgotPassword = async (req, res) => {
     try {
         const sid = req.body.sid;
@@ -281,36 +320,36 @@ const resetPassword = async (req, res) => {
 }
 
 const loginStudent = async (req, res) => {
-    const {sid,password} = req.body;
+    const { sid, password } = req.body;
     try {
-        
-        const user = await Student.findOne({sid:sid})
 
-        if(!user){
-            return res.status(400).json({"message":"Incorrect SID.!",result:false});
+        const user = await Student.findOne({ sid: sid })
+
+        if (!user) {
+            return res.status(400).json({ "message": "Incorrect SID.!", result: false });
         }
 
-        const comparedPassword = await bcrypt.compare(password,user.password);
-         if(!comparedPassword){
-            return res.status(400).json({"message":"Invalid Password",result:false});
-         }
-         
-         const data = {
-            user:{
-                id:user._id,
-                role:"Student",
-                name:user.studentName,
+        const comparedPassword = await bcrypt.compare(password, user.password);
+        if (!comparedPassword) {
+            return res.status(400).json({ "message": "Invalid Password", result: false });
+        }
+
+        const data = {
+            user: {
+                id: user._id,
+                role: "Student",
+                name: user.studentName,
             }
-         };
+        };
+        console.log(data)
+        const token = jwtToken.sign(data, SECRET_KEY);
 
-         const token = jwtToken.sign(data,SECRET_KEY);
-
-         return res.status(200).json({"message":"Logged in Successfully",data:user,result:true,token});
+        return res.status(200).json({ "message": "Logged in Successfully", data: user, result: true, token });
 
     } catch (error) {
-        
-        return res.status(400).json({"message":"Error Occured",result:false});
+
+        return res.status(400).json({ "message": "Error Occured", result: false });
     }
 }
 
-module.exports = { registerStudentsInBulk, getStudents, getDivisions, getIndividualStudents, studentForgotPassword, verifyOTP, resetPassword ,loginStudent};
+module.exports = { registerStudentsInBulk, getStudents, getDivisions, getIndividualStudentsFromSid, studentForgotPassword, verifyOTP, resetPassword, loginStudent, getIndividualStudentsFromId };

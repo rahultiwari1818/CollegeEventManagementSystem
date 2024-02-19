@@ -24,9 +24,9 @@ export default function Navbar() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const userData = useSelector((state)=>state.UserSlice);
+  const userData = useSelector((state) => state.UserSlice);
   console.log(userData)
-  
+
 
   const closeSideBar = () => {
     setOpenSideBar(() => !openSideBar);
@@ -41,7 +41,7 @@ export default function Navbar() {
 
   useLayoutEffect(() => {
     if (location.pathname === "/") return;
-    console.log("location",location.pathname)
+    console.log("location", location.pathname)
     const fetchData = async () => {
       try {
         const { data } = await axios.post(`${API_URL}/api/auth/checkIsLoggedIn`, "", {
@@ -109,20 +109,20 @@ export default function Navbar() {
                   :
                   isLoggedIn ?
                     <>
-                   
+
                       <Link to="/home" className='py-3 px-4 hover:text-green-500 hover:bg-white bg-green-500 text-white shadow-lg rounded-lg mx-3' > Home </Link>
-                      
+
                       {
-                      userData.role !== "Student" 
-                      &&
-                      <>
-                      <Link to="generateevent" className='py-3 px-4 hover:text-green-500 hover:bg-white bg-green-500 text-white shadow-lg rounded-lg mx-3' > Generate Event </Link>
-                      <PopoverComponent options={studentsRoutes} label="Students" />
-                      <PopoverComponent options={facultiesRoutes} label="Faculties" />
-                      </>
-                    }
+                        userData.role !== "Student"
+                        &&
+                        <>
+                          <Link to="generateevent" className='py-3 px-4 hover:text-green-500 hover:bg-white bg-green-500 text-white shadow-lg rounded-lg mx-3' > Generate Event </Link>
+                          <PopoverComponent options={studentsRoutes} label="Students" />
+                          <PopoverComponent options={facultiesRoutes} label="Faculties" />
+                        </>
+                      }
                       <ProfilePopOver logoutHandler={logoutHandler} />
-                      
+
                     </>
                     :
                     <section>
@@ -166,28 +166,38 @@ export default function Navbar() {
                     :
                     isLoggedIn ?
                       <>
-                      <section className="flex justify-center items-center w-full mt-[20vh] mb-[10vh]">
-                        <section className='bg-white p-2 rounded-full cursor-pointer w-fit'>
-                          <ProfileIcon />
+                      
+                        <section className="flex justify-center items-center w-full mt-[20vh] mb-[10vh]">
+                          <section className='bg-white p-2 rounded-full cursor-pointer w-fit'>
+                            <Link to="/profile" onClick={closeSideBar}>
+                              <ProfileIcon />
+                            </Link>
+                          </section>
                         </section>
-                      </section>
+
                         <Link to="/home" className=' w-full block py-3 px-4 hover:text-green-500 hover:bg-white bg-green-500 text-white shadow-lg rounded-lg mx-3' onClick={() => closeSideBar()} > Home </Link>
+                        
+                        
                         {
-                      userData.role !== "Student" 
-                      &&
-                      <>
-                      <Link to="generateevent" className='py-3 px-4 hover:text-green-500 hover:bg-white bg-green-500 text-white shadow-lg rounded-lg mx-3' > Generate Event </Link>
-                      <PopoverComponent options={studentsRoutes} label="Students" />
-                      <PopoverComponent options={facultiesRoutes} label="Faculties" />
-                      </>
-                    }
-                        <Link to="login" className={`py-3 px-4 hover:text-red-500 hover:bg-white bg-red-500  text-white shadow-lg rounded-lg mx-3 flex justify-between items-center gap-3 ${userData.role==="Student"?"my-4":""}`} onClick={() => {
+                          userData.role !== "Student"
+                          &&
+                          <>
+                            <Link to="generateevent" className='w-full block py-3 px-4 hover:text-green-500 hover:bg-white bg-green-500 text-white shadow-lg rounded-lg mx-3 my-2' onClick={() => closeSideBar()}> Generate Event </Link>
+                            <PopoverComponent options={studentsRoutes} label="Students" closeSideBar={closeSideBar} />
+                            <PopoverComponent options={facultiesRoutes} label="Faculties" closeSideBar={closeSideBar} />
+                          </>
+                        }
+
+
+                        <Link to="login" className={`py-3 px-4 hover:text-red-500 hover:bg-white bg-red-500  text-white shadow-lg rounded-lg mx-3 flex justify-between items-center gap-3 ${userData.role === "Student" ? "my-4" : ""}`} onClick={() => {
                           logoutHandler();
                           closeSideBar();
                         }} >
                           <p>Logout</p>
                           <LoginIcon className="outline outline-white  bg-white" />
                         </Link>
+
+
                       </>
                       :
                       <section>

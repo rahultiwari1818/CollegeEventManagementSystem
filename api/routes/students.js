@@ -5,7 +5,7 @@ const multer = require("multer");
 const upload = multer({dest:"uploads/"});
 const fetchUser = require("../middlewares/fetchUser.js");
 const checkIsAdmin = require("../middlewares/checkIsAdmin.js");
-const { registerStudentsInBulk ,getStudents, getDivisions, getIndividualStudents, studentForgotPassword, verifyOTP, resetPassword, loginStudent} = require("../controllers/students.controller.js");
+const { registerStudentsInBulk ,getStudents, getDivisions, getIndividualStudentsFromSid, studentForgotPassword, verifyOTP, resetPassword, loginStudent, getIndividualStudentsFromId} = require("../controllers/students.controller.js");
 
 
 
@@ -22,6 +22,7 @@ router.post("/resetPassword",fetchUser,resetPassword);
 router.post("/login",loginStudent);
 
 router.get("/getStudents",fetchUser,getStudents)
-router.get("/getIndividualStudents/:id",fetchUser,getIndividualStudents)
+router.get("/getIndividualStudents/:id",fetchUser,getIndividualStudentsFromSid)
+router.get("/getSpecificStudents/:id",fetchUser,getIndividualStudentsFromId)
 router.get("/getDivisions",fetchUser,getDivisions)
 module.exports = router;
