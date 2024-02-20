@@ -40,11 +40,10 @@ export default function EventDetails() {
             if (data.data.length === 0) {
                 navigate("/home");
             }
-            setData(data.data[0]);
+            setData(()=>data.data[0]);
+            setIsLoading(() => false);
         } catch (error) {
             setData({});
-        }
-        finally {
             setIsLoading(() => false);
         }
 
@@ -142,7 +141,7 @@ export default function EventDetails() {
             <section className='m-5'>
                 <section className='flex justify-center items-center '>
 
-                    <section className='shadow-xl overflow-auto rounded-xl w-[90vw] md:w-[70vw] lg:w-[50vw] px-5 py-5'>
+                    <section className='shadow-xl overflow-auto rounded-xl w-[90vw] md:w-[70vw]  px-5 py-5'>
                         <section className="py-4">
 
                             <p className='text-3xl font-extrabold'>

@@ -1,6 +1,6 @@
 import { BrowserRouter } from "react-router-dom";
 import Footer from "./components/Footer";
-import Router from "./components/Router";
+import Router from "./router/Router";
 import Navbar from "./components/Navbar";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';

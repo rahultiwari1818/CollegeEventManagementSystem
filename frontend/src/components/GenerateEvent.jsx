@@ -537,7 +537,8 @@ export default function GenerateEvent() {
                                     }
                                 </label>
 
-                            </section>                </section>
+                            </section>
+                                    </section>
 
                         <section className='md:p-2 md:m-2 p-1 m-1'>
                             <input type="submit" value="Generate Event" className='text-red-500 cursor-pointer bg-white rounded-lg shadow-lg px-5 py-3 w-full m-2 outline outline-red-500 hover:text-white hover:bg-red-500 ' />

@@ -21,9 +21,9 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
     const [subEventDataToUpdate, setSubEventDataToUpdate] = useState({});
     const noOfParticipants = useRef(null);
     const token = localStorage.getItem("token");
-    const [fileErrors,setFileErrors] = useState({
-        posterError:"",
-        brochureError:""
+    const [fileErrors, setFileErrors] = useState({
+        posterError: "",
+        brochureError: ""
     })
 
 
@@ -69,29 +69,29 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
             return;
         }
 
-            const formData = new FormData();
-            formData.append("ename", data.ename.trim());
-            formData.append("etype", data.etype.trim());
-            formData.append("ptype", data.ptype.trim());
-            formData.append("enature", data.enature.trim());
-            formData.append("noOfParticipants", data.noOfParticipants);
-            formData.append("edate", formatDate(data.edate));
-            formData.append("rcdate", formatDate(data.rcdate));
-            formData.append("edetails", (data.edetails.trim()));
-            formData.append("rules", (data.rules.trim()));
-            formData.append("ebrochure", data.ebrochure);
-            formData.append("eposter", data.eposter);
-            formData.append("hasSubEvents",data.hasSubEvents);
-            formData.append("subEvents",JSON.stringify(data.subEvents));
+        const formData = new FormData();
+        formData.append("ename", data.ename.trim());
+        formData.append("etype", data.etype.trim());
+        formData.append("ptype", data.ptype.trim());
+        formData.append("enature", data.enature.trim());
+        formData.append("noOfParticipants", data.noOfParticipants);
+        formData.append("edate", formatDate(data.edate));
+        formData.append("rcdate", formatDate(data.rcdate));
+        formData.append("edetails", (data.edetails.trim()));
+        formData.append("rules", (data.rules.trim()));
+        formData.append("ebrochure", data.ebrochure);
+        formData.append("eposter", data.eposter);
+        formData.append("hasSubEvents", data.hasSubEvents);
+        formData.append("subEvents", JSON.stringify(data.subEvents));
 
         try {
             const { data } = await axios.patch(`${API_URL}/api/events/updateEventDetails/${id}`, formData,
-            {
-                headers:{
-                    'Content-Type': "multipart/form-data",
-                    "auth-token":token,
-                }
-            });
+                {
+                    headers: {
+                        'Content-Type': "multipart/form-data",
+                        "auth-token": token,
+                    }
+                });
             if (data.result) {
                 toast.success(data.message);
             }
@@ -116,30 +116,30 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
     };
 
 
-    
-    const changeEventNature = useCallback((value)=>{
-        setData((old)=>({...old,enature:value}))
-    },[setData]);
+
+    const changeEventNature = useCallback((value) => {
+        setData((old) => ({ ...old, enature: value }))
+    }, [setData]);
 
 
-    const changeParticipationType = useCallback((value)=>{
-        setData((old)=>({...old,ptype:value}))
-        
+    const changeParticipationType = useCallback((value) => {
+        setData((old) => ({ ...old, ptype: value }))
+
         if (value === 'Individual') {
-            
-            setData((old)=>({...old,ptype:value}));
-            
+
+            setData((old) => ({ ...old, ptype: value }));
+
             noOfParticipants.current.value = 1;
             noOfParticipants.current.disabled = true;
-          } else if (value === 'Group') {
+        } else if (value === 'Group') {
             noOfParticipants.current.disabled = false;
-          }
+        }
         //   console.log(value,noOfParticipants.current,"participant")
-    },[setData]);
+    }, [setData]);
 
-    const changeEventType = useCallback((value)=>{
-        setData((old)=>({...old,etype:value}))
-    },[setData]);
+    const changeEventType = useCallback((value) => {
+        setData((old) => ({ ...old, etype: value }))
+    }, [setData]);
 
 
 
@@ -188,27 +188,27 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
         setData(dataToUpdate)
     }, [dataToUpdate])
 
-  useEffect(()=>{
-    // handleInputChange()
-    if(noOfParticipants.current){
-        console.log(noOfParticipants.current,"part")
-        if(data?.ptype === "Individual"){
-          noOfParticipants.current.value = 1;
-          noOfParticipants.current.disabled = true;
+    useEffect(() => {
+        // handleInputChange()
+        if (noOfParticipants.current) {
+            console.log(noOfParticipants.current, "part")
+            if (data?.ptype === "Individual") {
+                noOfParticipants.current.value = 1;
+                noOfParticipants.current.disabled = true;
+            }
+            else if (data?.ptype === "Group") {
+                noOfParticipants.current.disabled = false;
+            }
+            console.log(data, "data")
         }
-        else if(data?.ptype === "Group"){
-          noOfParticipants.current.disabled = false;
-        }
-        console.log(data,"data")
-    }
-    
-  },[data])
+
+    }, [data])
 
     const eventNatures = [{ name: "Cultural" }, { name: "IT" }, { name: "Management" }, { name: "Sports" }];
     const eventTypes = [{ name: "Intra-College" }, { name: "Inter-College" }];
 
     return (
-        
+
         <Modal isOpen={openUpdateModal} close={setOpenUpdateModal} heading={"Update Event"}>
             {/* <form method="post" className='p-4' onSubmit={updateEvent}>
                 <section className='md:p-2 md:m-2 p-1 m-1' >
@@ -356,12 +356,12 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
                             label={"Select Event Nature"}
                         />
                         {
-                                    errors && errors.enatureErr !== ""
-                                    &&
-                                    <p className="text-red-500 my-2">
-                                        {errors.enatureErr}
-                                    </p>
-                                }
+                            errors && errors.enatureErr !== ""
+                            &&
+                            <p className="text-red-500 my-2">
+                                {errors.enatureErr}
+                            </p>
+                        }
                     </section>
 
                     <section className='md:p-2 md:m-2 p-1 m-1'>
@@ -373,13 +373,13 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
                             name={"etype"}
                             label={"Select Event Type"}
                         />
-{
-                                    errors && errors.etypeErr !== ""
-                                    &&
-                                    <p className="text-red-500 my-2">
-                                        {errors.etypeErr}
-                                    </p>
-                                }
+                        {
+                            errors && errors.etypeErr !== ""
+                            &&
+                            <p className="text-red-500 my-2">
+                                {errors.etypeErr}
+                            </p>
+                        }
                     </section>
                 </section>
 
@@ -439,12 +439,12 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
                                 label={"Select Participation Type"}
                             />
                             {
-                                    errors && errors.ptypeErr !== ""
-                                    &&
-                                    <p className="text-red-500 my-2">
-                                        {errors.ptypeErr}
-                                    </p>
-                                }
+                                errors && errors.ptypeErr !== ""
+                                &&
+                                <p className="text-red-500 my-2">
+                                    {errors.ptypeErr}
+                                </p>
+                            }
                         </section>
                         <section className='md:p-2 md:m-2 p-1 m-1'>
                             <label htmlFor="nop">Max No Of Team Members:</label>
@@ -472,61 +472,61 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
                 )}
 
                 <section className='md:flex md:justify-start gap-10 md:items-center'>
-                <section className='md:p-2 md:m-2  p-1 m-1'>
-                                <label htmlFor="rcdate">Registration Closing  Date:</label><br />
-                                <DatePicker
-                                    name='rcdate'
-                                    selected={data.rcdate}
-                                    onChange={(date) => {
+                    <section className='md:p-2 md:m-2  p-1 m-1'>
+                        <label htmlFor="rcdate">Registration Closing  Date:</label><br />
+                        <DatePicker
+                            name='rcdate'
+                            selected={new Date(data.rcdate)}
+                            onChange={(date) => {
 
-                                        if (date > data.edate) {
-                                            setErrors((old) => ({ ...old, "edateErr": "Event Date Should be Greater Than Registration Closing Date" }))
-                                        }
-                                        else {
-                                            setErrors((old) => ({ ...old, "edateErr": "" }))
-                                        }
-
-                                        setData({ ...data, rcdate: date })
-
-
-                                    }
-                                    }
-                                    dateFormat="dd-MM-yyyy"
-                                    minDate={new Date().setDate(new Date().getDate() - 1)}
-                                    className="w-full shadow-lg md:p-3 rounded-lg md:m-2 p-2 m-1"
-                                    showIcon
-                                    icon={<CalanderIcon />}
-                                />
-                            </section>
-                            <section className='md:p-2 md:m-2  p-1 m-1'>
-                                <label htmlFor="edate">Event Date:</label><br />
-                                <DatePicker
-                                    name='edate'
-                                    selected={data.edate}
-                                    onChange={(date) => {
-                                        if (date < data.rcdate) {
-                                            setErrors((old) => ({ edateErr: "Event Date Should be Greater Than Registration Closing Date" }))
-                                        }
-                                        else {
-                                            setData({ ...data, edate: date })
-                                            setErrors((old) => ({ edateErr: "" }))
-                                        }
-                                    }}
-                                    dateFormat="dd-MM-yyyy"
-                                    minDate={new Date()}
-                                    className=" w-full shadow-lg md:p-3 rounded-lg md:m-2 p-2 m-1"
-                                    icon={<CalanderIcon />}
-                                    showIcon
-                                />
-                                {
-                                    errors && errors.edateErr !== ""
-                                    &&
-                                    <p className="text-red-500 my-2">
-                                        {errors.edateErr}
-                                    </p>
+                                if (date > data.edate) {
+                                    setErrors((old) => ({ ...old, "edateErr": "Event Date Should be Greater Than Registration Closing Date" }))
                                 }
-                            </section>
-                        </section>
+                                else {
+                                    setErrors((old) => ({ ...old, "edateErr": "" }))
+                                }
+
+                                setData({ ...data, rcdate: date })
+
+
+                            }
+                            }
+                            dateFormat="dd-MM-yyyy"
+                            minDate={new Date().setDate(new Date().getDate() - 1)}
+                            className="w-full shadow-lg md:p-3 rounded-lg md:m-2 p-2 m-1"
+                            showIcon
+                            icon={<CalanderIcon />}
+                        />
+                    </section>
+                    <section className='md:p-2 md:m-2  p-1 m-1'>
+                        <label htmlFor="edate">Event Date:</label><br />
+                        <DatePicker
+                            name='edate'
+                            selected={new Date(data.edate)}
+                            onChange={(date) => {
+                                if (date < data.rcdate) {
+                                    setErrors((old) => ({ edateErr: "Event Date Should be Greater Than Registration Closing Date" }))
+                                }
+                                else {
+                                    setData({ ...data, edate: date })
+                                    setErrors((old) => ({ edateErr: "" }))
+                                }
+                            }}
+                            dateFormat="dd-MM-yyyy"
+                            minDate={new Date()}
+                            className=" w-full shadow-lg md:p-3 rounded-lg md:m-2 p-2 m-1"
+                            icon={<CalanderIcon />}
+                            showIcon
+                        />
+                        {
+                            errors && errors.edateErr !== ""
+                            &&
+                            <p className="text-red-500 my-2">
+                                {errors.edateErr}
+                            </p>
+                        }
+                    </section>
+                </section>
 
                 <section className='md:p-2 md:m-2 p-1 m-1'>
                     <label htmlFor="details">Event Details:</label><br />
@@ -554,115 +554,115 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
                 {/* File upload sections */}
 
                 <section className='md:p-2 md:m-2 p-1 m-1'>
-                <section className="flex items-center justify-center w-full">
-                                <label
-                                    htmlFor="dropzoneFileForPoster"
-                                    className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
-                                >
-                                    <section className="flex flex-col items-center justify-center pt-5 pb-6">
-                                        <FileUploadIcon className="h-10 w-10" />
-                                        <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                                            <span className="font-semibold">Click to Upload</span> or Drag and Drop Event Poster
+                    <section className="flex items-center justify-center w-full">
+                        <label
+                            htmlFor="dropzoneFileForPoster"
+                            className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
+                        >
+                            <section className="flex flex-col items-center justify-center pt-5 pb-6">
+                                <FileUploadIcon className="h-10 w-10" />
+                                <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                                    <span className="font-semibold">Click to Upload</span> or Drag and Drop Event Poster
+                                </p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">
+
+                                </p>
+                            </section>
+                            <section className="mt-2">
+                                {data.eposter ? (
+                                    <>
+                                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                                            Selected File: {data.eposter.name}
                                         </p>
                                         <p className="text-xs text-gray-500 dark:text-gray-400">
-
+                                            Selected File Size : {formatFileSize(data.eposter.size)}
                                         </p>
-                                    </section>
-                                    <section className="mt-2">
-                                        {data.eposter ? (
-                                            <>
-                                                <p className="text-xs text-gray-500 dark:text-gray-400">
-                                                    Selected File: {data.eposter.name}
-                                                </p>
-                                                <p className="text-xs text-gray-500 dark:text-gray-400">
-                                                    Selected File Size : {formatFileSize(data.eposter.size)}
-                                                </p>
-                                            </>
-                                        ) : null}
-                                    </section>
-                                    <input
-                                        type="file"
-                                        id="dropzoneFileForPoster"
-                                        name="eposter"
-                                        className="hidden"
-                                        accept="image/*" 
-                                        onChange={(e) => {
-                                            const file = e.target.files[0];
-                                            if (file && file.size > 10485760) {
-                                                setFileErrors((old)=>({...old,posterError:"Poster Size Should be less than 10 Mb."}))
-                                                setData({ ...data, eposter: null });
-                                            }
-                                            else{
-                                                setData({ ...data, eposter: file });
-                                                setFileErrors((old)=>({...old,posterError:""}));
-                                            }
-                                        }}
-
-                                    />
-                                    {
-                                    fileErrors &&
-                                    <p className='text-red-500 py-2'>
-                                        {fileErrors.posterError}
-                                    </p> 
-                                }
-                                </label>
+                                    </>
+                                ) : null}
                             </section>
+                            <input
+                                type="file"
+                                id="dropzoneFileForPoster"
+                                name="eposter"
+                                className="hidden"
+                                accept="image/*"
+                                onChange={(e) => {
+                                    const file = e.target.files[0];
+                                    if (file && file.size > 10485760) {
+                                        setFileErrors((old) => ({ ...old, posterError: "Poster Size Should be less than 10 Mb." }))
+                                        setData({ ...data, eposter: null });
+                                    }
+                                    else {
+                                        setData({ ...data, eposter: file });
+                                        setFileErrors((old) => ({ ...old, posterError: "" }));
+                                    }
+                                }}
+
+                            />
+                            {
+                                fileErrors &&
+                                <p className='text-red-500 py-2'>
+                                    {fileErrors.posterError}
+                                </p>
+                            }
+                        </label>
+                    </section>
                 </section>
 
                 <section className='md:p-2 md:m-2 p-1 m-1'>
-                <section className="flex items-center justify-center w-full">
-                                <label
-                                    htmlFor="dropzoneFileForBrochure"
-                                    className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
-                                >
-                                    <section className="flex flex-col items-center justify-center pt-5 pb-6">
-                                        <FileUploadIcon className="h-10 w-10" />
-                                        <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                                            <span className="font-semibold">Click to upload</span> or drag and drop event brochure
+                    <section className="flex items-center justify-center w-full">
+                        <label
+                            htmlFor="dropzoneFileForBrochure"
+                            className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
+                        >
+                            <section className="flex flex-col items-center justify-center pt-5 pb-6">
+                                <FileUploadIcon className="h-10 w-10" />
+                                <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                                    <span className="font-semibold">Click to upload</span> or drag and drop event brochure
+                                </p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">
+
+                                </p>
+                            </section>
+                            <section className="mt-2">
+                                {data.ebrochure ? (
+                                    <>
+                                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                                            Selected File: {data.ebrochure.name}
                                         </p>
                                         <p className="text-xs text-gray-500 dark:text-gray-400">
-
+                                            Selected File Size : {formatFileSize(data.ebrochure.size)}
                                         </p>
-                                    </section>
-                                    <section className="mt-2">
-                                        {data.ebrochure ? (
-                                            <>
-                                                <p className="text-xs text-gray-500 dark:text-gray-400">
-                                                    Selected File: {data.ebrochure.name}
-                                                </p>
-                                                <p className="text-xs text-gray-500 dark:text-gray-400">
-                                                    Selected File Size : {formatFileSize(data.ebrochure.size)}
-                                                </p>
-                                            </>
-                                        ) : null}
-                                    </section>
-                                    <input
-                                        type="file"
-                                        id="dropzoneFileForBrochure"
-                                        name="ebrochure"
-                                        className="hidden"
-                                        accept=".pdf,.docx" 
-                                        onChange={(e) => {
-                                            const file = e.target.files[0];
-                                            if (file && file.size > 10485760) {
-                                                setFileErrors((old)=>({...old,brochureError:"Brochure Size Should be less than 10 Mb."}))
-                                                setData({ ...data, ebrochure: null });
-                                            }
-                                            else{
-                                            setData({ ...data, ebrochure: file });
-                                            setFileErrors((old)=>({...old,brochureError:""}))
-                                            }
-                                        }}
+                                    </>
+                                ) : null}
+                            </section>
+                            <input
+                                type="file"
+                                id="dropzoneFileForBrochure"
+                                name="ebrochure"
+                                className="hidden"
+                                accept=".pdf,.docx"
+                                onChange={(e) => {
+                                    const file = e.target.files[0];
+                                    if (file && file.size > 10485760) {
+                                        setFileErrors((old) => ({ ...old, brochureError: "Brochure Size Should be less than 10 Mb." }))
+                                        setData({ ...data, ebrochure: null });
+                                    }
+                                    else {
+                                        setData({ ...data, ebrochure: file });
+                                        setFileErrors((old) => ({ ...old, brochureError: "" }))
+                                    }
+                                }}
 
-                                    />
-                                    {
-                                    fileErrors &&
-                                    <p className='text-red-500 py-2'>
-                                        {fileErrors.brochureError}
-                                    </p> 
-                                }   
-                                </label>
-                            </section>                </section>
+                            />
+                            {
+                                fileErrors &&
+                                <p className='text-red-500 py-2'>
+                                    {fileErrors.brochureError}
+                                </p>
+                            }
+                        </label>
+                    </section>                </section>
 
                 <section className='md:p-2 md:m-2 p-1 m-1'>
                     <input type="submit" value="Update Event" className='text-red-500 cursor-pointer bg-white rounded-lg shadow-lg px-5 py-3 w-full m-2 outline outline-red-500 hover:text-white hover:bg-red-500 ' />
