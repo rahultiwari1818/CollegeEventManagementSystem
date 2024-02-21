@@ -6,7 +6,7 @@ import EventDetail from '../pages/EventDetail';
 import Installation from '../pages/Installation';
 import AddStudents from '../pages/AddStudents';
 import ViewStudents from "../pages/ViewStudents";
-import RegisterInEvent from '../components/RegisterInEvent';
+import RegisterInEvent from '../pages/RegisterInEvent';
 import AddFaculties from '../pages/AddFaculties';
 import ViewFaculties from '../pages/ViewFaculties';
 import Profile from '../pages/Profile';

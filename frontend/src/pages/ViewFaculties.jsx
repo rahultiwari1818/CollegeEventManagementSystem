@@ -1,10 +1,11 @@
 import axios from 'axios';
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import Search from '../components/Search';
 import Dropdown from '../components/Dropdown'; // Import the Dropdown component
-import { debounce } from '../utils';
+import { debounce, transformCourseData } from '../utils';
 import Skeleton from 'react-loading-skeleton';
 import Overlay from '../components/Overlay';
+import { useDispatch, useSelector } from 'react-redux';
 
 export default function ViewFaculties() {
     const [facultyData, setFacultyData] = useState([]);
@@ -28,6 +29,8 @@ export default function ViewFaculties() {
         
     }, [setSearchParams]);
 
+    const coursesData = useSelector((state)=>state.CourseSlice.data);
+    const dispatch = useDispatch();
 
 
     const token = localStorage.getItem("token");
@@ -64,6 +67,10 @@ export default function ViewFaculties() {
     const debouncedfetchFacultyData = useCallback(debounce(fetchFacultyData, 800), [searchParams, currentPage, entriesPerPage]);
 
 
+    const courses = useMemo(()=>{
+      return transformCourseData(coursesData);
+  },[coursesData])
+
     useEffect(() => {
         setCurrentPage(1); // Reset current page when search parameters change
     }, [searchParams]);
@@ -72,7 +79,6 @@ export default function ViewFaculties() {
         debouncedfetchFacultyData(); // Call the debounced function in useEffect
     }, [searchParams, currentPage, entriesPerPage]);
 
-    const courses = [{ name: "All" }, { name: "B.C.A." }, { name: "B.B.A." }, { name: "B.Com.(GM)" }, { name: "B.Com.(EM)" }];
 
     const handlePageChange = (page) => {
         setCurrentPage(page);

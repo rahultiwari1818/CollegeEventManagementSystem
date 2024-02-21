@@ -1,10 +1,12 @@
 import axios from 'axios';
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import Search from '../components/Search';
 import Dropdown from '../components/Dropdown'; // Import the Dropdown component
-import { debounce } from '../utils';
+import { debounce, transformCourseData } from '../utils';
 import Skeleton from 'react-loading-skeleton';
 import Overlay from '../components/Overlay';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchAllCourses } from '../store/CourseSlice';
 
 export default function ViewStudents() {
     const [studentData, setStudentData] = useState([]);
@@ -22,6 +24,9 @@ export default function ViewStudents() {
     const [selectedPage, setSelectedPage] = useState(1);
     const [entriesPerPage, setEntriesPerPage] = useState(15); // State for selected entries per page
     const [totalEntries, setTotalEntries] = useState(0); // State for total number of entries
+
+    const coursesData = useSelector((state)=>state.CourseSlice.data);
+    const dispatch = useDispatch();
 
     const changeSearch = useCallback((value) => {
         setSearchParams((old) => ({ ...old, search: value }));
@@ -110,7 +115,15 @@ export default function ViewStudents() {
         debouncedFetchStudentData(); // Call the debounced function in useEffect
     }, [searchParams, currentPage, entriesPerPage]);
 
-    const courses = [{ name: "All" }, { name: "BCA" }, { name: "BBA" }, { name: "BcomGujaratiMed" }, { name: "BcomEnglishMedium" }];
+    useEffect(()=>{
+        dispatch(fetchAllCourses());
+    },[dispatch])
+
+    const courses = useMemo(()=>{
+        return transformCourseData(coursesData);
+    },[coursesData])
+
+    // const courses = [{ name: "All" }, { name: "BCA" }, { name: "BBA" }, { name: "BcomGujaratiMed" }, { name: "BcomEnglishMedium" }];
     const semesters = [{ name: "All" }, { name: "Sem-I" }, { name: "Sem-II" }, { name: "Sem-III" }, { name: "Sem-IV" }, { name: "Sem-V" }, { name: "Sem-VI" }];
 
     const handlePageChange = (page) => {
