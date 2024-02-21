@@ -1,6 +1,10 @@
 import React, { useState } from 'react'
 import { ReactComponent as FileUploadIcon } from "../assets/Icons/FileUploadIcon.svg";
 import { formatFileSize } from '../utils';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import { fetchAllEventTypes } from '../store/EventTypeSlice';
+import { useDispatch } from 'react-redux';
 
 export default function AddEventType() {
   
@@ -13,6 +17,7 @@ export default function AddEventType() {
     });
 
     const [fileError,setFileError]= useState("");
+    const dispatch = useDispatch();
 
     const updateData = (e) =>{
         const {name,value} = e.target;
@@ -21,6 +26,39 @@ export default function AddEventType() {
 
     const addEventTypeHandler = async() =>{
 
+        try {
+            
+
+            const formData = new FormData();
+            formData.append("eventTypeName",data.eventTypeName);
+            formData.append("eventTypeLogo",data.eventTypeLogo)
+    
+            const response = await axios.post(`${API_URL}/api/eventType/addEventType`,formData,{
+                headers:{
+                    "auth-token":token,
+                    "Content-Type":"multipart/form-data"
+                }
+            })
+            if(response.data.result){
+                toast.success(response.data.message);
+            }
+            else{
+                toast.error(response.data.message)
+            }
+
+        } catch ({response}) {
+            toast.error(response.data.message)
+        }
+        finally{
+            setData({
+                eventTypeName:"",
+                eventTypeLogo:null
+            })
+            dispatch(fetchAllEventTypes());
+
+        }
+
+        
     }
     
     return (
@@ -75,7 +113,7 @@ export default function AddEventType() {
                                             const file = e.target.files[0];
                                             // console.log("brochure",file);
                                             if (file && file.size > 10485760) {
-                                                setFileError((old) => ( "Brochure Size Should be less than 10 Mb."))
+                                                setFileError((old) => ( "Logo Size Should be less than 10 Mb."))
                                                 setData({ ...data, eventTypeLogo: null });
                                             }
                                             else {
@@ -83,10 +121,10 @@ export default function AddEventType() {
                                                 setFileError((old) => (""))
                                             }
                                         }}
-
+                                        required
                                     />
                                     {
-                                        fileError!="" &&
+                                        fileError!=="" &&
                                         <p className='text-red-500 py-2'>
                                             {fileError}
                                         </p>

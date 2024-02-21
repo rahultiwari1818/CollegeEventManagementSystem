@@ -54,13 +54,15 @@ export default function Installation() {
 
             const response = await axios.get(`${API_URL}/api/faculties/isSetUpDone`);
             // console.log(response)
-            // if(response.data.isSetUp){
-            //     navigate("/login");
-            // }
-            // setIsLoading(false);
+            if(response.data.isSetUp){
+                navigate("/login");
+            }
+            setIsLoading(false);
 
         } catch (error) {
-
+            if(!navigator.onLine){
+                console.log("offline");
+            }
         }
         finally {
             setIsLoading(false);
@@ -92,9 +94,7 @@ export default function Installation() {
         } catch ({ response }) {
             console.log(response)
             toast.error(response.data.message)
-            // if(!navigator.onLine){
-            //     navigate("/login");
-            // }
+            
         }
         finally {
             setIsLoading(() => false);

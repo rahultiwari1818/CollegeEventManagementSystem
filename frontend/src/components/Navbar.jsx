@@ -94,7 +94,7 @@ export default function Navbar() {
 
     <nav className='bg-blue-500 p-2  top-0 sticky z-10 '>
       <section className='lg:flex items-center  lg:justify-around '>
-        <img src={CollegeLogo} alt="logo" className='w-20 h-20 md:h-24 md:w-24 lg:h-32 lg:w-32 lg:m-0 mx-5' />
+        <img src={CollegeLogo} alt="logo" className='w-12 h-12 md:h-20 md:w-20  lg:m-0 mx-5' />
         <section className='hidden lg:flex items-center'>
           {
             pathname !== "/"
@@ -146,7 +146,7 @@ export default function Navbar() {
         }
         {
           openSideBar &&
-          <button className='fixed z-10 top-10 right-10 bg-white p-2 rounded ' onClick={() => closeSideBar()}>
+          <button className='fixed z-10 top-3 right-10 bg-white p-2 rounded ' onClick={() => closeSideBar()}>
             <CloseIcon />
           </button>
         }

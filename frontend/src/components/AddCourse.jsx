@@ -1,6 +1,8 @@
 import axios from 'axios';
 import React, { useState } from 'react'
+import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
+import { fetchAllCourses } from '../store/CourseSlice';
 
 export default function AddCourse() {
 
@@ -8,6 +10,7 @@ export default function AddCourse() {
     const API_URL = process.env.REACT_APP_BASE_URL;
 
     const [data, setData] = useState("");
+    const dispatch = useDispatch();
 
     const addCourseHandler = async () => {
         try {
@@ -22,6 +25,7 @@ export default function AddCourse() {
             );
             if (response.data.result) {
                 toast.success(response.data.message);
+                dispatch(fetchAllCourses());
             } else {
                 toast.error(response.data.message);
             }

@@ -48,7 +48,6 @@ const generateEvent = async (req, res) => {
 
         const originalBrochureName = brochure ? brochure.originalname : "";
         const originalPosterName = poster ? poster.originalname : "";
-        const current_time = Date.now();
         let newBrochurePath="",newPosterPath="";
         
         if (brochure) {
