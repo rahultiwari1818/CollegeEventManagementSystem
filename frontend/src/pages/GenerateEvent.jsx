@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import Dropdown from './Dropdown';
+import Dropdown from '../components/Dropdown';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { ReactComponent as CalanderIcon } from "../assets/Icons/calander_icon.svg";
@@ -10,9 +10,9 @@ import { ReactComponent as DeleteIcon } from "../assets/Icons/DeleteIcon.svg";
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { formatFileSize, handleNumericInput } from '../utils';
-import ToggleSwitch from './ToggleSwitch';
-import AddSubEvents from './AddSubEvents';
-import Overlay from "./Overlay";
+import ToggleSwitch from '../components/ToggleSwitch';
+import AddSubEvents from '../components/AddSubEvents';
+import Overlay from "../components/Overlay";
 
 export default function GenerateEvent() {
 

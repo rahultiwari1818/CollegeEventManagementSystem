@@ -5,9 +5,9 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { ReactComponent as LoginIcon } from "../assets/Icons/LoginIcon.svg";
 import { setNewUser } from '../store/UserSlice';
-import Overlay from "./Overlay"
-import ForgotPassword from './ForgotPassword';
-import Dropdown from './Dropdown';
+import Overlay from "../components/Overlay"
+import ForgotPassword from '../components/ForgotPassword';
+import Dropdown from '../components/Dropdown';
 import { handleNumericInput } from '../utils';
 export default function Login() {
 

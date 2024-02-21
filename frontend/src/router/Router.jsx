@@ -1,6 +1,6 @@
 import React from 'react';
-import GenerateEvent from "../components/GenerateEvent";
-import Login from '../components/Login';
+import GenerateEvent from "../pages/GenerateEvent";
+import Login from '../pages/Login';
 import {  Route, Routes } from 'react-router-dom';
 import EventDetail from '../pages/EventDetail';
 import Installation from '../pages/Installation';
@@ -9,7 +9,7 @@ import ViewStudents from "../pages/ViewStudents";
 import RegisterInEvent from '../components/RegisterInEvent';
 import AddFaculties from '../pages/AddFaculties';
 import ViewFaculties from '../pages/ViewFaculties';
-import Profile from '../components/Profile';
+import Profile from '../pages/Profile';
 import Home from '../pages/Home';
 import ErrorPage from '../pages/ErrorPage';
 import Courses from '../pages/Courses';
@@ -29,7 +29,6 @@ export default function Router() {
 			<Route path="/addfaculties" element={<AddFaculties/>} />
 			<Route path='/viewfaculties' element={<ViewFaculties/>} />
 			<Route path='/profile' element={<Profile/>} />
-
 			<Route path='/courses' element={<Courses/>} />
 			<Route path='/eventType' element={<EventType/>} />
 			<Route path="*" element={<ErrorPage/>}/>
