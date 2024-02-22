@@ -2,7 +2,7 @@ const Course = require("../models/Course");
 
 const addCourse = async (req, res) => {
     try {
-        const { courseName } = req.body;
+        const { courseName,noOfSemesters } = req.body;
         if(courseName.trim()===""){
             return res.status(400).json({
                 message:"Provide a Valid Course Name.",
@@ -10,7 +10,8 @@ const addCourse = async (req, res) => {
             })
         }
         const course = await Course.create({
-            courseName: courseName
+            courseName: courseName,
+            noOfSemesters:noOfSemesters
         });
 
         return res.status(200).json({

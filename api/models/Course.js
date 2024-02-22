@@ -7,6 +7,10 @@ const CourseSchema = new Schema({
         required:true,
         type:String,
         unique:true
+    },
+    noOfSemesters:{
+        type:Number,
+        required:true
     }
 });
 

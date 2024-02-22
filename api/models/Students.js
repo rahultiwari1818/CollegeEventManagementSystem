@@ -3,6 +3,10 @@ const mongoose = require("mongoose");
 const {Schema} = mongoose;
 
 const StudentSchema = new Schema({
+    profilePic:{
+        type:String,
+        required:true
+    },
     course: {
         type: String,
         required: true

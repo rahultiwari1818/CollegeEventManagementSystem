@@ -1,5 +1,5 @@
 const express = require("express");
-const { setUpSystem, getFaculties,registerIndividualFaculties, loginFaculty, registerFacultiesInBulk, getIndividualFaculty } = require("../controllers/faculties.controller");
+const { setUpSystem, getFaculties,registerIndividualFaculties, loginFaculty, registerFacultiesInBulk, getIndividualFaculty, facultyForgotPassword, verifyOTP, resetPassword } = require("../controllers/faculties.controller");
 const {checkSetUp} = require("../controllers/college.controller");
 const fetchUser = require("../middlewares/fetchUser");
 const checkIsAdmin = require("../middlewares/checkIsAdmin.js");
@@ -12,6 +12,9 @@ const router = express.Router();
 
 router.post("/registerIndividual",checkIsAdmin,registerIndividualFaculties );
 router.post("/registerInBulk",checkIsAdmin,upload.single("facultycsv"),registerFacultiesInBulk );
+router.post("/forgotPassword",facultyForgotPassword);
+router.post("/verifyOTP",verifyOTP);
+router.post("/resetPassword",fetchUser,resetPassword);
 router.post("/login",loginFaculty)
 router.get("/isSetUpDone",checkSetUp)
 router.get("/getfaculties",checkIsAdmin,getFaculties);

@@ -4,6 +4,7 @@ import { ReactComponent as FileUploadIcon } from "../assets/Icons/FileUploadIcon
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import Overlay from "../components/Overlay";
+import AddIndividualStudent from '../components/AddIndividualStudent';
 
 export default function AddStudents() {
 
@@ -45,7 +46,7 @@ export default function AddStudents() {
 
 
     return (
-        <>
+        <section className='pt-3 pb-6'>
             {
                 showOverLay &&
                 <Overlay />
@@ -96,8 +97,9 @@ export default function AddStudents() {
 
                 
             </section>
-
-        </>
+            <section className="w-full border border-blue-500 my-2"></section>
+            <AddIndividualStudent/>
+        </section>
 
     )
 }

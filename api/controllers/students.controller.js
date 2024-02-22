@@ -176,14 +176,14 @@ const getIndividualStudentsFromId = async (req, res) => {
             return res.status(200).json({
                 "message": "Student Data Fetched Successfully.",
                 "data": {
-                    course:student.course ,
-                    division: student.division ,
-                    dob: student.dob ,
-                    gender: student.gender ,
-                    phno: student.phno ,
-                    rollno: student.rollno ,
-                    semester: student.semester ,
-                    sid : student.sid ,
+                    course: student.course,
+                    division: student.division,
+                    dob: student.dob,
+                    gender: student.gender,
+                    phno: student.phno,
+                    rollno: student.rollno,
+                    semester: student.semester,
+                    sid: student.sid,
                     name: student.studentName,
                     _id: student._id
                 },
@@ -226,20 +226,36 @@ const studentForgotPassword = async (req, res) => {
 
         const from = "Vonage APIs";
         const to = "91" + studentData[0].phno;
-        const text = `Your OTP is ${otp}.`;
+        const text = `Your OTP for CEMS is ${otp}. Don't Share it with anyone.`;
 
         async function sendSMS() {
             await vonage.sms.send({ to, from, text })
-                .then(resp => { console.log('Message sent successfully'); console.log(resp); })
-                .catch(err => { console.log('There was an error sending the messages.'); console.error(err); });
+                .then(resp => {
+                    console.log('Message sent successfully');
+                    console.log(resp);
+                    return true;
+                })
+                .catch(err => {
+                    console.log('There was an error sending the messages.');
+                    console.error(err);
+                    return false;
+                });
         }
 
-        sendSMS();
 
-        return res.status(200).json({
-            message: `OTP sent to your mobile number ending with ${phno.slice(6, phno.length)}`,
-            result: true
-        });
+        if (sendSMS()) {
+            return res.status(200).json({
+                message: `OTP sent to your mobile number ending with ${phno.slice(6, phno.length)}`,
+                result: true
+            });
+        }
+        else {
+            return res.status(500).json({
+                message: `Unable to send OTP`,
+                result: false
+            });
+        }
+
 
 
 

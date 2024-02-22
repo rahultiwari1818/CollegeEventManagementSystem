@@ -5,6 +5,9 @@ const College = require("../models/College");
 const fs = require("fs").promises;
 const path = require("path");
 const csvtojson = require("csvtojson");
+const transporter = require("../config/mailTransporter");
+const { generateOTP } = require("../utils");
+const { client } = require("../config/redisConfig");
 
 const SECRET_KEY = process.env.SECRET_KEY;
 
@@ -212,6 +215,117 @@ const setUpSystem =  async(req,res)=>{
 
 }
 
+const facultyForgotPassword = async(req,res)=>{
+
+    try {
+        
+        const {email} = req.body;
+        const facultyData = await Faculties.findOne({email:email});
+        if(!facultyData){
+            return res.status(400).json({
+                message:"EmailId Not Registered.",
+                result:false
+            })
+        }
+
+        const otp = generateOTP();
+
+        client.set(email, otp);
+
+
+        const mailOptions = {
+            from: process.env.EMAIL_ID,
+            to: email,
+            subject: 'OTP for Forgot Password in CEMS',
+            text: `Your OTP for CEMS is ${otp}. Dont share it with anyone.`
+        };
+        
+        // Send email
+        transporter.sendMail(mailOptions, function(error, info) {
+            if (error) {
+                return res.status(500).json({
+                    message:"Unable to send Email",
+                    result:false
+                })
+            } else {
+                return res.status(200).json({
+                    message:"OTP Mailed Successfully",
+                    result:true
+                });
+        
+            }
+        });
+
+
+    } catch (error) {
+        
+    }
+
+}
+
+const verifyOTP = async (req, res) => {
+    try {
+        const userOTP = req.body.otp;
+        const email = req.body.email;
+
+        const generatedOTP = await client.get(email);
+        if (generatedOTP === userOTP) {
+
+            const facultydata = await Faculties.findOne({ email });
+
+            const data = {
+                user: {
+                    _id: facultydata._id
+                }
+            };
+            const token = jwtToken.sign(data, SECRET_KEY);
+
+            await client.del(email);
+
+            return res.status(200)
+                .json({
+                    message: "User Authenticated Successfully",
+                    token: token,
+                    result: true
+                })
+        }
+        else {
+            return res.status(200)
+                .json({
+                    message: "Incorrect OTP Provided",
+                    result: false
+                })
+        }
+
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+const resetPassword = async (req, res) => {
+    try {
+
+        const userId = req.user._id;
+        // console.log(req.user)
+        const newPassword = req.body.newPassword;
+
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+        // Update the password for the user with the specified userId
+        await Faculties.updateOne({ _id: userId }, { password: hashedPassword });
+
+        return res.status(200).json({
+            message: "Password Reset Successfully",
+            result: true
+        })
+
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+
 
 module.exports = {
     registerIndividualFaculties,
@@ -219,5 +333,8 @@ module.exports = {
     loginFaculty,
     getFaculties,
     setUpSystem,
-    getIndividualFaculty
+    getIndividualFaculty,
+    facultyForgotPassword,
+    verifyOTP,
+    resetPassword
 };

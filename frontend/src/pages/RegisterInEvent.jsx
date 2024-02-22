@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Overlay from '../components/Overlay';
 import { handleNumericInput } from '../utils';
@@ -10,6 +10,9 @@ export default function RegisterInEvent() {
     const API_URL = process.env.REACT_APP_BASE_URL;
 
     const [eventData, setEventData] = useState({});
+    const [registrationData,setRegistrationData] = useState([{
+
+    }]);
     const [isPageLoading, setIsPageLoading] = useState(true);
 
     const params = useParams();
@@ -50,7 +53,7 @@ export default function RegisterInEvent() {
                 });
                 if (data?.data[0]?.hasSubEvents) {
                     const subEvents = data.data[0].subEvents;
-                    const [subEventData] = subEvents.filter((event) => event.sId == subEventId);
+                    const [subEventData] = subEvents.filter((event) => event.sId === subEventId);
                     setEventData({ eventId: data.data[0]._id, ...subEventData });
                 }
                 else {
@@ -85,7 +88,7 @@ export default function RegisterInEvent() {
 
                         </section>
                         <section className='md:p-2 md:m-2 p-1 m-1'>
-                            <input type="submit" value="Generate Event" className='text-red-500 bg-white rounded-lg shadow-lg px-5 py-3 w-full m-2 outline outline-red-500 hover:text-white hover:bg-red-500 ' />
+                            <input type="submit" value="Request Registration" className='text-red-500 cursor-pointer bg-white rounded-lg shadow-lg px-5 py-3 w-full m-2 outline outline-red-500 hover:text-white hover:bg-red-500 ' />
                         </section>
                     </form>
                 </section>

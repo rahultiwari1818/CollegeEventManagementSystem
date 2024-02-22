@@ -23,7 +23,8 @@ export default function ViewCourses() {
 				<thead className='bg-blue-500 text-white'>
 					<tr>
 						<th className='px-4 py-2'>Sr No</th>
-						<th className='px-4 py-2'>Course</th>
+						<th className='px-4 py-2'>Course Name</th>
+						<th className='px-4 py-2'>No of Semesters</th>
 					</tr>
 				</thead>
 				<tbody className="text-gray-600 border border-blue-500">
@@ -51,6 +52,16 @@ export default function ViewCourses() {
 															   duration={0.9}
 														   />
 													   </td>
+													   <td className="border px-4 py-2 ">
+														   <Skeleton
+															   count={1}
+															   height="50%"
+															   width="100%"
+															   baseColor="#4299e1"
+															   highlightColor="#f7fafc"
+															   duration={0.9}
+														   />
+													   </td>
 													   </tr>
 													})
 													:
@@ -58,6 +69,7 @@ export default function ViewCourses() {
 														return <tr key={course._id}>
 															<td className='border px-4 py-2'>{idx+1}</td>
 															<td className='border px-4 py-2'>{course.courseName}</td>
+															<td className='border px-4 py-2'>{course.noOfSemesters}</td>
 														</tr>
 													})
 
