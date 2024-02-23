@@ -140,13 +140,13 @@ export default function Navbar() {
       <section className='lg:hidden'>
         {
           !openSideBar &&
-          <button className='fixed z-10 top-10 right-10 bg-white p-2 rounded ' onClick={() => closeSideBar()}>
+          <button className='fixed z-10 top-4 right-10 bg-white p-2 rounded ' onClick={() => closeSideBar()}>
             <HamburgerIcon />
           </button>
         }
         {
           openSideBar &&
-          <button className='fixed z-10 top-3 right-10 bg-white p-2 rounded ' onClick={() => closeSideBar()}>
+          <button className='fixed z-10 top-4 right-10 bg-white p-2 rounded ' onClick={() => closeSideBar()}>
             <CloseIcon />
           </button>
         }

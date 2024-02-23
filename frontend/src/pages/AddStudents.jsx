@@ -52,6 +52,7 @@ export default function AddStudents() {
                 <Overlay />
             }
             <section className='md:p-2 md:m-2  p-1 m-1'>
+                <p className='lg:py-3 lg:px-3 lg:text-lg py-1 px-2  bg-blue-500 text-white w-fit rounded-lg shadow-md'>Add Student Data in Bulk </p>
                 <form method="post" onSubmit={fileUploadHandler} className='px-3 py-2'>
                     <section className="flex items-center justify-center w-full">
                         <label
@@ -86,7 +87,7 @@ export default function AddStudents() {
                                     setFileToUpload(file);
                                 }}
                                 accept=".csv"
-                                aria-required="true"
+                                required
                             />
                         </label>
                     </section>
@@ -98,7 +99,10 @@ export default function AddStudents() {
                 
             </section>
             <section className="w-full border border-blue-500 my-2"></section>
-            <AddIndividualStudent/>
+            <section className='mx-4'>
+            <p className='lg:py-3 lg:px-3 lg:text-lg py-1 px-2  bg-blue-500 text-white w-fit rounded-lg shadow-md'>Add Student Data individually </p>
+                <AddIndividualStudent/>
+            </section>
         </section>
 
     )

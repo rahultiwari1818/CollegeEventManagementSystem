@@ -68,7 +68,7 @@ export default function ViewFaculties() {
 
 
     const courses = useMemo(()=>{
-      return transformCourseData(coursesData);
+      return transformCourseData(coursesData,true);
   },[coursesData])
 
     useEffect(() => {

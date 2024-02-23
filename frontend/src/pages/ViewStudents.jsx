@@ -120,11 +120,23 @@ export default function ViewStudents() {
     },[dispatch])
 
     const courses = useMemo(()=>{
-        return transformCourseData(coursesData);
+        return transformCourseData(coursesData,true);
     },[coursesData])
 
     // const courses = [{ name: "All" }, { name: "BCA" }, { name: "BBA" }, { name: "BcomGujaratiMed" }, { name: "BcomEnglishMedium" }];
-    const semesters = [{ name: "All" }, { name: "Sem-I" }, { name: "Sem-II" }, { name: "Sem-III" }, { name: "Sem-IV" }, { name: "Sem-V" }, { name: "Sem-VI" }];
+
+    const semestersArr = useMemo(() => {
+        for (let course of coursesData) {
+            if (course.courseName === searchParams.searchCourse) {
+                let semesters = [];
+                for (let i = 1; i <= course.noOfSemesters; i++) {
+                    semesters.push({ name: i });
+                }
+                return semesters;
+            }
+        }
+        return [];
+    }, [searchParams.searchCourse,coursesData])
 
     const handlePageChange = (page) => {
         setCurrentPage(page);
@@ -156,7 +168,7 @@ export default function ViewStudents() {
                 <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-3 lg:gap-5 p-2">
                     <Search placeholder="Search Student" searchValue={searchParams?.search} changeSearch={changeSearch} />
                     <Dropdown dataArr={courses} selected={searchParams.searchCourse} setSelected={changeSearchCourse} name="searchCourse" label="Select Course" />
-                    <Dropdown dataArr={semesters} selected={searchParams.searchSemester} setSelected={changeSemesterCourse} name="searchSemester" label="Select Semester" />
+                    <Dropdown dataArr={semestersArr} selected={searchParams.searchSemester} setSelected={changeSemesterCourse} name="searchSemester" label="Select Semester" />
                     <Dropdown dataArr={division} selected={searchParams.searchdivision} setSelected={changeSearchDivision} name="searchdivisions" label="Select Division" disabled={disablesection} />
                 </section>
 

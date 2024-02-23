@@ -495,7 +495,10 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
                             minDate={new Date().setDate(new Date().getDate() - 1)}
                             className="w-full shadow-lg md:p-3 rounded-lg md:m-2 p-2 m-1"
                             showIcon
-                            icon={<CalanderIcon />}
+                            icon={
+                                <section className="m-2">
+                                    <CalanderIcon />
+                                </section>}
                         />
                     </section>
                     <section className='md:p-2 md:m-2  p-1 m-1'>
@@ -515,7 +518,10 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
                             dateFormat="dd-MM-yyyy"
                             minDate={new Date()}
                             className=" w-full shadow-lg md:p-3 rounded-lg md:m-2 p-2 m-1"
-                            icon={<CalanderIcon />}
+                            icon={
+                                <section className="m-2">
+                                    <CalanderIcon />
+                                </section>}
                             showIcon
                         />
                         {

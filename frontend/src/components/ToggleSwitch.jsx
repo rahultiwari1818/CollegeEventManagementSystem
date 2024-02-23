@@ -1,14 +1,15 @@
 import { useEffect, useState } from 'react'
 import { Switch } from '@headlessui/react'
 
-export default function ToggleSwitch({headingText,hasSubEvents,updateHasSubEvents}) {
-    const [enabled, setEnabled] = useState(hasSubEvents)
+export default function ToggleSwitch({headingText,selected,updateSelected}) {
+    const [enabled, setEnabled] = useState(selected)
 
     useEffect(()=>{
-        updateHasSubEvents(enabled);
+      updateSelected(enabled);
     },[enabled])
 
     return (
+      <>
         <Switch.Group>
       <section className="flex items-center">
       <Switch.Label className="mr-4">{headingText}</Switch.Label>
@@ -25,7 +26,8 @@ export default function ToggleSwitch({headingText,hasSubEvents,updateHasSubEvent
           />
         </Switch>
       </section>
-      </Switch.Group>
+      </Switch.Group></>
+      
 
     )
 }

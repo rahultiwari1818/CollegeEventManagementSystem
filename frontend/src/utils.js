@@ -61,8 +61,11 @@ export function isValidName(name) {
 	return nameRegex.test(name);
 }
 
-export function transformCourseData(coursesData) {
-	const arr = [{ name: "All" }];
+export function transformCourseData(coursesData,requiresAll) {
+	const arr = [];
+	if(requiresAll){
+		arr.push({ name: "All" });
+	}
 	for (let course of coursesData) {
 		arr.push({ name: course.courseName });
 	}

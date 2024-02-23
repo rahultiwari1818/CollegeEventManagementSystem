@@ -60,7 +60,6 @@ export default function GenerateEvent() {
             ...prevData,
             hasSubEvents: value
         }));
-        console.log(data)
     }, []);
 
     const removeSubEvent = (id) => {
@@ -255,7 +254,7 @@ export default function GenerateEvent() {
                         </section>
 
                         <section className='md:p-2 md:m-2 p-1 m-1'>
-                            <ToggleSwitch headingText={"Has Sub Event?"} updateHasSubEvents={updateHasSubEvents} hasSubEvents={data.hasSubEvents} />
+                            <ToggleSwitch headingText={"Has Sub Event?"} updateSelected={updateHasSubEvents} selected={data.hasSubEvents} />
                         </section>
 
                         {data?.hasSubEvents && (
@@ -366,7 +365,10 @@ export default function GenerateEvent() {
                                     minDate={new Date().setDate(new Date().getDate() - 1)}
                                     className="w-full shadow-lg md:p-3 rounded-lg md:m-2 p-2 m-1"
                                     showIcon
-                                    icon={<CalanderIcon />}
+                                    icon={
+                                <section className="m-2">
+                                    <CalanderIcon />
+                                </section>}
                                 />
                             </section>
                             <section className='md:p-2 md:m-2  p-1 m-1'>
@@ -386,7 +388,10 @@ export default function GenerateEvent() {
                                     dateFormat="dd-MM-yyyy"
                                     minDate={new Date()}
                                     className=" w-full shadow-lg md:p-3 rounded-lg md:m-2 p-2 m-1"
-                                    icon={<CalanderIcon />}
+                                    icon={
+                                <section className="m-2">
+                                    <CalanderIcon />
+                                </section>}
                                     showIcon
                                 />
                                 {

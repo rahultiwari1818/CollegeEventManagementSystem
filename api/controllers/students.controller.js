@@ -56,6 +56,10 @@ const registerStudentsInBulk = async (req, res) => {
     }
 };
 
+const registerStudentIndividually = async(req,res)=>{
+
+}
+
 const getStudents = async (req, res) => {
     try {
         const searchQuery = req.query.search || "";
@@ -368,4 +372,4 @@ const loginStudent = async (req, res) => {
     }
 }
 
-module.exports = { registerStudentsInBulk, getStudents, getDivisions, getIndividualStudentsFromSid, studentForgotPassword, verifyOTP, resetPassword, loginStudent, getIndividualStudentsFromId };
+module.exports = { registerStudentsInBulk, getStudents, getDivisions, getIndividualStudentsFromSid, studentForgotPassword, verifyOTP, resetPassword, loginStudent, getIndividualStudentsFromId,registerStudentIndividually };
