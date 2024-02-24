@@ -121,6 +121,16 @@ const registerStudentIndividually = async(req,res)=>{
 
         const { course, semester, division, rollno, sid, studentName, phno, gender, dob, password, email } = req.body;
         const profilePic = req?.file;
+        
+        const doesSidAlreadyExists = await Student.find({sid:sid});
+
+        if(doesSidAlreadyExists.length>=1){
+            return res.status(400).json({
+                message:"SID Already Registered.! ",
+                result:false
+            })
+        }
+
         if(!profilePic){
             return res.status(400).json({
                 message:"Profile Pic  is Required.! ",
@@ -323,6 +333,7 @@ const getIndividualStudentsFromId = async (req, res) => {
                     semester: student.semester,
                     sid: student.sid,
                     name: student.studentName,
+                    email:student.email,
                     _id: student._id
                 },
                 "result": true
@@ -506,4 +517,8 @@ const loginStudent = async (req, res) => {
     }
 }
 
-module.exports = { registerStudentsInBulk, getStudents, getDivisions, getIndividualStudentsFromSid, studentForgotPassword, verifyOTP, resetPassword, loginStudent, getIndividualStudentsFromId,registerStudentIndividually };
+const updateStudentData = async(req,res)=>{
+
+}
+
+module.exports = { registerStudentsInBulk, getStudents, getDivisions, getIndividualStudentsFromSid, studentForgotPassword, verifyOTP, resetPassword, loginStudent, getIndividualStudentsFromId,registerStudentIndividually,updateStudentData };

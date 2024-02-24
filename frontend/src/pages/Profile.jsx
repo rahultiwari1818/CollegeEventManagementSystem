@@ -221,7 +221,9 @@ export default function Profile() {
                                                         duration={0.9}
                                                     />
                                                     :
-                                                    profileData?.email || <span className="text-red-500">Not Provided</span>
+                                                    profileData?.email==="" ? <span className="text-red-500">Not Provided</span>
+                                                    :
+                                                    profileData.email
                                             }
                                         </p>
                                     </section>

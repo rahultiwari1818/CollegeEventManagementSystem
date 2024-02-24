@@ -13,6 +13,8 @@ import { formatFileSize, handleNumericInput } from '../utils';
 import ToggleSwitch from '../components/ToggleSwitch';
 import AddSubEvents from '../components/AddSubEvents';
 import Overlay from "../components/Overlay";
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchAllCourses } from '../store/CourseSlice';
 
 export default function GenerateEvent() {
 
@@ -31,25 +33,37 @@ export default function GenerateEvent() {
         ebrochure: null,
         eposter: null,
         hasSubEvents: false,
-        subEvents: []
+        subEvents: [],
+        eligibleCourses: []
     }
 
     const [data, setData] = useState(initialState);
+
     const initialErrorState = {
         edateErr: "",
         rcdateErr: "",
         etypeErr: "",
         ptypeErr: "",
-        enatureErr: ""
+        enatureErr: "",
+        eligibleCoursesErr:""
     };
+
     const [errors, setErrors] = useState(initialErrorState)
+
     const [subEventDataToUpdate, setSubEventDataToUpdate] = useState({});
+
     const noOfParticipants = useRef(null);
+
     const [isLoading, setIsLoading] = useState(true);
+
     const [fileErrors, setFileErrors] = useState({
         posterError: "",
         brochureError: ""
     })
+
+    const coursesData = useSelector((state) => state.CourseSlice.data);
+    const dispatch = useDispatch();
+
     const updateData = (e) => {
         const name = e.target.name;
         const value = e.target.value;
@@ -102,23 +116,47 @@ export default function GenerateEvent() {
     }, [setData]);
 
 
+    const handleCourseChange = (courseName) => {
+        const newSelectedCourses = data.eligibleCourses.includes(courseName)
+            ? data.eligibleCourses.filter((name) => name !== courseName)
+            : [...data.eligibleCourses, courseName];
+        setData((old) => ({ ...old, eligibleCourses: newSelectedCourses }));
+    };
+
     const [openAddSubEventModal, setOpenAddSubEventModal] = useState(false);
 
 
-    const validateDropDowns = () => {
+    const validateData = () => {
         let isValidated = true;
         if (data.etype === "") {
             setErrors((old) => ({ ...old, etypeErr: "Event Type is Required" }));
             isValidated = false;
         }
+        else{
+            setErrors((old) => ({ ...old, etypeErr: "" }));
+        }
         if (data.ptype === "" && !data.hasSubEvents) {
             setErrors((old) => ({ ...old, ptypeErr: "Participation Type is Required" }));
             isValidated = false;
         }
+        else{
+            setErrors((old) => ({ ...old, ptypeErr: "" }));
+        }
         if (data.enature === "") {
             setErrors((old) => ({ ...old, enatureErr: "Event Nature is Required" }));
             isValidated = false;
+
+        }else{
+            setErrors((old) => ({ ...old, enatureErr: "" }));
         }
+        if (data.eligibleCourses === "") {
+            setErrors((old) => ({ ...old, eligibleCoursesErr: "Select at least 1 Eligible Course" }));
+            isValidated = false;
+
+        }else{
+            setErrors((old) => ({ ...old, eligibleCoursesErr: "" }));
+        }
+        
 
         console.log(errors)
         return isValidated;
@@ -128,9 +166,7 @@ export default function GenerateEvent() {
     const generateEventHandler = async (e) => {
         e.preventDefault();
 
-        if (!validateDropDowns()) {
-            return;
-        }
+        if (!validateData()) return;
 
         setIsLoading((old) => true);
         const formData = new FormData();
@@ -147,6 +183,7 @@ export default function GenerateEvent() {
         formData.append("eposter", data.eposter);
         formData.append("hasSubEvents", data.hasSubEvents);
         formData.append("subEvents", JSON.stringify(data.subEvents));
+        formData.append("eligibleCourses", JSON.stringify(data.eligibleCourses));
         try {
             const { data } = await axios.post(`${API_URL}/api/events/generateevent`, formData, {
                 headers: {
@@ -166,13 +203,9 @@ export default function GenerateEvent() {
             setIsLoading((old) => !old);
         }
 
-
-
-
-
-
-
     }
+
+
 
     const formatDate = (date) => {
         return date.toLocaleDateString('en-US', {
@@ -186,7 +219,11 @@ export default function GenerateEvent() {
 
     useEffect(() => {
         setIsLoading(false)
+        if (coursesData?.length === 0 || !Array.isArray(coursesData)) {
+            dispatch(fetchAllCourses());
+        }
     }, [])
+
 
     const eventNatures = [{ name: "Cultural" }, { name: "IT" }, { name: "Management" }, { name: "Sports" }];
     const eventTypes = [{ name: "Intra-College" }, { name: "Inter-College" }];
@@ -251,6 +288,38 @@ export default function GenerateEvent() {
                                     </p>
                                 }
                             </section>
+                        </section>
+
+
+
+                        <section className='md:p-2 md:m-2 p-1 m-1'>
+                            <p className="py-2">
+                                Select Eligible Courses :
+                            </p>
+                            <section className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-2 py-2 shadow-lg rounded-lg'>
+                                {coursesData.map((course) => (
+                                    <section key={course._id} className="flex items-center">
+                                        <input
+                                            type="checkbox"
+                                            id={course._id}
+                                            value={course.courseName}
+                                            checked={data.eligibleCourses.includes(course.courseName)}
+                                            onChange={() => handleCourseChange(course.courseName)}
+                                            className='mr-2 cursor-pointer'
+                                        />
+                                        <label htmlFor={course._id} className="cursor-pointer">{course.courseName}</label>
+                                    </section>
+                                ))}
+                            </section>
+                            {
+                                errors.eligibleCoursesErr !== ""
+                                &&
+                                <p className='text-red-500 my-2'>
+                                    {
+                                        errors.eligibleCoursesErr
+                                    }
+                                </p>
+                            }
                         </section>
 
                         <section className='md:p-2 md:m-2 p-1 m-1'>
@@ -366,9 +435,9 @@ export default function GenerateEvent() {
                                     className="w-full shadow-lg md:p-3 rounded-lg md:m-2 p-2 m-1"
                                     showIcon
                                     icon={
-                                <section className="m-2">
-                                    <CalanderIcon />
-                                </section>}
+                                        <section className="m-2">
+                                            <CalanderIcon />
+                                        </section>}
                                 />
                             </section>
                             <section className='md:p-2 md:m-2  p-1 m-1'>
@@ -389,9 +458,9 @@ export default function GenerateEvent() {
                                     minDate={new Date()}
                                     className=" w-full shadow-lg md:p-3 rounded-lg md:m-2 p-2 m-1"
                                     icon={
-                                <section className="m-2">
-                                    <CalanderIcon />
-                                </section>}
+                                        <section className="m-2">
+                                            <CalanderIcon />
+                                        </section>}
                                     showIcon
                                 />
                                 {
@@ -543,7 +612,7 @@ export default function GenerateEvent() {
                                 </label>
 
                             </section>
-                                    </section>
+                        </section>
 
                         <section className='md:p-2 md:m-2 p-1 m-1'>
                             <input type="submit" value="Generate Event" className='text-red-500 cursor-pointer bg-white rounded-lg shadow-lg px-5 py-3 w-full m-2 outline outline-red-500 hover:text-white hover:bg-red-500 ' />

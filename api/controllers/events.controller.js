@@ -62,6 +62,7 @@ const generateEvent = async (req, res) => {
         }
 
         const subEvents = JSON.parse(req.body.subEvents || "[]"); // Parse subEvents JSON string, default to empty array if not provided
+        const eligibleCourses = JSON.parse(req.body.eligibleCourses || "[]"); // Parse subEvents JSON string, default to empty array if not provided
         const genEvent = await Event.create({
             ename: ename.trim(),
             etype: etype.trim(),
@@ -78,6 +79,7 @@ const generateEvent = async (req, res) => {
             eposterPath: newPosterPath,
             hasSubEvents: hasSubEvents,
             subEvents: subEvents,
+            eligibleCourses:eligibleCourses,
             isCanceled: false
         });
 
@@ -190,7 +192,8 @@ const updateEventDetails = async (req, res) => {
 
         // Update event details in the database
         const subEvents = JSON.parse(req.body.subEvents);
-        const dataToUpdate = { ename, etype, ptype, enature, noOfParticipants, edate, edetails, rules, rcdate, ebrochureName: originalBrochureName, ebrochurePath: newBrochurePath, eposterName: originalPosterName, eposterPath: newPosterPath, hasSubEvents, subEvents };
+        const eligibleCourses = JSON.parse(req.body.eligibleCourses ); // Parse subEvents JSON string, default to empty array if not provided
+        const dataToUpdate = { ename, etype, ptype, enature, noOfParticipants, edate, edetails, rules, rcdate, ebrochureName: originalBrochureName, ebrochurePath: newBrochurePath, eposterName: originalPosterName, eposterPath: newPosterPath, hasSubEvents, subEvents,eligibleCourses };
         await Event.updateOne({ _id: id }, { $set: dataToUpdate });
 
         return res.status(200).json({ "message": "Event Updated Successfully", "result": true });
