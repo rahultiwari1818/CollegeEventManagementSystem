@@ -3,10 +3,12 @@ const fs = require("fs").promises;
 const path = require("path");
 const csvtojson = require("csvtojson");
 const { vonage } = require("../config/vonage.js");
-const { generateOTP } = require("../utils.js");
+const { generateOTP, uploadToCloudinary } = require("../utils.js");
 const { client } = require("../config/redisConfig.js");
 const jwtToken = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const Course = require("../models/Course.js");
+const transporter = require("../config/mailTransporter");
 const SECRET_KEY = process.env.SECRET_KEY;
 
 
@@ -14,17 +16,23 @@ const SECRET_KEY = process.env.SECRET_KEY;
 
 const registerStudentsInBulk = async (req, res) => {
     let newStudentCSVFilePath = "";
+    let invalidRecordsFilePath = "";
     try {
         const studentCSVFile = req.file;
+        console.log(studentCSVFile)
         newStudentCSVFilePath = `uploads/${studentCSVFile.originalname}${path.extname(studentCSVFile.originalname)}`
         await fs.rename(studentCSVFile.path, newStudentCSVFilePath)
 
         const source = await csvtojson().fromFile(`./uploads/${studentCSVFile.originalname}${path.extname(studentCSVFile.originalname)}`); // await the csvtojson promise
 
+        const courses = await Course.find();
+
+        const invalidRecords = [];
+
         const arrayToInsert = source.map(entry => {
             let dob;
-            if (entry["Date Of Birth"]) {
-                const dobParts = entry["Date Of Birth"].split("/");
+            if (entry["dob"]) {
+                const dobParts = entry["dob"].split("/");
                 // Reorder date parts to "mm/dd/yyyy" format
                 dob = new Date(`${dobParts[1]}/${dobParts[0]}/${dobParts[2]}`);
             } else {
@@ -32,31 +40,157 @@ const registerStudentsInBulk = async (req, res) => {
                 dob = new Date("1/1/2001");
             }
 
+            let flag = false;
+
+            for(let course of courses){
+                if(course.courseName === entry["course"] && course.noOfSemesters >= Number( entry["semester"])){
+                    flag = true;
+                    break;
+                }
+            }
+
+
+
+            if(!flag){
+                invalidRecords.push(entry);
+                return ;
+            }
+
             return {
-                course: entry["Course"],
-                semester: entry["Semester"],
-                division: entry["Division"],
-                rollno: entry["Roll Number"],
-                sid: entry["SID No"],
-                studentName: entry["Student Name"],
-                phno: entry["Student Mobile No"],
-                gender: entry["Gender"],
+                profilePicName:".",
+                profilePicPath:".",
+                course: entry["course"],
+                semester: entry["semester"],
+                division: entry["division"],
+                rollno: entry["roll no"],
+                sid: entry["sid"],
+                studentName: entry["student name"],
+                phno: entry["mobile no"],
+                email: entry["email"],
+                gender: entry["gender"],
                 dob: dob,
-                password: dob // Assuming password is also "Date Of Birth"
+                password: dob, // Assuming password is also "Date Of Birth"
+                status:"Active",
             };
         });
-        const result = await Student.insertMany(arrayToInsert);
-        res.status(200).json({ success: true, message: "Students registered successfully." });
+
+        // If there are invalid records, write them to a temporary file
+        if (invalidRecords.length > 0) {
+            invalidRecordsFilePath = 'invalid_records.csv';
+            const csvData = invalidRecords.map(record => Object.values(record).join(',')).join('\n');
+            fs.writeFile(invalidRecordsFilePath, csvData);
+        }
+
+        // If there are valid records, insert them into the database
+        const validRecordsToInsert = arrayToInsert.filter(record => record); // Filter out undefined records
+        if (validRecordsToInsert.length > 0) {
+            await Student.insertMany(validRecordsToInsert);
+        }
+
+        // Send response
+        // console.log(invalidRecords,"\n",validRecordsToInsert.length)
+        if (invalidRecords.length > 0) {
+            // Send the temporary file containing invalid records to the user for download
+            res.download(invalidRecordsFilePath, 'invalid_records.csv', (err) => {
+                if (err) {
+                    console.error('Error sending file:', err);
+                    res.status(500).json({ success: false, message: 'Error sending file' });
+                } else {
+                    // Cleanup after successful download
+                    fs.unlink(invalidRecordsFilePath);
+                    res.status(200).json({ result: true, message: "Students registered with some errors. Check the downloaded file for invalid records." });
+                }
+            });
+        } else {
+            // If there are no invalid records, send success response
+            res.status(200).json({ result: true, message: "Students registered successfully." });
+        }
     } catch (error) {
-        // console.error("Error registering students:", error);
-        res.status(500).json({ success: false, message: "An error occurred while registering students. Please Check Your CSV File format", error: error });
+        console.error("Error registering students:", error);
+        res.status(500).json({ result: false, message: "An error occurred while registering students. Check Your CSV Headers", error: error });
     }
     finally {
+        // Cleanup: Delete the uploaded CSV file
         fs.unlink(newStudentCSVFilePath);
     }
 };
 
 const registerStudentIndividually = async(req,res)=>{
+
+    try {
+
+        const { course, semester, division, rollno, sid, studentName, phno, gender, dob, password, email } = req.body;
+        const profilePic = req?.file;
+        if(!profilePic){
+            return res.status(400).json({
+                message:"Profile Pic  is Required.! ",
+                result:false
+            })
+        }
+        let profilePicPath = "";
+        const profilePicName = profilePic ? profilePic.originalname : "";
+
+        if(profilePic){
+            const result = await uploadToCloudinary(profilePic.path,"image");
+            profilePicPath = result.url;
+        }
+
+
+
+        const salt = await  bcrypt.genSalt(10);
+
+        const secPass = await bcrypt.hash(password,salt);
+        const newStudent = await Student.create({
+            profilePicName,
+            profilePicPath,
+            course,
+            semester,
+            division,
+            rollno,
+            sid,
+            studentName,
+            phno,
+            gender,
+            dob,
+            password:secPass,
+            email,
+            status: "Active" // Assuming default status is Active
+        });
+
+        const mailOptions = {
+            from: process.env.EMAIL_ID,
+            to: email,
+            subject: 'Successfull Registration in CEMS',
+            text: `Your Login Credentials are for CEMS are:
+                SID : ${sid} and Password : ${password}.
+                please change your password after login
+            `
+        };
+        
+        // Send email
+        transporter.sendMail(mailOptions, function(error, info) {
+            if (error) {
+                // return res.status(500).json({
+                //     message:"Unable to send Email",
+                //     result:false
+                // })
+                console.log("error in sending mail",error)
+            } else {
+                // return res.status(200).json({
+                //     message:"OTP Mailed Successfully",
+                //     result:true
+                // });
+                console.log("Mail Send Successfully.");
+            }
+        });
+
+
+        res.status(200).json({ result: true, message: "Student registered successfully." });
+
+    } catch (error) {
+        console.log(error)
+    }
+
 
 }
 

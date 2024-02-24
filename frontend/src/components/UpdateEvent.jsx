@@ -210,128 +210,6 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
     return (
 
         <Modal isOpen={openUpdateModal} close={setOpenUpdateModal} heading={"Update Event"}>
-            {/* <form method="post" className='p-4' onSubmit={updateEvent}>
-                <section className='md:p-2 md:m-2 p-1 m-1' >
-                    <label htmlFor="ename">Event Name:</label>
-                    <input
-                        type="text"
-                        name="ename"
-                        value={data.ename}
-                        onChange={updateData}
-                        placeholder='Enter Event Name'
-                        className='w-full shadow-lg md:p-3 rounded-lg md:m-2 p-2 m-1'
-                        required
-                    />
-                </section>
-                <section className='md:flex md:justify-between md:items-center block '>
-                    <section className='md:p-2 md:m-2  p-1 m-1'>
-                        <label htmlFor="etype">Event Type:</label>
-                        <Dropdown
-                            dataArr={eventTypes}
-                            selected={data.etype}
-                            setSelected={setData}
-                            name={"etype"}
-                            label={"Select Event Type"}
-                        />
-                    </section>
-                    <section className='md:p-2 md:m-2  p-1 m-1'>
-                        <label htmlFor="ptype">Participation  Type:</label>
-                        <Dropdown
-                            dataArr={[{ name: "Individual" }, { name: "Group" }]}
-                            selected={data.ptype}
-                            setSelected={setData}
-                            name={"ptype"}
-                            label={"Select Participation Type"}
-                            ref={noOfParticipants}
-                        />
-                    </section>
-                </section>
-                <section className='md:flex md:justify-between md:items-center block '>
-                    <section className='md:p-2 md:m-2  p-1 m-1'>
-                        <label htmlFor="nop">Max No Of Team Members:</label>
-                        <input type="number"
-                            name="noOfParticipants"
-                            min={1}
-                            ref={noOfParticipants}
-                            value={data.noOfParticipants}
-                            onChange={updateData}
-                            onBlur={(e) => {
-                                if (e.target.name === "noOfParticipants") {
-                                    if (e.target.value < 1) {
-                                        setData({ ...data, [e.target.name]: 1 });
-                                        return;
-                                    }
-                                }
-                            }}
-                            placeholder='Enter No Of Participants'
-                            className='block shadow-lg md:p-3 rounded-lg md:m-2 p-2 m-1'
-                            required
-                        />
-                    </section>
-
-                </section>
-
-                <section className='md:flex md:justify-between md:items-center block'>
-
-                    <section className='md:p-2 md:m-2  p-1 m-1'>
-                        <label htmlFor="rcdate">Registration Closing  Date:</label><br />
-                        <DatePicker
-                            name='rcdate'
-                            selected={new Date(data.rcdate)}
-                            onChange={(date) => setData({ ...data, rcdate: date })}
-                            dateFormat="dd-MM-yyyy"
-                            minDate={new Date().setDate(new Date().getDate() - 1)}
-                            className="w-full shadow-lg md:p-3 rounded-lg md:m-2 p-2 m-1"
-                            showIcon
-                            icon={<CalanderIcon />}
-                        />
-                    </section>
-
-                    <section className='md:p-2 md:m-2  p-1 m-1'>
-                        <label htmlFor="edate">Event Date:</label><br />
-                        <DatePicker
-                            name='edate'
-                            selected={new Date(data.edate)}
-                            onChange={(date) => setData({ ...data, edate: date })}
-                            dateFormat="dd-MM-yyyy"
-                            minDate={new Date()}
-                            className=" w-full shadow-lg md:p-3 rounded-lg md:m-2 p-2 m-1"
-                            icon={<CalanderIcon />}
-                            showIcon
-                        />
-
-                    </section>
-                </section>
-
-
-                <section className='md:p-2 md:m-2  p-1 m-1'>
-                    <label htmlFor="details">Event Details:</label><br />
-                    <textarea
-                        name="edetails"
-                        value={data.edetails}
-                        onChange={updateData}
-                        className=' w-full shadow-lg md:p-3 rounded-lg md:m-2 p-2 m-1'
-                        placeholder="Enter Event Details "
-                        required
-                    ></textarea>
-                </section>
-                <section className='md:p-2 md:m-2  p-1 m-1'>
-                    <label htmlFor="rules">Rules For Events:</label><br />
-                    <textarea
-                        name="rules"
-                        value={data.rules}
-                        onChange={updateData}
-                        className=' w-full shadow-lg md:p-3 rounded-lg md:m-2 p-2 m-1'
-                        placeholder="Enter Rules "
-                        required
-                    ></textarea>
-                </section>
-
-
-                <section className='md:p-2 md:m-2  p-1 m-1'>
-                    <input type="submit" value="Update Event" className='text-red-500 bg-white rounded-lg shadow-lg px-5 py-3 w-full m-2 outline outline-red-500 hover:text-white hover:bg-red-500 ' />
-                </section>
-            </form> */}
             <form method="post" className='p-4 md:max-w-[70vw] mx-auto' onSubmit={updateEvent}>
                 <section className='md:p-2 md:m-2 p-1 m-1'>
                     <label htmlFor="ename">Event Name:</label>
@@ -384,7 +262,7 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
                 </section>
 
                 <section className='md:p-2 md:m-2 p-1 m-1'>
-                    <ToggleSwitch headingText={"Has Sub Event?"} updateHasSubEvents={updateHasSubEvents} hasSubEvents={data.hasSubEvents} />
+                    <ToggleSwitch headingText={"Has Sub Event?"} updateSelected={updateHasSubEvents} selected={data.hasSubEvents} />
                 </section>
 
                 {data?.hasSubEvents && (

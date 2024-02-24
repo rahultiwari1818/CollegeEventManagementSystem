@@ -6,12 +6,13 @@ const checkIsAdmin = require("../middlewares/checkIsAdmin.js");
 const multer = require("multer");
 const { storage } = require("../utils.js");
 const checkIsFaculty = require("../middlewares/checkIsFaculty.js");
+const checkIsSuperAdmin = require("../middlewares/checkIsSuperAdmin.js");
 const upload = multer({storage:storage});
 const router = express.Router();
 
 
-router.post("/registerIndividual",checkIsAdmin,registerIndividualFaculties );
-router.post("/registerInBulk",checkIsAdmin,upload.single("facultycsv"),registerFacultiesInBulk );
+router.post("/registerIndividual",checkIsSuperAdmin,registerIndividualFaculties );
+router.post("/registerInBulk",checkIsSuperAdmin,upload.single("facultycsv"),registerFacultiesInBulk );
 router.post("/forgotPassword",facultyForgotPassword);
 router.post("/verifyOTP",verifyOTP);
 router.post("/resetPassword",fetchUser,resetPassword);
@@ -19,6 +20,5 @@ router.post("/login",loginFaculty)
 router.get("/isSetUpDone",checkSetUp)
 router.get("/getfaculties",checkIsAdmin,getFaculties);
 router.get("/getSpecificFaculty/:id",checkIsFaculty,getIndividualFaculty)
-router.post("/forgotPassword",async(req,res)=>{})
 router.post("/setup",setUpSystem);
 module.exports = router;

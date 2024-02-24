@@ -47,13 +47,27 @@ export default function AddFaculties() {
         }
     }
 
+
+    const showCSVHandler = () => {
+        window.open(`${API_URL}/sampleFiles/Sample CSV For Faculties.csv`, "_blank")
+    }
+
+
     return (
         <>
-        {
-            showOverLay && <Overlay />
-        }
+            {
+                showOverLay && <Overlay />
+            }
 
-<section className='md:p-2 md:m-2  p-1 m-1'>
+            <section className='md:p-2 md:m-2  p-1 m-1'>
+                <section className="md:flex justify-start gap-5 items-center">
+                    <p className='lg:py-2 lg:px-3 lg:text-base py-1 px-2  bg-blue-500 text-white w-fit rounded-lg shadow-md'>Add Faculty Data in Bulk </p>
+                    <button className='lg:py-2 lg:px-3 lg:text-base py-1 px-2 my-2 md:my-0  bg-blue-500 text-white w-fit rounded-lg shadow-md'
+                        onClick={showCSVHandler}
+                    >
+                        Download Sample CSV
+                    </button>
+                </section>
                 <form method="post" onSubmit={fileUploadHandler} className='px-3 py-2'>
                     <section className="flex items-center justify-center w-full">
                         <label
@@ -97,7 +111,7 @@ export default function AddFaculties() {
                     </section>
                 </form>
 
-                
+
             </section>
         </>
 

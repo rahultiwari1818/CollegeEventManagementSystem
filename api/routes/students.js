@@ -12,7 +12,7 @@ const { registerStudentsInBulk ,getStudents, getDivisions, getIndividualStudents
 
 router.post("/registerInBulk",checkIsSuperAdmin,upload.single("studentcsv"),registerStudentsInBulk)
 
-router.post("/registerIndividual",checkIsSuperAdmin,registerStudentIndividually)
+router.post("/registerIndividual",checkIsSuperAdmin,upload.single("profilePic"),registerStudentIndividually)
 
 router.post("/forgotPassword",studentForgotPassword);
 router.post("/verifyOTP",verifyOTP);

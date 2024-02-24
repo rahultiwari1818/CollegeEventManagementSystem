@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import Modal from './Modal'
 import Dropdown from './Dropdown'
-import { handleNumericInput } from '../utils';
+import { handleNumericInput, isValidPassword } from '../utils';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
@@ -41,7 +41,8 @@ export default function ForgotPassword({ openForgotPasswordModal, setOpenForgotP
         sidErr: "",
         emailErr: "",
         otpErr: "",
-        roleErr:""
+        roleErr:"",
+        needStrongPasswordErr:false
     })
     const [disableRole, setDisableRole] = useState(false);
     const [otpSent, setOtpSent] = useState(false);
@@ -145,6 +146,13 @@ export default function ForgotPassword({ openForgotPasswordModal, setOpenForgotP
     const passwordResetHandler = async()=>{
         // Need To Implement Password Validation
 
+        if(!isValidPassword(newPassword)){
+            setErrors((old)=>({...old,needStrongPasswordErr:true}))
+            return;
+        }
+        else{
+            setErrors((old)=>({...old,needStrongPasswordErr:false}))
+        }
 
 
         passwordResetBtnRef.current.disabled = true;
@@ -277,6 +285,14 @@ export default function ForgotPassword({ openForgotPasswordModal, setOpenForgotP
                             <input type="text" name="newPassword" className='px-3 py-3 rounded-lg shadow-lg w-full' placeholder='Enter New Password' value={newPassword} onChange={(e)=>setNewPassword(e.target.value)} 
                             ref={newPasswordRef}
                             required />
+                            {
+                                errors.needStrongPasswordErr 
+                                &&
+                                <p className="text-red-500 m-2">
+                                    Password Should Have at least 1 UpperCase Letter , 1 LowerCase Letter , 1 Digit and 1 Special Character.
+                                    its length should be greater than 8
+                                </p>
+                            }
 
                         </section>
                         <section className="px-3 my-2">

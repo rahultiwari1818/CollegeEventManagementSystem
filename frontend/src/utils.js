@@ -61,6 +61,12 @@ export function isValidName(name) {
 	return nameRegex.test(name);
 }
 
+export function isValidPassword(password){
+	const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d !@#$%^&*()_+]{8,}$/;
+	return regex.test(password);
+
+}
+
 export function transformCourseData(coursesData,requiresAll) {
 	const arr = [];
 	if(requiresAll){

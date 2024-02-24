@@ -3,7 +3,11 @@ const mongoose = require("mongoose");
 const {Schema} = mongoose;
 
 const StudentSchema = new Schema({
-    profilePic:{
+    profilePicName:{
+        type:String,
+        required:true
+    },
+    profilePicPath:{
         type:String,
         required:true
     },
@@ -38,17 +42,26 @@ const StudentSchema = new Schema({
     },
     email:{
         type:String,
+        required: true,
     },
     gender: {
         type: String,
         required:true
     },
     dob: {
-        type: Date
+        type: Date,
+        required:true,
+        default: new Date("2001-01-01")
     },
     password:{
-        type:String
+        type:String,
+        required:true
+    },
+    status:{
+        type:String,
+        required:true
     }
+
 });
 
 const Students = mongoose.model("Students",StudentSchema);

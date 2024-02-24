@@ -2,11 +2,12 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Dropdown from './Dropdown';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAllCourses } from '../store/CourseSlice';
-import { formatFileSize, handleNumericInput, transformCourseData } from '../utils';
+import { formatFileSize, handleNumericInput, isValidPassword, transformCourseData } from '../utils';
 import { ReactComponent as CalanderIcon } from "../assets/Icons/calander_icon.svg";
 import DatePicker from 'react-datepicker';
 import { ReactComponent as FileUploadIcon } from "../assets/Icons/FileUploadIcon.svg";
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 export default function AddIndividualStudent() {
 
@@ -14,7 +15,7 @@ export default function AddIndividualStudent() {
     const token = localStorage.getItem("token");
     const API_URL = process.env.REACT_APP_BASE_URL;
 
-    const [formData, setFormData] = useState({
+    const initialFormData = {
         course: '',
         semester: '',
         division: '',
@@ -25,14 +26,17 @@ export default function AddIndividualStudent() {
         gender: '',
         dob: new Date().setDate(new Date().getDate() - 1),
         password: '',
-        profilePic:null,
-        email:""
-    });
-    const [errors,setErrors] = useState({
-        genderErr:"",
-        courseErr:"",
-        semesterErr:"",
-        phnoErr:""
+        profilePic: null,
+        email: ""
+    };
+
+    const [formData, setFormData] = useState(initialFormData);
+    const [errors, setErrors] = useState({
+        genderErr: "",
+        courseErr: "",
+        semesterErr: "",
+        phnoErr: "",
+        passwordErr: ""
     })
     const coursesData = useSelector((state) => state.CourseSlice.data);
     const dispatch = useDispatch();
@@ -56,50 +60,94 @@ export default function AddIndividualStudent() {
         }))
     }, []);
 
-    const isValidData =  () =>{
+    const isValidData = () => {
         let result = true;
 
-        if(formData.course===""){
+        if (formData.course === "") {
             result = false;
-            setErrors((old)=>({...old,courseErr:"Select a Course"}))
+            setErrors((old) => ({ ...old, courseErr: "Select a Course" }))
         }
-        else{
-            setErrors((old)=>({...old,courseErr:""}))
+        else {
+            setErrors((old) => ({ ...old, courseErr: "" }))
         }
-        if(formData.semester===""){
+        if (formData.semester === "") {
             result = false;
-            setErrors((old)=>({...old,semesterErr:"Select a Semester"}))
+            setErrors((old) => ({ ...old, semesterErr: "Select a Semester" }))
         }
-        else{
-            setErrors((old)=>({...old,semesterErr:""}))
+        else {
+            setErrors((old) => ({ ...old, semesterErr: "" }))
         }
-        if(formData.gender===""){
+        if (formData.gender === "") {
             result = false;
-            setErrors((old)=>({...old,genderErr:"Select a Gender"}))
+            setErrors((old) => ({ ...old, genderErr: "Select a Gender" }))
         }
-        else{
-            setErrors((old)=>({...old,genderErr:""}))
+        else {
+            setErrors((old) => ({ ...old, genderErr: "" }))
         }
-        if(formData.phno.length!==10){
+        if (formData.phno.length !== 10) {
             result = false;
-            setErrors((old)=>({...old,phnoErr:"Phone Number Should Have Exactly 10 Digits"}))
+            setErrors((old) => ({ ...old, phnoErr: "Phone Number Should Have Exactly 10 Digits" }))
         }
-        else{
-            setErrors((old)=>({...old,phnoErr:""}))
+        else {
+            setErrors((old) => ({ ...old, phnoErr: "" }))
+        }
+
+        if (!isValidPassword(formData.password)) {
+            result = false;
+            setErrors((old) => ({
+                ...old, passwordErr: `Password Should Have at least 1 UpperCase Letter , 1 LowerCase Letter , 1 Digit and 1 Special Character.
+            its length should be greater than 8`}))
+        }
+        else {
+            setErrors((old) => ({ ...old, passwordErr: "" }))
         }
         return result;
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async(e) => {
         e.preventDefault();
 
-        if(!isValidData())return;
+        if (!isValidData()) return;
+        console.log(formData)
+        // return;
+        try {
 
-        const formData = new FormData();
 
-        const {data} = axios.post(`${API_URL}/api/students/registerIndividual`,formData,{
+            const dataToPost = new FormData();
+            dataToPost.append('course', formData.course);
+            dataToPost.append('semester', formData.semester);
+            dataToPost.append('division', formData.division);
+            dataToPost.append('rollno', formData.rollno);
+            dataToPost.append('sid', formData.sid);
+            dataToPost.append('studentName', formData.studentName);
+            dataToPost.append('phno', formData.phno);
+            dataToPost.append('gender', formData.gender);
+            dataToPost.append('dob', formData.dob);
+            dataToPost.append('password', formData.password);
+            dataToPost.append('profilePic', formData.profilePic);
+            dataToPost.append('email', formData.email);
 
-        })
+            const {data} = await axios.post(`${API_URL}/api/students/registerIndividual`, formData, {
+                headers: {
+                    "auth-token": token,
+                    "Content-Type":"multipart/form-data"
+                }
+            })
+                if (data.result) {
+                toast.success(data.message);
+                setFormData(initialFormData)
+            }
+            else {
+                toast.error(data.message)
+
+            }
+
+
+        } catch (error) {
+            console.log(error)
+
+        }
+
 
     };
 
@@ -123,7 +171,7 @@ export default function AddIndividualStudent() {
             }
         }
         return [];
-    }, [formData.course,coursesData])
+    }, [formData.course, coursesData])
 
     return (
         <form onSubmit={handleSubmit} className="p-4 bg-white shadow-lg rounded-lg mx-4 my-3">
@@ -292,74 +340,82 @@ export default function AddIndividualStudent() {
                 </section>
                 <section>
                     <label htmlFor="dob" className="block mb-1">Date of Birth:</label>
-                        <DatePicker
-                            name='dob'
-                            selected={formData.dob}
-                            onChange={(date) => {
-                                setFormData({ ...formData, dob: date })
-                            }
-                            }
-                            dateFormat="dd-MM-yyyy"
-                            maxDate={new Date().setDate(new Date().getDate() - 1)}
-                            className="w-full shadow-lg md:p-3 rounded-lg md:m-2 p-2 m-1 "
-                            showIcon
-                            icon={
-                                <section className="m-2">
-                                    <CalanderIcon />
-                                </section>
+                    <DatePicker
+                        name='dob'
+                        selected={formData.dob}
+                        onChange={(date) => {
+                            setFormData({ ...formData, dob: date })
                         }
-                        />
+                        }
+                        dateFormat="dd-MM-yyyy"
+                        maxDate={new Date().setDate(new Date().getDate() - 1)}
+                        className="w-full shadow-lg md:p-3 rounded-lg md:m-2 p-2 m-1 "
+                        showIcon
+                        icon={
+                            <section className="m-2">
+                                <CalanderIcon />
+                            </section>
+                        }
+                    />
                 </section>
                 <section>
                     <label htmlFor="password" className="block mb-1">Password:</label>
                     <input type="password"
-                     id="password"
-                      name="password"
-                       value={formData.password}
-                        onChange={handleChange} 
+                        id="password"
+                        name="password"
+                        value={formData.password}
+                        onChange={handleChange}
                         className="w-full px-3 py-2  rounded-lg focus:outline-none focus:border-blue-500 shadow-lg"
                         placeholder='Enter Default Password '
                         required />
+
+                    {
+                        errors.passwordErr !== ""
+                        &&
+                        <p className="text-red-500">
+                            {errors.passwordErr}
+                        </p>
+                    }
                 </section>
             </section>
             <section className='flex items-center justify-center'>
-            <section className="flex items-center justify-center md:w-[50%] ">
-                        <label
-                            htmlFor="dropzone-profilePic"
-                            className="flex flex-col items-center justify-center w-full h-36 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
-                        >
-                            <section className="flex flex-col items-center justify-center pt-5 pb-6">
-                                <FileUploadIcon className="h-7 w-7" />
-                                <p className=" text-sm text-gray-500 dark:text-gray-400">
-                                    <span className="font-semibold">Click to Upload</span> or Drag and Drop Student Pic
-                                </p>
-                            </section>
-                            <section className="mt-2">
-                                {formData.profilePic !== null ? (
-                                    <>
-                                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                                            Selected File: {formData.profilePic?.name}
-                                        </p>
-                                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                                            Selected File Size : {formatFileSize(formData.profilePic?.size || 0)}
-                                        </p>
-                                    </>
-                                ) : null}
-                            </section>
-                            <input
-                                type="file"
-                                id="dropzone-profilePic"
-                                name="profilPic"
-                                className="hidden"
-                                onChange={(e) => {
-                                    const file = e.target.files[0];
-                                    setFormData((old)=>({...old,profilePic:file}))
-                                }}
-                                accept="image/*"
-                                aria-required="true"
-                            />
-                        </label>
-                    </section>
+                <section className="flex items-center justify-center md:w-[50%] ">
+                    <label
+                        htmlFor="dropzone-profilePic"
+                        className="flex flex-col items-center justify-center w-full h-44 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
+                    >
+                        <section className="flex flex-col items-center justify-center pt-5 pb-6">
+                            <FileUploadIcon className="h-7 w-7" />
+                            <p className=" text-sm text-gray-500 dark:text-gray-400">
+                                <span className="font-semibold">Click to Upload</span> or Drag and Drop Student Pic
+                            </p>
+                        </section>
+                        <section className="mt-2">
+                            {formData.profilePic !== null ? (
+                                <>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                                        Selected File: {formData.profilePic?.name}
+                                    </p>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                                        Selected File Size : {formatFileSize(formData.profilePic?.size || 0)}
+                                    </p>
+                                </>
+                            ) : null}
+                        </section>
+                        <input
+                            type="file"
+                            id="dropzone-profilePic"
+                            name="profilPic"
+                            className="hidden"
+                            onChange={(e) => {
+                                const file = e.target.files[0];
+                                setFormData((old) => ({ ...old, profilePic: file }))
+                            }}
+                            accept="image/*"
+                            aria-required="true"
+                        />
+                    </label>
+                </section>
             </section>
             <section className="flex justify-center mt-4">
                 <button type="submit" className='text-red-500 bg-white rounded-lg shadow-lg px-5 py-3 w-full m-2 outline outline-red-500 hover:text-white hover:bg-red-500'>Add Student</button>
