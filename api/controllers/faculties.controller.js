@@ -6,7 +6,7 @@ const fs = require("fs").promises;
 const path = require("path");
 const csvtojson = require("csvtojson");
 const transporter = require("../config/mailTransporter");
-const { generateOTP } = require("../utils");
+const { generateOTP, uploadToCloudinary } = require("../utils");
 const { client } = require("../config/redisConfig");
 
 const SECRET_KEY = process.env.SECRET_KEY;
@@ -14,31 +14,84 @@ const SECRET_KEY = process.env.SECRET_KEY;
 const registerIndividualFaculties = async(req,res)=>{
     try {
 
-        let user = await Faculties.findOne({email:req.body.email});
+        const {name,email,phno,course,password,salutation} = req.body;
 
+        let user = await Faculties.findOne({email:email});
         if(user){
             return res.status(400).json({"message":"Email Already registered.!","result":false});
         }
+        const profilePic = req.file;
+
+        if (!profilePic) {
+            return res.status(400).json({
+                message: "Profile Photo  is Required.! ",
+                result: false
+            })
+        }
+        let profilePicPath = "";
+        const profilePicName = profilePic ? profilePic.originalname : "";
+
+        if (profilePic) {
+            const result = await uploadToCloudinary(profilePic.path, "image");
+            profilePicPath = result.url;
+        }
+
+
+
 
         const salt = await bcrypt.genSalt(10);
-        const secPass = await bcrypt.hash(req.body.password,salt);
+        const secPass = await bcrypt.hash(password,salt);
+
 
         user = await Faculties.create({
-            name:req.body.name.trim(),
+            salutation:salutation.trim(),
+            name:name.trim(),
             password:secPass,
-            email:req.body.email.trim(),
-            role:req.body.userType.trim(),
-            phno:req.body.phno.trim()
+            email:email.trim(),
+            role:"Faculty",
+            phno:phno.trim(),
+            course:course.trim(),
+            profilePicName:profilePicName,
+            profilePicPath:profilePicPath,
+            status:"Active"
+
         });
         
 
-        return res.status(200).json({"message":"User Created Successfully.!","result":true});
+        const mailOptions = {
+            from: process.env.EMAIL_ID,
+            to: email,
+            subject: 'Successfull Registration in CEMS',
+            text: `Your Login Credentials are for CEMS are:
+                email : ${email} and Password : ${password}.
+                please change your password after login
+            `
+        };
+
+        // Send email
+        transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+                // return res.status(500).json({
+                //     message:"Unable to send Email",
+                //     result:false
+                // })
+                console.log("error in sending mail", error)
+            } else {
+                // return res.status(200).json({
+                //     message:"OTP Mailed Successfully",
+                //     result:true
+                // });
+                console.log("Mail Send Successfully.");
+            }
+        });
+
+        return res.status(200).json({"message":"Faculty Registered Successfully!","result":true});
 
 
         
     } catch (error) {
-
-        return res.status(400).json({"message":"Error Occured"});
+        console.log(error)
+        return res.status(500).json({"message":"Error Occured",result:false});
     }
 }
 
@@ -52,13 +105,16 @@ const registerFacultiesInBulk = async(req,res) =>{
         const source = await csvtojson().fromFile(`./uploads/${facultyCSVFile.originalname}${path.extname(facultyCSVFile.originalname)}`); // await the csvtojson promise
 
         const arrayToInsert = source.map(entry => ({
+            profilePicName:".",
+            profilePicPath:".",
             salutation:entry["saultation"],
-            name:entry["dname"]+" "+entry["mname"]+" "+entry["lname"],
-            email:entry["mailid"],
+            name:entry["name"],
+            email:entry["email"],
             phno:entry["mobile"],
             role:"Faculty",
             course:entry["course"],
-            password:entry["mailid"]
+            password:entry["email"],
+            status:"Active"
         }));
         const result = await Faculties.insertMany(arrayToInsert);
        return res.status(200).json({ success: true, message: "Faculties registered successfully." });
@@ -166,9 +222,7 @@ const getIndividualFaculty =  async(req,res)=>{
     try {
 
         const id = req.user.id;
-
         const data = await Faculties.findOne({_id:id})
-
         const user = {
             _id:data._id,
             salutation:data.salutation,
@@ -204,7 +258,10 @@ const setUpSystem =  async(req,res)=>{
             email:req.body.sadminemail.trim(),
             role:"Super Admin",
             course:"All",
-            phno:req.body.sadminphno.trim()
+            phno:req.body.sadminphno.trim(),
+            status:"Active",
+            profilePicName:".",
+            profilePicPath:"."
         });
 
         return res.status(200).json({"message":"System Set Up Successfull.!","result":true});

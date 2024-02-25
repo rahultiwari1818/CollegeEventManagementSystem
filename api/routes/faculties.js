@@ -11,7 +11,7 @@ const upload = multer({storage:storage});
 const router = express.Router();
 
 
-router.post("/registerIndividual",checkIsSuperAdmin,registerIndividualFaculties );
+router.post("/registerIndividual",checkIsSuperAdmin,upload.single("profilePic"),registerIndividualFaculties );
 router.post("/registerInBulk",checkIsSuperAdmin,upload.single("facultycsv"),registerFacultiesInBulk );
 router.post("/forgotPassword",facultyForgotPassword);
 router.post("/verifyOTP",verifyOTP);

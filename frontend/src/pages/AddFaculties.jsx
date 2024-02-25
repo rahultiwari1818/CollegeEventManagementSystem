@@ -4,6 +4,7 @@ import { ReactComponent as FileUploadIcon } from "../assets/Icons/FileUploadIcon
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import Overlay from "../components/Overlay";
+import AddIndividualFaculty from '../components/AddIndividualFaculty';
 
 
 
@@ -38,8 +39,8 @@ export default function AddFaculties() {
             setFileToUpload(null);
 
 
-        } catch (error) {
-            toast.error("Check Your CSV File Structure");
+        } catch ({response}) {
+            toast.error(response.data.message);
         }
         finally {
 
@@ -102,7 +103,7 @@ export default function AddFaculties() {
                                     setFileToUpload(file);
                                 }}
                                 accept=".csv"
-                                aria-required="true"
+                                required
                             />
                         </label>
                     </section>
@@ -110,8 +111,11 @@ export default function AddFaculties() {
                         <button type="submit" className='text-red-500 bg-white rounded-lg shadow-lg px-5 py-3 w-full m-2 outline outline-red-500 hover:text-white hover:bg-red-500'>Upload File</button>
                     </section>
                 </form>
-
-
+                <section className="w-full border border-blue-500 my-2"></section>
+            <section className='mx-4'>
+            <p className='lg:py-2 lg:px-3 lg:text-base py-1 px-2  bg-blue-500 text-white w-fit rounded-lg shadow-md'>Add Faculty Data individually </p>
+                <AddIndividualFaculty/>
+            </section>
             </section>
         </>
 

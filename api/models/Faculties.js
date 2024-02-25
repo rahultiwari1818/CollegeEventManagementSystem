@@ -41,6 +41,10 @@ const FacultySchema = new Schema({
         required:true,
         type:String
     },
+    status:{
+        required:true,
+        type:String
+    }
 
 });
 

@@ -149,7 +149,7 @@ const registerStudentIndividually = async (req, res) => {
 
         if (!profilePic) {
             return res.status(400).json({
-                message: "Profile Pic  is Required.! ",
+                message: "Profile Photo  is Required.! ",
                 result: false
             })
         }
@@ -550,6 +550,7 @@ const updateStudentData = async (req, res) => {
                 result: false
             })
         }
+
 
         const doesRollNoInSameDivExists = await Student.findOne({
             course: course,

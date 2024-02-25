@@ -6,6 +6,7 @@ import { debounce, transformCourseData } from '../utils';
 import Skeleton from 'react-loading-skeleton';
 import Overlay from '../components/Overlay';
 import { useDispatch, useSelector } from 'react-redux';
+import ToggleSwitch from '../components/ToggleSwitch';
 
 export default function ViewFaculties() {
     const [facultyData, setFacultyData] = useState([]);
@@ -26,10 +27,10 @@ export default function ViewFaculties() {
 
     const changeSearchCourse = useCallback((value) => {
         setSearchParams((old) => ({ ...old, searchCourse: value, }));
-        
+
     }, [setSearchParams]);
 
-    const coursesData = useSelector((state)=>state.CourseSlice.data);
+    const coursesData = useSelector((state) => state.CourseSlice.data);
     const dispatch = useDispatch();
 
 
@@ -40,7 +41,7 @@ export default function ViewFaculties() {
     const fetchFacultyData = async () => {
         try {
             setIsDataLoading(true);
-            const { search, searchCourse,  } = searchParams;
+            const { search, searchCourse, } = searchParams;
             const course = searchCourse === "All" ? "" : searchCourse;
 
             const { data } = await axios.get(`${API_URL}/api/faculties/getFaculties`, {
@@ -67,9 +68,9 @@ export default function ViewFaculties() {
     const debouncedfetchFacultyData = useCallback(debounce(fetchFacultyData, 800), [searchParams, currentPage, entriesPerPage]);
 
 
-    const courses = useMemo(()=>{
-      return transformCourseData(coursesData,true);
-  },[coursesData])
+    const courses = useMemo(() => {
+        return transformCourseData(coursesData, true);
+    }, [coursesData])
 
     useEffect(() => {
         setCurrentPage(1); // Reset current page when search parameters change
@@ -117,13 +118,15 @@ export default function ViewFaculties() {
                     <table className="table-auto min-w-full bg-white shadow-md rounded-lg overflow-hidden ">
                         <thead className="bg-blue-500 text-white">
                             <tr>
-                                <th className="px-4 py-2 min-w-[10%]">Sr No</th>
-                                <th className="px-4 py-2 min-w-[10%]">Salutation</th>
+                                <th className="px-4 py-2 min-w-[5%]">Sr No</th>
+                                <th className="px-4 py-2 min-w-[5%]">Salutation</th>
                                 <th className="px-4 py-2 min-w-[30%]"> Name</th>
                                 <th className="px-4 py-2 min-w-[10%]">Course</th>
-                                <th className="px-4 py-2 min-w-[15%]">Phno</th>
-                                <th className="px-4 py-2 min-w-[15%]">Email</th>
+                                <th className="px-4 py-2 min-w-[10%]">Phno</th>
+                                <th className="px-4 py-2 min-w-[10%]">Email</th>
                                 <th className="px-4 py-2 min-w-[10%]">Role</th>
+                                <th className="px-4 py-2 min-w-[10%]">Update</th>
+                                <th className="px-4 py-2 min-w-[10%]">Status</th>
                             </tr>
                         </thead>
                         <tbody className="text-gray-600">
@@ -131,7 +134,7 @@ export default function ViewFaculties() {
                                 isDataLoading ?
                                     [1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12].map((skeleton, idx) => {
                                         return <tr key={idx}>
-                                            <td className="border px-4 py-2 min-w-[10%]">
+                                            <td className="border px-4 py-2 min-w-[5%]">
                                                 <Skeleton
                                                     count={1}
                                                     height="50%"
@@ -141,7 +144,7 @@ export default function ViewFaculties() {
                                                     duration={0.9}
                                                 />
                                             </td>
-                                            <td className="border px-4 py-2 min-w-[10%]">
+                                            <td className="border px-4 py-2 min-w-[5%]">
                                                 <Skeleton
                                                     count={1}
                                                     height="50%"
@@ -171,17 +174,7 @@ export default function ViewFaculties() {
                                                     duration={0.9}
                                                 />
                                             </td>
-                                            <td className="border px-4 py-2 min-w-[15%]">
-                                                <Skeleton
-                                                    count={1}
-                                                    height="50%"
-                                                    width="100%"
-                                                    baseColor="#4299e1"
-                                                    highlightColor="#f7fafc"
-                                                    duration={0.9}
-                                                />
-                                            </td>
-                                            <td className="border px-4 py-2 min-w-[15%]">
+                                            <td className="border px-4 py-2 min-w-[10%]">
                                                 <Skeleton
                                                     count={1}
                                                     height="50%"
@@ -201,19 +194,68 @@ export default function ViewFaculties() {
                                                     duration={0.9}
                                                 />
                                             </td>
-                                            
+                                            <td className="border px-4 py-2 min-w-[10%]">
+                                                <Skeleton
+                                                    count={1}
+                                                    height="50%"
+                                                    width="100%"
+                                                    baseColor="#4299e1"
+                                                    highlightColor="#f7fafc"
+                                                    duration={0.9}
+                                                />
+                                            </td>
+                                            <td className="border px-4 py-2 min-w-[10%]">
+                                                <Skeleton
+                                                    count={1}
+                                                    height="50%"
+                                                    width="100%"
+                                                    baseColor="#4299e1"
+                                                    highlightColor="#f7fafc"
+                                                    duration={0.9}
+                                                />
+                                            </td>
+                                            <td className="border px-4 py-2 min-w-[10%]">
+                                                <Skeleton
+                                                    count={1}
+                                                    height="50%"
+                                                    width="100%"
+                                                    baseColor="#4299e1"
+                                                    highlightColor="#f7fafc"
+                                                    duration={0.9}
+                                                />
+                                            </td>
                                         </tr>
                                     })
                                     :
                                     facultyData?.map((faculty, idx) => (
                                         <tr key={faculty._id}>
-                                            <td className="border px-4 py-2 min-w-[10%]">{idx + 1}</td>
-                                            <td className="border px-4 py-2 min-w-[10%]">{faculty.salutation}</td>
+                                            <td className="border px-4 py-2 min-w-[5%]">{idx + 1}</td>
+                                            <td className="border px-4 py-2 min-w-[5%]">{faculty.salutation}</td>
                                             <td className="border px-4 py-2 min-w-[30%]">{faculty.name}</td>
                                             <td className="border px-4 py-2 min-w-[10%]">{faculty.course}</td>
-                                            <td className="border px-4 py-2 min-w-[15%]">{faculty.phno}</td>
-                                            <td className="border px-4 py-2 min-w-[15%]">{faculty.email}</td>
+                                            <td className="border px-4 py-2 min-w-[10%]">{faculty.phno}</td>
+                                            <td className="border px-4 py-2 min-w-[10%]">{faculty.email}</td>
                                             <td className="border px-4 py-2 min-w-[10%]">{faculty.role}</td>
+                                            <td className="border px-4 py-2 min-w-[10%]">
+                                                <button
+                                                    className='px-5 py-3 bg-yellow-500 rounded-lg shadow-lg text-white hover:text-yellow-500 hover:bg-white hover:outline hover:outline-yellow-500'
+                                                    onClick={() => {
+                                                        // setOpenUpdateModal(true)
+                                                        // setDataUpdated((old)=>student)
+                                                    }}
+                                                >
+                                                    Update
+                                                </button>
+                                            </td>
+                                            <td className="border px-4 py-2 min-w-[10%]">
+                                                <ToggleSwitch
+                                                    headingText={""}
+                                                    selected={faculty.status === "Active"}
+                                                    updateSelected={() => { }}
+                                                />
+                                                <p className="my-1 text-center">{faculty.status}</p>
+                                            </td>
+
                                         </tr>
                                     ))
                             }
