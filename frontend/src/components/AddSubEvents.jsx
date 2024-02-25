@@ -11,7 +11,13 @@ export default function AddSubEvents({ openUpdateModal, setOpenUpdateModal, head
         subEventDetail: "",
         subEventRules: ""
     }
+
+    const initialErrorState = {
+        ptypeErr:""
+    }
+
     const [subEventData, setSubEventData] = useState(initialState);
+    const [subEventError, setSubEventError] = useState(initialErrorState);
 
     const noOfPartcipants = useRef(null);
 
@@ -95,7 +101,11 @@ export default function AddSubEvents({ openUpdateModal, setOpenUpdateModal, head
 
     const submitHandler = (e) => {
         e.preventDefault();
-        console.log(dataToBeUpdated,"dtu");
+
+        if(subEventData.ptype===""){
+            setSubEventError((old)=>({...old,ptypeErr:"Select Participation Type"}));
+            return;
+        }
 
         if (dataToBeUpdated?.sId) {
             updateHandler();
@@ -132,6 +142,13 @@ export default function AddSubEvents({ openUpdateModal, setOpenUpdateModal, head
                             name={"ptype"}
                             label={"Select Participation Type"}
                         />
+                        {
+                            subEventError.ptypeErr !== ""
+                            &&
+                            <p className="text-red-500">
+                                {subEventError.ptypeErr}
+                            </p>
+                        }
                     </section>
                     <section className='md:p-2 md:m-2  p-1 m-1'>
                         <label htmlFor="nop">Max No Of Team Members:</label>

@@ -3,7 +3,11 @@ const mongoose = require("mongoose");
 const {Schema} = mongoose;
 
 const FacultySchema = new Schema({
-    profilePic:{
+    profilePicName:{
+        type:String,
+        required:true
+    },
+    profilePicPath:{
         type:String,
         required:true
     },

@@ -75,8 +75,12 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
             setErrors((old) => ({ ...old, eligibleCoursesErr: "Select at least 1 Eligible Course" }));
             isValidated = false;
 
-        }else{
+        }
+        else{
             setErrors((old) => ({ ...old, eligibleCoursesErr: "" }));
+        }
+        if(errors.edateErr!==""){
+            isValidated = false;
         }
         
 
@@ -238,7 +242,11 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
 
     }, [data])
 
-    console.log(data,"data")
+    // console.log(data,"data",errors)
+
+    useEffect(()=>{
+        console.log(errors,"error");
+    },[errors])
 
     const eventNatures = [{ name: "Cultural" }, { name: "IT" }, { name: "Management" }, { name: "Sports" }];
     const eventTypes = [{ name: "Intra-College" }, { name: "Inter-College" }];
@@ -424,7 +432,7 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
                             selected={new Date(data.rcdate)}
                             onChange={(date) => {
 
-                                if (date > data.edate) {
+                                if (date > new Date(data.edate)) {
                                     setErrors((old) => ({ ...old, "edateErr": "Event Date Should be Greater Than Registration Closing Date" }))
                                 }
                                 else {
@@ -432,7 +440,7 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
                                 }
 
                                 setData({ ...data, rcdate: date })
-
+                                
 
                             }
                             }
@@ -452,7 +460,7 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
                             name='edate'
                             selected={new Date(data.edate)}
                             onChange={(date) => {
-                                if (date < data.rcdate) {
+                                if (date < new Date(data.rcdate)) {
                                     setErrors((old) => ({ edateErr: "Event Date Should be Greater Than Registration Closing Date" }))
                                 }
                                 else {

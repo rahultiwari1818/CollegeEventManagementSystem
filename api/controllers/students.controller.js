@@ -3,7 +3,7 @@ const fs = require("fs").promises;
 const path = require("path");
 const csvtojson = require("csvtojson");
 const { vonage } = require("../config/vonage.js");
-const { generateOTP, uploadToCloudinary } = require("../utils.js");
+const { generateOTP, uploadToCloudinary, deleteFromCloudinary } = require("../utils.js");
 const { client } = require("../config/redisConfig.js");
 const jwtToken = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
@@ -42,8 +42,8 @@ const registerStudentsInBulk = async (req, res) => {
 
             let flag = false;
 
-            for(let course of courses){
-                if(course.courseName === entry["course"] && course.noOfSemesters >= Number( entry["semester"])){
+            for (let course of courses) {
+                if (course.courseName === entry["course"] && course.noOfSemesters >= Number(entry["semester"])) {
                     flag = true;
                     break;
                 }
@@ -51,14 +51,14 @@ const registerStudentsInBulk = async (req, res) => {
 
 
 
-            if(!flag){
+            if (!flag) {
                 invalidRecords.push(entry);
-                return ;
+                return;
             }
 
             return {
-                profilePicName:".",
-                profilePicPath:".",
+                profilePicName: ".",
+                profilePicPath: ".",
                 course: entry["course"],
                 semester: entry["semester"],
                 division: entry["division"],
@@ -70,7 +70,7 @@ const registerStudentsInBulk = async (req, res) => {
                 gender: entry["gender"],
                 dob: dob,
                 password: dob, // Assuming password is also "Date Of Birth"
-                status:"Active",
+                status: "Active",
             };
         });
 
@@ -115,41 +115,57 @@ const registerStudentsInBulk = async (req, res) => {
     }
 };
 
-const registerStudentIndividually = async(req,res)=>{
+const registerStudentIndividually = async (req, res) => {
 
     try {
 
         const { course, semester, division, rollno, sid, studentName, phno, gender, dob, password, email } = req.body;
         const profilePic = req?.file;
-        
-        const doesSidAlreadyExists = await Student.find({sid:sid});
 
-        if(doesSidAlreadyExists.length>=1){
+        const doesSidAlreadyExists = await Student.find({ sid: sid });
+
+        if (doesSidAlreadyExists.length >= 1) {
             return res.status(400).json({
-                message:"SID Already Registered.! ",
-                result:false
+                message: "SID Already Registered.! ",
+                result: false
             })
         }
 
-        if(!profilePic){
+
+        const doesRollNoInSameDivExists = await Student.findOne({
+            course: course,
+            semester: semester,
+            division: division,
+            rollno: rollno,
+        });
+
+        if (doesRollNoInSameDivExists) {
             return res.status(400).json({
-                message:"Profile Pic  is Required.! ",
-                result:false
+                message: "A student with the same roll number already exists in this division, semester, and course.",
+                result: false
+            });
+        }
+
+
+        if (!profilePic) {
+            return res.status(400).json({
+                message: "Profile Pic  is Required.! ",
+                result: false
             })
         }
         let profilePicPath = "";
         const profilePicName = profilePic ? profilePic.originalname : "";
 
-        if(profilePic){
-            const result = await uploadToCloudinary(profilePic.path,"image");
+        if (profilePic) {
+            const result = await uploadToCloudinary(profilePic.path, "image");
             profilePicPath = result.url;
         }
 
 
 
-        const salt = await  bcrypt.genSalt(10);
+        const salt = await bcrypt.genSalt(10);
 
-        const secPass = await bcrypt.hash(password,salt);
+        const secPass = await bcrypt.hash(password, salt);
         const newStudent = await Student.create({
             profilePicName,
             profilePicPath,
@@ -162,7 +178,7 @@ const registerStudentIndividually = async(req,res)=>{
             phno,
             gender,
             dob,
-            password:secPass,
+            password: secPass,
             email,
             status: "Active" // Assuming default status is Active
         });
@@ -176,15 +192,15 @@ const registerStudentIndividually = async(req,res)=>{
                 please change your password after login
             `
         };
-        
+
         // Send email
-        transporter.sendMail(mailOptions, function(error, info) {
+        transporter.sendMail(mailOptions, function (error, info) {
             if (error) {
                 // return res.status(500).json({
                 //     message:"Unable to send Email",
                 //     result:false
                 // })
-                console.log("error in sending mail",error)
+                console.log("error in sending mail", error)
             } else {
                 // return res.status(200).json({
                 //     message:"OTP Mailed Successfully",
@@ -333,8 +349,10 @@ const getIndividualStudentsFromId = async (req, res) => {
                     semester: student.semester,
                     sid: student.sid,
                     name: student.studentName,
-                    email:student.email,
-                    _id: student._id
+                    email: student.email,
+                    _id: student._id,
+                    profilePicName:student.profilePicName,
+                    profilePicPath:student.profilePicPath
                 },
                 "result": true
             });
@@ -517,8 +535,137 @@ const loginStudent = async (req, res) => {
     }
 }
 
-const updateStudentData = async(req,res)=>{
+const updateStudentData = async (req, res) => {
+
+    try {
+
+
+        const { _id, course, semester, division, rollno, sid, studentName, phno, gender, dob, email } = req.body;
+
+        const doesSidAlreadyExists = await Student.findOne({ sid: sid, _id: { $ne: _id } })
+
+        if (doesSidAlreadyExists) {
+            return res.status(400).json({
+                message: "This SID is Already registered.",
+                result: false
+            })
+        }
+
+        const doesRollNoInSameDivExists = await Student.findOne({
+            course: course,
+            semester: semester,
+            division: division,
+            rollno: rollno,
+            _id: { $ne: _id }
+        });
+
+        if (doesRollNoInSameDivExists) {
+            return res.status(400).json({
+                message: "A student with the same roll number already exists in this division, semester, and course.",
+                result: false
+            });
+        }
+
+
+        const updatedStudent = await Student.findOneAndUpdate(
+            { _id: _id },
+            {
+                $set: {
+                    course: course,
+                    semester: semester,
+                    division: division,
+                    rollno: rollno,
+                    sid: sid,
+                    studentName: studentName,
+                    phno: phno,
+                    gender: gender,
+                    dob: dob,
+                    email: email
+                }
+            },
+            { new: true } // To return the updated document
+        );
+
+        // Return success response with updated student data
+        return res.status(200).json({
+            message: "Student data updated successfully.",
+            result: true,
+            updatedStudent: updatedStudent
+        });
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: "An error occurred while updating student data.",
+            result: false
+        });
+    }
 
 }
 
-module.exports = { registerStudentsInBulk, getStudents, getDivisions, getIndividualStudentsFromSid, studentForgotPassword, verifyOTP, resetPassword, loginStudent, getIndividualStudentsFromId,registerStudentIndividually,updateStudentData };
+const changeUserProfilePic = async(req,res)=>{
+
+    try {
+        
+        const profilePic = req.file;
+        if(!profilePic){
+            return res.status(400).json({
+                message:"Please Provide Profile Photo",
+                result:false
+            })
+        }
+        const userData = await Student.findOne({_id:req.user.id})
+        
+
+
+        const profilePicName = profilePic.originalname;
+        const result = await uploadToCloudinary(profilePic.path, "image");
+        if(result.message==="Fail"){
+            return res.status(500).json({
+                message:"Some Error Occued...",
+                result:false
+            })
+        }
+        const newProfilePicPath = result.url;
+
+        if(userData.profilePicName !== "."){
+            const publicId = userData.profilePicPath.split('/').slice(-1)[0].split('.')[0];
+            await deleteFromCloudinary(publicId);
+        }
+
+
+        const updatedData = await Student.updateOne(
+            { _id: req.user.id },
+            {
+                $set: {
+                    profilePicName:profilePicName,
+                    profilePicPath:newProfilePicPath
+                }
+            },
+            { new: true } 
+        )
+        
+        console.log(updatedData)
+
+        return res.status(200).json({
+            message:"Profile Photo Uploaded Sucessfully",
+            result:true,
+            data:{
+                profilePicPath:newProfilePicPath,
+                profilePicName
+            }
+        })
+
+
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({
+            message:"Some Error Occured",
+            result:true
+        })
+    }
+
+}
+
+
+module.exports = { registerStudentsInBulk, getStudents, getDivisions, getIndividualStudentsFromSid, studentForgotPassword, verifyOTP, resetPassword, loginStudent, getIndividualStudentsFromId, registerStudentIndividually, updateStudentData,changeUserProfilePic };

@@ -175,7 +175,9 @@ const getIndividualFaculty =  async(req,res)=>{
             name:data.name,
             course:data.course,
             phno:data.phno,
-            email:data.email
+            email:data.email,
+            profilePicName:data.profilePicName,
+            profilePicPath:data.profilePicPath
         }
 
         return res.status(200).json({"message":"Faculty Data Fetched Successfully.","data":user,"result":true})

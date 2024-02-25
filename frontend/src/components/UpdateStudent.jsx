@@ -6,7 +6,8 @@ import DatePicker from 'react-datepicker';
 import { useDispatch, useSelector } from 'react-redux';
 import Dropdown from './Dropdown';
 import { fetchAllCourses } from '../store/CourseSlice';
-
+import axios from 'axios';
+import {toast} from "react-toastify"
 export default function UpdateStudent({ isOpen, close, heading, dataToBeUpdated = {} }) {
 
 
@@ -89,6 +90,27 @@ export default function UpdateStudent({ isOpen, close, heading, dataToBeUpdated 
 
     const updateDataHandler = async(e)=>{
         e.preventDefault();
+
+
+        try {
+            
+            const response = await axios.post(`${API_URL}/api/students/updateStudentData`,data,{
+                headers:{
+                    "auth-token":token
+                }
+            })
+            
+            if(response.data.result){
+                toast.success(response.data.message)
+                close()
+            }
+
+        } catch ({response}) {
+
+            toast.error(response.data.message)
+        }
+
+        
     }
 
 
@@ -118,6 +140,7 @@ export default function UpdateStudent({ isOpen, close, heading, dataToBeUpdated 
         return [];
     }, [data.course, coursesData])
 
+    console.log(data,"data")
 
     return (
         <Modal isOpen={isOpen} close={close} heading={heading}>
@@ -241,7 +264,6 @@ export default function UpdateStudent({ isOpen, close, heading, dataToBeUpdated 
                                 className="w-full px-3 py-2  rounded-lg focus:outline-none focus:border-blue-500 shadow-lg"
                                 required
                                 placeholder='Enter Your Email'
-                                onKeyDown={handleNumericInput}
                             />
                         </section>
                         <section>
@@ -252,7 +274,7 @@ export default function UpdateStudent({ isOpen, close, heading, dataToBeUpdated 
                                     id="male"
                                     name="gender"
                                     value="male"
-                                    checked={data.gender.toLowerCase() === 'male' }
+                                    checked={data.gender?.toLowerCase() === 'male' }
                                     onChange={handleChange}
                                     className="mr-2"
                                 />
@@ -262,7 +284,7 @@ export default function UpdateStudent({ isOpen, close, heading, dataToBeUpdated 
                                     id="female"
                                     name="gender"
                                     value="female"
-                                    checked={data.gender.toLowerCase() === 'female'}
+                                    checked={data.gender?.toLowerCase() === 'female'}
                                     onChange={handleChange}
                                     className="ml-4 mr-2"
                                 />
@@ -272,7 +294,7 @@ export default function UpdateStudent({ isOpen, close, heading, dataToBeUpdated 
                                     id="other"
                                     name="gender"
                                     value="other"
-                                    checked={data.gender.toLowerCase() === 'other'}
+                                    checked={data.gender?.toLowerCase() === 'other'}
                                     onChange={handleChange}
                                     className="ml-4"
                                 />
@@ -290,7 +312,7 @@ export default function UpdateStudent({ isOpen, close, heading, dataToBeUpdated 
                             <label htmlFor="dob" className="block mb-1">Date of Birth:</label>
                             <DatePicker
                                 name='dob'
-                                selected={new Date(data.dob)}
+                                selected={new Date(data.dob||Date.now())}
                                 onChange={(date) => {
                                     setData({ ...data, dob: date })
                                 }
