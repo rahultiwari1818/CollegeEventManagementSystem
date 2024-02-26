@@ -78,6 +78,16 @@ export function transformCourseData(coursesData,requiresAll) {
 	return arr;
 }
 
+export function transformEventTypesData(eventTypes) {
+	const arr = [];
+	
+	for (let eventtype of eventTypes) {
+		arr.push({ name: eventtype.eventTypeName,
+		eventTypeLogoPath:eventtype.eventTypeLogoPath
+		});
+	}
+	return arr;
+}
 
 
 

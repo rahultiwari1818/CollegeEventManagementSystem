@@ -77,15 +77,7 @@ export default function UpdateStudent({ isOpen, close, heading, dataToBeUpdated 
             setErrors((old) => ({ ...old, phnoErr: "" }))
         }
 
-        if (!isValidPassword(data.password)) {
-            result = false;
-            setErrors((old) => ({
-                ...old, passwordErr: `Password Should Have at least 1 UpperCase Letter , 1 LowerCase Letter , 1 Digit and 1 Special Character.
-            its length should be greater than 8`}))
-        }
-        else {
-            setErrors((old) => ({ ...old, passwordErr: "" }))
-        }
+        
         return result;
     }
 

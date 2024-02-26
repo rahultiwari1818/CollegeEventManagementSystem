@@ -9,7 +9,7 @@ import { ReactComponent as EditIcon } from "../assets/Icons/edit_icon.svg";
 import { ReactComponent as DeleteIcon } from "../assets/Icons/DeleteIcon.svg";
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { formatFileSize, handleNumericInput } from '../utils';
+import { formatFileSize, handleNumericInput, transformEventTypesData } from '../utils';
 import ToggleSwitch from '../components/ToggleSwitch';
 import AddSubEvents from '../components/AddSubEvents';
 import Overlay from "../components/Overlay";
@@ -61,6 +61,8 @@ export default function GenerateEvent() {
         brochureError: ""
     })
 
+    const [eventNatures,setEventNatures] = useState([]);
+
     const coursesData = useSelector((state) => state.CourseSlice.data);
     const dispatch = useDispatch();
 
@@ -94,6 +96,8 @@ export default function GenerateEvent() {
     const changeEventNature = useCallback((value) => {
         setData((old) => ({ ...old, enature: value }))
     }, [setData]);
+
+
 
 
     const changeParticipationType = useCallback((value) => {
@@ -215,6 +219,31 @@ export default function GenerateEvent() {
         });
     };
 
+    const fetchEventNatures = async()=>{
+
+        try {
+            
+        const response = await axios.get(`${API_URL}/api/eventType/getEventTypes`,{
+            headers:{
+                "auth-token":token
+            }
+        })
+
+        if(response.data.result){
+
+            console.log(response.data.data)
+            setEventNatures((old)=>transformEventTypesData(response.data.data))
+        }
+        else{
+            setEventNatures([]);
+        }
+
+
+        } catch (error) {
+            
+        }
+
+    }
 
 
     useEffect(() => {
@@ -222,10 +251,12 @@ export default function GenerateEvent() {
         if (coursesData?.length === 0 || !Array.isArray(coursesData)) {
             dispatch(fetchAllCourses());
         }
+        fetchEventNatures();
     }, [])
 
+    
 
-    const eventNatures = [{ name: "Cultural" }, { name: "IT" }, { name: "Management" }, { name: "Sports" }];
+    // const eventNatures = [{ name: "Cultural" }, { name: "IT" }, { name: "Management" }, { name: "Sports" }];
     const eventTypes = [{ name: "Intra-College" }, { name: "Inter-College" }];
 
     return (

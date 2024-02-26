@@ -85,7 +85,11 @@ export default function Profile() {
                             <section className="max-w-fit mx-auto rounded-full shadow-md p-1 bg-gray-50">
                                 <img
                                     className="w-28 h-28 sm:w-40 sm:h-40 object-cover rounded-full shadow-md"
-                                    src={profileData?.profilePicPath==="."?DefaultImage:profileData?.profilePicPath}
+                                    src={
+                                        isDataLoading ?
+                                        DefaultImage
+                                        :
+                                        profileData?.profilePicPath==="."?DefaultImage:profileData?.profilePicPath}
                                     alt="Profile"
                                 />
                                 <section className="relative">

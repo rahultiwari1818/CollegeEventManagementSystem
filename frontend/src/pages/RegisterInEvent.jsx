@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import Overlay from '../components/Overlay';
 import { handleNumericInput } from '../utils';
 import { useSelector } from 'react-redux';
+import ParticipantDetail from '../components/ParticipantDetail';
 
 export default function RegisterInEvent() {
     const token = localStorage.getItem("token");
@@ -53,8 +54,9 @@ export default function RegisterInEvent() {
                 });
                 if (data?.data[0]?.hasSubEvents) {
                     const subEvents = data.data[0].subEvents;
-                    const [subEventData] = subEvents.filter((event) => event.sId === subEventId);
-                    setEventData({ eventId: data.data[0]._id, ...subEventData });
+                    const [subEventData] = subEvents.filter((event) => event.sId === Number(subEventId));
+                    console.log(subEventData)
+                    setEventData(()=>({ eventId: data.data[0]._id, ...subEventData }));
                 }
                 else {
                     setEventData(data?.data[0]);
@@ -66,6 +68,7 @@ export default function RegisterInEvent() {
         fetchEventData();
     }, [eventId, subEventId, token, API_URL]);
 
+    console.log("eventData",eventData)
     useEffect(() => {
         setIsPageLoading(false);
     }, []);
@@ -85,7 +88,7 @@ export default function RegisterInEvent() {
                     <p className='text-2xl text-center text-white bg-blue-500 p-2'>Registration Form</p>
                     <form method="post" onSubmit={onSubmitHandler}>
                         <section className='md:p-2 md:m-2 p-1 m-1'>
-
+                            <ParticipantDetail noOfParticipants={eventData?.noOfParticipants}/>
                         </section>
                         <section className='md:p-2 md:m-2 p-1 m-1'>
                             <input type="submit" value="Request Registration" className='text-red-500 cursor-pointer bg-white rounded-lg shadow-lg px-5 py-3 w-full m-2 outline outline-red-500 hover:text-white hover:bg-red-500 ' />
