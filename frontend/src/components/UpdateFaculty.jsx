@@ -1,15 +1,14 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import Dropdown from './Dropdown';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchAllCourses } from '../store/CourseSlice';
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import Modal from './Modal'
 import { formatFileSize, handleNumericInput, isValidPassword, transformCourseData } from '../utils';
-import { ReactComponent as FileUploadIcon } from "../assets/Icons/FileUploadIcon.svg";
+
+import { useDispatch, useSelector } from 'react-redux';
+import Dropdown from './Dropdown';
+import { fetchAllCourses } from '../store/CourseSlice';
 import axios from 'axios';
-import { toast } from 'react-toastify';
+import {toast} from "react-toastify"
 import Overlay from './Overlay';
-
-export default function AddIndividualFaculty() {
-
+export default function UpdateStudent({ isOpen, close, heading, dataToBeUpdated = {} }) {
 
     const token = localStorage.getItem("token");
     const API_URL = process.env.REACT_APP_BASE_URL;
@@ -21,17 +20,20 @@ export default function AddIndividualFaculty() {
         phno: '',
         gender: '',
         password: '',
-        profilePic: null,
+        // profilePic: null,
         email: ""
     };
 
-    const [formData, setFormData] = useState(initialFormData);
+    const [formData, setFormData] = useState(dataToBeUpdated);
     const [isLoading,setIsLoading] = useState(false);
+
+    useEffect(()=>{
+        setFormData(dataToBeUpdated)
+    },[dataToBeUpdated])
 
     const [errors, setErrors] = useState({
         courseErr: "",
         phnoErr: "",
-        passwordErr: "",
         salutationErr:""
     })
     const coursesData = useSelector((state) => state.CourseSlice.data);
@@ -82,15 +84,7 @@ export default function AddIndividualFaculty() {
             setErrors((old) => ({ ...old, phnoErr: "" }))
         }
 
-        if (!isValidPassword(formData.password)) {
-            result = false;
-            setErrors((old) => ({
-                ...old, passwordErr: `Password Should Have at least 1 UpperCase Letter , 1 LowerCase Letter , 1 Digit and 1 Special Character.
-            its length should be greater than 8`}))
-        }
-        else {
-            setErrors((old) => ({ ...old, passwordErr: "" }))
-        }
+        
         return result;
     }
 
@@ -109,14 +103,13 @@ export default function AddIndividualFaculty() {
             dataToPost.append('name', formData.name);
             dataToPost.append('phno', formData.phno);
             dataToPost.append('salutation', formData.salutation);
-            dataToPost.append('password', formData.password);
-            dataToPost.append('profilePic', formData.profilePic);
+            // dataToPost.append('profilePic', formData.profilePic);
             dataToPost.append('email', formData.email);
 
-            const {data} = await axios.post(`${API_URL}/api/faculties/registerIndividual`, formData, {
+            const {data} = await axios.post(`${API_URL}/api/faculties/updateFacultyData`, formData, {
                 headers: {
                     "auth-token": token,
-                    "Content-Type":"multipart/form-data"
+                    // "Content-Type":"multipart/form-data"
                 }
             })
 
@@ -128,7 +121,7 @@ export default function AddIndividualFaculty() {
                 toast.error(data.message)
 
             }
-
+            close();
         } catch (error) {
             console.log(error)
 
@@ -162,15 +155,17 @@ export default function AddIndividualFaculty() {
         { name: "I/c. Prin. Dr." }
     ];
 
+
     return (
 
         <>
         {
-
-isLoading &&
-<Overlay/>
-}
-        <form onSubmit={handleSubmit} className="p-4 bg-white shadow-lg rounded-lg mx-4 my-3">
+            isLoading
+            &&
+            <Overlay/>
+        }
+        <Modal isOpen={isOpen} close={close} heading={heading}>
+                 <form onSubmit={handleSubmit} className="p-4 bg-white shadow-lg rounded-lg mx-4 my-3">
             <section className="grid md:grid-cols-2 grid-col-1 gap-4 my-3">
 
             <section>
@@ -252,27 +247,8 @@ isLoading &&
                     />
                 </section>
 
-                <section>
-                    <label htmlFor="password" className="block mb-1">Password:</label>
-                    <input type="password"
-                        id="password"
-                        name="password"
-                        value={formData.password}
-                        onChange={handleChange}
-                        className="w-full px-3 py-2  rounded-lg focus:outline-none focus:border-blue-500 shadow-lg"
-                        placeholder='Enter Default Password '
-                        required />
-
-                    {
-                        errors.passwordErr !== ""
-                        &&
-                        <p className="text-red-500">
-                            {errors.passwordErr}
-                        </p>
-                    }
-                </section>
             </section>
-            <section className='flex items-center justify-center'>
+            {/* <section className='flex items-center justify-center'>
                 <section className="flex items-center justify-center md:w-[50%] ">
                     <label
                         htmlFor="dropzone-profilePic"
@@ -310,12 +286,13 @@ isLoading &&
                         />
                     </label>
                 </section>
-            </section>
+            </section> */}
             <section className="flex justify-center mt-4">
-                <button type="submit" className='text-red-500 bg-white rounded-lg shadow-lg px-5 py-3 w-full m-2 outline outline-red-500 hover:text-white hover:bg-red-500'>Add Faculty</button>
+                <button type="submit" className='text-red-500 bg-white rounded-lg shadow-lg px-5 py-3 w-full m-2 outline outline-red-500 hover:text-white hover:bg-red-500'>Update Faculty</button>
             </section>
         </form>
+        </Modal>
         </>
-    );
-};
 
+    )
+}

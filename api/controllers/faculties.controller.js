@@ -384,7 +384,116 @@ const resetPassword = async (req, res) => {
     }
 }
 
+const updateFacultyData = async(req,res)=>{
+    try {
 
+
+        const { _id, course, name, phno, email ,salutation} = req.body;
+
+        const doesEmailAlreadyExists = await Faculties.findOne({ email: email, _id: { $ne: _id } })
+
+        if (doesEmailAlreadyExists) {
+            return res.status(400).json({
+                message: "This Email is Already registered.",
+                result: false
+            })
+        }
+
+
+
+
+        const updatedFaculties = await Faculties.findOneAndUpdate(
+            { _id: _id },
+            {
+                $set: {
+                    course: course,
+                    salutation:salutation,
+                    name: name,
+                    phno: phno,
+                    email: email
+                }
+            },
+            { new: true } // To return the updated document
+        );
+
+        // Return success response with updated student data
+        return res.status(200).json({
+            message: "Faculty data updated successfully.",
+            result: true,
+            updatedFaculties: updatedFaculties
+        });
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: "An error occurred while updating student data.",
+            result: false
+        });
+    }
+}
+
+const changeFacultyProfilePic = async(req,res)=>{
+    try {
+        
+        const profilePic = req.file;
+        if(!profilePic){
+            return res.status(400).json({
+                message:"Please Provide Profile Photo",
+                result:false
+            })
+        }
+        const userData = await Faculties.findOne({_id:req.user.id})
+        
+
+
+        const profilePicName = profilePic.originalname;
+        const result = await uploadToCloudinary(profilePic.path, "image");
+        if(result.message==="Fail"){
+            return res.status(500).json({
+                message:"Some Error Occued...",
+                result:false
+            })
+        }
+        const newProfilePicPath = result.url;
+
+        if(userData.profilePicName !== "."){
+            const publicId = userData.profilePicPath.split('/').slice(-1)[0].split('.')[0];
+            await deleteFromCloudinary(publicId);
+        }
+
+
+        const updatedData = await Faculties.updateOne(
+            { _id: req.user.id },
+            {
+                $set: {
+                    profilePicName:profilePicName,
+                    profilePicPath:newProfilePicPath
+                }
+            },
+            { new: true } 
+        )
+        
+        console.log(updatedData)
+
+        return res.status(200).json({
+            message:"Profile Photo Uploaded Sucessfully",
+            result:true,
+            data:{
+                profilePicPath:newProfilePicPath,
+                profilePicName
+            }
+        })
+
+
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({
+            message:"Some Error Occured",
+            result:true
+        })
+    }
+
+}
 
 module.exports = {
     registerIndividualFaculties,
@@ -395,5 +504,7 @@ module.exports = {
     getIndividualFaculty,
     facultyForgotPassword,
     verifyOTP,
-    resetPassword
+    resetPassword,
+    updateFacultyData,
+    changeFacultyProfilePic
 };

@@ -15,7 +15,8 @@ router.post("/registerInBulk",checkIsSuperAdmin,upload.single("studentcsv"),regi
 router.post("/registerIndividual",checkIsSuperAdmin,upload.single("profilePic"),registerStudentIndividually)
 
 router.post("/updateStudentData",checkIsSuperAdmin,updateStudentData)
-router.post("/changeProfilePic",fetchUser,upload.single("profilePic"),changeUserProfilePic)
+router.post("/changeProfilePhoto",fetchUser,upload.single("profilePic"),changeUserProfilePic)
+router.post("/changePassword",fetchUser,()=>{})
 
 router.post("/forgotPassword",studentForgotPassword);
 router.post("/verifyOTP",verifyOTP);

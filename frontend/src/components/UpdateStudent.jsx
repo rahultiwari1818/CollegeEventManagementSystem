@@ -8,6 +8,7 @@ import Dropdown from './Dropdown';
 import { fetchAllCourses } from '../store/CourseSlice';
 import axios from 'axios';
 import {toast} from "react-toastify"
+import Overlay from './Overlay';
 export default function UpdateStudent({ isOpen, close, heading, dataToBeUpdated = {} }) {
 
 
@@ -24,6 +25,7 @@ export default function UpdateStudent({ isOpen, close, heading, dataToBeUpdated 
     })
     const coursesData = useSelector((state) => state.CourseSlice.data);
     const dispatch = useDispatch();
+    const [isLoading,setIsLoading] = useState(false);
 
 
     const handleChange = (e) => {
@@ -91,9 +93,12 @@ export default function UpdateStudent({ isOpen, close, heading, dataToBeUpdated 
     const updateDataHandler = async(e)=>{
         e.preventDefault();
 
+        if(!isValidData()) return;
 
         try {
             
+            setIsLoading(true);
+
             const response = await axios.post(`${API_URL}/api/students/updateStudentData`,data,{
                 headers:{
                     "auth-token":token
@@ -108,6 +113,9 @@ export default function UpdateStudent({ isOpen, close, heading, dataToBeUpdated 
         } catch ({response}) {
 
             toast.error(response.data.message)
+        }
+        finally{
+            setIsLoading(false);
         }
 
         
@@ -143,6 +151,12 @@ export default function UpdateStudent({ isOpen, close, heading, dataToBeUpdated 
     console.log(data,"data")
 
     return (
+        <>
+        {
+        isLoading
+        &&
+        <Overlay/>
+        }
         <Modal isOpen={isOpen} close={close} heading={heading}>
             <form  method="post" onSubmit={updateDataHandler}>
                 <section>
@@ -337,5 +351,6 @@ export default function UpdateStudent({ isOpen, close, heading, dataToBeUpdated 
                 </section>
             </form>
         </Modal>
+        </>
     )
 }

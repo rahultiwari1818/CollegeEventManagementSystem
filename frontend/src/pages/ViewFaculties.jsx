@@ -7,6 +7,7 @@ import Skeleton from 'react-loading-skeleton';
 import Overlay from '../components/Overlay';
 import { useDispatch, useSelector } from 'react-redux';
 import ToggleSwitch from '../components/ToggleSwitch';
+import UpdateFaculty from "../components/UpdateFaculty";
 
 export default function ViewFaculties() {
     const [facultyData, setFacultyData] = useState([]);
@@ -20,6 +21,10 @@ export default function ViewFaculties() {
     const [selectedPage, setSelectedPage] = useState(1);
     const [entriesPerPage, setEntriesPerPage] = useState(15); // State for selected entries per page
     const [totalEntries, setTotalEntries] = useState(0); // State for total number of entries
+
+    const [openUpdateModal,setOpenUpdateModal] = useState(false);
+    const [dataToBeUpdated,setDataUpdated] = useState({});
+
 
     const changeSearch = useCallback((value) => {
         setSearchParams((old) => ({ ...old, search: value }));
@@ -240,8 +245,8 @@ export default function ViewFaculties() {
                                                 <button
                                                     className='px-5 py-3 bg-yellow-500 rounded-lg shadow-lg text-white hover:text-yellow-500 hover:bg-white hover:outline hover:outline-yellow-500'
                                                     onClick={() => {
-                                                        // setOpenUpdateModal(true)
-                                                        // setDataUpdated((old)=>student)
+                                                        setOpenUpdateModal(true)
+                                                        setDataUpdated((old)=>faculty)
                                                     }}
                                                 >
                                                     Update
@@ -309,6 +314,8 @@ export default function ViewFaculties() {
                 </section>
 
             </section>
+            <UpdateFaculty isOpen={openUpdateModal} close={setOpenUpdateModal} heading={"Update Student Data"} dataToBeUpdated={dataToBeUpdated}/>
+
         </>
     );
 }
