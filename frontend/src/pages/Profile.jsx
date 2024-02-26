@@ -6,6 +6,7 @@ import axios from 'axios';
 import { formatMongoDate } from '../utils';
 import Skeleton from 'react-loading-skeleton';
 import ChangeProfilPic from '../components/ChangeProfilePic';
+import ChangePassword from '../components/ChangePassword';
 
 
 export default function Profile() {
@@ -18,11 +19,20 @@ export default function Profile() {
     const user = useSelector((state) => state.UserSlice);
     const [isDataLoading, setIsDataLoading] = useState(true);
     const [isOpenChangeProfilePicModal, setIsOpenChangeProfilePicModal] = useState(false);
+    const [isOpenChangePasswordModal,setIsOpenChangePasswordModal] = useState(false);
     const openProfilePicModal = () => {
         setIsOpenChangeProfilePicModal(true)
     }
     const closeProfilePicModal = () =>{
         setIsOpenChangeProfilePicModal(false)
+    }
+
+    const openChangePasswordModal = () =>{
+        setIsOpenChangePasswordModal(true);
+    }
+
+    const closeChangePasswordModal = () =>{
+        setIsOpenChangePasswordModal(false);
     }
 
     const changeProfilePicURL = useCallback((data)=>{
@@ -375,9 +385,17 @@ export default function Profile() {
                                 </section>
                         }
                     </section>
+                    <section className="my-2 flex justify-center">
+                        <button className='px-5 py-3 bg-yellow-500 rounded-lg shadow-lg text-white hover:text-yellow-500 hover:bg-white hover:outline hover:outline-yellow-500'
+                        onClick={openChangePasswordModal}
+                        >
+                            Change Password
+                        </button>
+                    </section>
                 </section>
             </section>
             <ChangeProfilPic isOpen={isOpenChangeProfilePicModal} close={closeProfilePicModal} heading={"Change Profile Pic"} imgUrl={profileData?.profilePicPath} changeProfilePicURL={changeProfilePicURL} />
+            <ChangePassword isOpen={isOpenChangePasswordModal} close={closeChangePasswordModal} heading={"Change Password"}/>
         </section>
     )
 }

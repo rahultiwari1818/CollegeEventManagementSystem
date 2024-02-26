@@ -668,5 +668,70 @@ const changeUserProfilePic = async(req,res)=>{
 
 }
 
+const changePassword = async(req,res)=>{
+    try {
+        
+        const {currentPassword,newPassword} = req.body;
+        const userId = req.user.id;
 
-module.exports = { registerStudentsInBulk, getStudents, getDivisions, getIndividualStudentsFromSid, studentForgotPassword, verifyOTP, resetPassword, loginStudent, getIndividualStudentsFromId, registerStudentIndividually, updateStudentData,changeUserProfilePic };
+        const user = await Student.findOne({_id:userId});
+
+        if(!user){
+            return res.status(400).json({
+                message:"Invalid User",
+                result:false
+            })
+        }
+
+        const comparedPassword = await bcrypt.compare(currentPassword,user.password);
+         if(!comparedPassword){
+            return res.status(400).json({"message":"Invalid Password",result:false});
+         }
+         
+         const salt = await bcrypt.genSalt(10);
+         const secPass = await bcrypt.hash(newPassword,salt);
+         
+         const userData = await Student.updateOne(
+            {_id:userId},
+            {
+                $set:{
+                    password:secPass
+                }
+            }
+         )
+
+         const mailOptions = {
+            from: process.env.EMAIL_ID,
+            to: user.email,
+            subject: 'Password Changed in CEMS',
+            text: `Your Password has been changed in CEMS.`
+        };
+
+        // Send email
+        transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+                // return res.status(500).json({
+                //     message:"Unable to send Email",
+                //     result:false
+                // })
+                console.log("error in sending mail", error)
+            } else {
+                // return res.status(200).json({
+                //     message:"OTP Mailed Successfully",
+                //     result:true
+                // });
+                console.log("Mail Send Successfully.");
+            }
+        });
+
+        return res.status(200).json({"message":"Password Updated  Successfully!","result":true});
+
+
+    } catch (error) {
+        return res.status(500).json({"message":"Some Error Occured!","result":false});
+
+    }
+}
+
+
+module.exports = { registerStudentsInBulk, getStudents, getDivisions, getIndividualStudentsFromSid, studentForgotPassword, verifyOTP, resetPassword, loginStudent, getIndividualStudentsFromId, registerStudentIndividually, updateStudentData,changeUserProfilePic,changePassword };
