@@ -15,6 +15,7 @@ import AddSubEvents from '../components/AddSubEvents';
 import Overlay from "../components/Overlay";
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAllCourses } from '../store/CourseSlice';
+import { useNavigate } from 'react-router-dom';
 
 export default function GenerateEvent() {
 
@@ -94,6 +95,7 @@ export default function GenerateEvent() {
     }
 
     const changeEventNature = useCallback((value) => {
+        
         setData((old) => ({ ...old, enature: value }))
     }, [setData]);
 
@@ -153,16 +155,17 @@ export default function GenerateEvent() {
         }else{
             setErrors((old) => ({ ...old, enatureErr: "" }));
         }
-        if (data.eligibleCourses === "") {
+        if (data.eligibleCourses.length===0) {
             setErrors((old) => ({ ...old, eligibleCoursesErr: "Select at least 1 Eligible Course" }));
             isValidated = false;
 
         }else{
+            
             setErrors((old) => ({ ...old, eligibleCoursesErr: "" }));
         }
         
-
-        console.log(errors)
+        // console.log(data.eligibleCourses.length)
+        // console.log(errors,"data",data)
         return isValidated;
 
     }
@@ -253,6 +256,19 @@ export default function GenerateEvent() {
         }
         fetchEventNatures();
     }, [])
+
+
+    const user = useSelector((state)=>state.UserSlice);
+    const navigate = useNavigate();
+    
+    useEffect(()=>{
+        if(!user) return;
+        if(user.role === "Student"){
+            navigate("/home");
+        }
+        // console.log("called")
+        setIsLoading(false)
+    },[user])
 
     
 

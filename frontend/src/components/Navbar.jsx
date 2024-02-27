@@ -41,7 +41,7 @@ export default function Navbar() {
 
   useLayoutEffect(() => {
     if (location.pathname === "/") return;
-    console.log("location", location.pathname)
+    // console.log("location", location.pathname)
     const fetchData = async () => {
       try {
         const { data } = await axios.post(`${API_URL}/api/auth/checkIsLoggedIn`, "", {

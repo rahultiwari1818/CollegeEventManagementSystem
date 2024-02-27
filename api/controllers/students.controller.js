@@ -228,7 +228,8 @@ const getStudents = async (req, res) => {
         const divisionFilter = req.query.division || "";
         const page = parseInt(req.query.page) || 1; // Current page, default is 1
         const limit = parseInt(req.query.limit) || 10; // Number of items per page, default is 10
-
+        const sidFilter = req.query?.sid || "";
+        // console.log(sidFilter)
         // Define the search criteria
         const searchCriteria = {
             $and: [
@@ -246,7 +247,8 @@ const getStudents = async (req, res) => {
                 } : {},
                 courseFilter ? { course: courseFilter } : {},
                 semesterFilter ? { semester: semesterFilter } : {},
-                divisionFilter ? { division: divisionFilter } : {}
+                divisionFilter ? { division: divisionFilter } : {},
+                sidFilter ? { sid: { $regex: sidFilter, $options: 'i' } } : {}
             ]
         };
 
@@ -260,10 +262,13 @@ const getStudents = async (req, res) => {
         const currentPage = Math.min(Math.max(page, 1), totalPages);
 
         // Calculate the number of documents to skip
-        const skip = (currentPage - 1) * limit;
+        const skip = ((currentPage - 1) * limit) >=0 ?((currentPage - 1) * limit)  : 0;
 
-        // Find students based on search criteria with pagination
-        const data = await Student.find(searchCriteria).skip(skip).limit(limit);
+        // Find students based on search criteria with pagination, excluding the password field
+        const data = await Student.find(searchCriteria)
+            .select('-password') // Exclude the password field
+            .skip(skip)
+            .limit(limit);
 
         return res.status(200).json({
             message: "Students Data Fetched Successfully.",
@@ -274,6 +279,7 @@ const getStudents = async (req, res) => {
             totalItems: totalDocuments
         });
     } catch (error) {
+        console.log(error)
         return res.status(400).json({ message: "Some Error Occurred.", result: false });
     }
 };

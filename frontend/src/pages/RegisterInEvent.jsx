@@ -2,7 +2,6 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Overlay from '../components/Overlay';
-import { handleNumericInput } from '../utils';
 import { useSelector } from 'react-redux';
 import ParticipantDetail from '../components/ParticipantDetail';
 
@@ -11,24 +10,15 @@ export default function RegisterInEvent() {
     const API_URL = process.env.REACT_APP_BASE_URL;
 
     const [eventData, setEventData] = useState({});
-    const [registrationData,setRegistrationData] = useState([{
-
-    }]);
-    const [isPageLoading, setIsPageLoading] = useState(true);
-
+    const [studentData,setStudentData] = useState({});
+    const [isPageLoading,setIsPageLoading] = useState(true);
     const params = useParams();
     const eventId = params.eid;
     const subEventId = params.sid;
 
     const userId = useSelector((state)=>state.UserSlice._id);
 
-    const onSubmitHandler = (e) => {
-        e.preventDefault();
-        // Add your submission logic here
-    };
-
     const findStudentData = async () => {
-        console.log(userId)
         if(!userId) return;
         try {
             const { data } = await axios.get(`${API_URL}/api/students/getSpecificStudents/${userId}`, {
@@ -37,7 +27,7 @@ export default function RegisterInEvent() {
                 }
             });
 
-            console.log(data)
+            setStudentData(data.data);
 
         } catch (error) {
 
@@ -55,8 +45,11 @@ export default function RegisterInEvent() {
                 if (data?.data[0]?.hasSubEvents) {
                     const subEvents = data.data[0].subEvents;
                     const [subEventData] = subEvents.filter((event) => event.sId === Number(subEventId));
-                    console.log(subEventData)
-                    setEventData(()=>({ eventId: data.data[0]._id, ...subEventData }));
+                    setEventData({ eventId: data.data[0]._id,
+                        ename:data.data[0].ename,
+                        hasSubEvents:data.data[0].hasSubEvents,
+                        etype:data.data[0].etype,
+                        ...subEventData });
                 }
                 else {
                     setEventData(data?.data[0]);
@@ -64,36 +57,27 @@ export default function RegisterInEvent() {
             } catch (error) {
                 console.error("Error fetching event data:", error);
             }
+            finally{
+                setIsPageLoading(false)
+            }
         };
         fetchEventData();
     }, [eventId, subEventId, token, API_URL]);
 
-    console.log("eventData",eventData)
     useEffect(() => {
-        setIsPageLoading(false);
-    }, []);
-
-    useEffect(()=>{
         findStudentData();
-
-    },[userId])
-
+    }, [userId])
 
     return (
         <>
             {isPageLoading && <Overlay />}
-
-            <section className='flex justify-center items-center'>
-                <section className='p-5 md:p-10 shadow-2xl bg-white md:outline-none outline outline-blue-500 md:mt-0 md:mb-0 mt-2 w-full max-w-4xl'>
+            
+            <section className='flex justify-center items-center mt-5'>
+                <section className='p-5 md:p-10 shadow-lg bg-white border  border-blue-500 md:mt-0 md:mb-0  w-full max-w-4xl '>
                     <p className='text-2xl text-center text-white bg-blue-500 p-2'>Registration Form</p>
-                    <form method="post" onSubmit={onSubmitHandler}>
                         <section className='md:p-2 md:m-2 p-1 m-1'>
-                            <ParticipantDetail noOfParticipants={eventData?.noOfParticipants}/>
+                            <ParticipantDetail noOfParticipants={eventData?.noOfParticipants} studentData={studentData}  eventData={eventData}/>
                         </section>
-                        <section className='md:p-2 md:m-2 p-1 m-1'>
-                            <input type="submit" value="Request Registration" className='text-red-500 cursor-pointer bg-white rounded-lg shadow-lg px-5 py-3 w-full m-2 outline outline-red-500 hover:text-white hover:bg-red-500 ' />
-                        </section>
-                    </form>
                 </section>
             </section>
         </>

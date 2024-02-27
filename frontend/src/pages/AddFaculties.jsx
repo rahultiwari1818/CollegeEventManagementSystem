@@ -1,10 +1,12 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { formatFileSize } from '../utils';
 import { ReactComponent as FileUploadIcon } from "../assets/Icons/FileUploadIcon.svg";
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import Overlay from "../components/Overlay";
 import AddIndividualFaculty from '../components/AddIndividualFaculty';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 
 
@@ -15,7 +17,7 @@ export default function AddFaculties() {
     const [fileToUpload, setFileToUpload] = useState(null);
     const token = localStorage.getItem("token");
     const API_URL = process.env.REACT_APP_BASE_URL;
-    const [showOverLay, setShowOverLay] = useState(false);
+    const [showOverLay, setShowOverLay] = useState(true);
 
 
     const fileUploadHandler = async (e) => {
@@ -52,6 +54,18 @@ export default function AddFaculties() {
     const showCSVHandler = () => {
         window.open(`${API_URL}/sampleFiles/Sample CSV For Faculties.csv`, "_blank")
     }
+
+    const user = useSelector((state)=>state.UserSlice);
+    const navigate = useNavigate();
+    
+    useEffect(()=>{
+        if(!user) return;
+        if(user.role !== "Super Admin"){
+            navigate("/home");
+        }
+        console.log("called")
+        setShowOverLay(false)
+    },[user])
 
 
     return (

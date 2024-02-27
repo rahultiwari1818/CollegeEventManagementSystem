@@ -2,6 +2,7 @@ const Event = require("../models/Events.js");
 const fs = require("fs").promises;
 const path = require("path");
 const { uploadToCloudinary, deleteFromCloudinary } = require("../utils.js");
+const Registration = require("../models/Registration.js");
 
 
 
@@ -205,11 +206,59 @@ const updateEventDetails = async (req, res) => {
 
 
 
+const registerInEvent = async(req,res)=>{
+
+    try {
+        
+        const {eventId,ename,hasSubEvents} = req.body;
+        let sId,subEventName;
+        if(hasSubEvents){
+            sId = req.body.sId;
+            subEventName = req.body.subEventName;
+        }
+
+        const studentData = JSON.parse(req.body.studentData)
+        for(let student of studentData){
+            if(!student?.sid){
+                return res.status(400).json({
+                    message:"Please Provide Data of All Participants",
+                    result:false
+                })
+            }
+        }
+
+
+        const registrationDetails = await Registration.create({
+            eventId:eventId,
+            ename:ename,
+            sId:sId,
+            subEventName:subEventName,
+            studentData:studentData,
+            createdAt:Date.now(),
+            status:'pending',
+            updatedAt:Date.now()
+        })
+
+        return res.status(200).json({
+            result:true,
+            message:"Registration Request Sent Successfully"
+        })
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ "message": "Some Error Occured", "result": false });
+
+    }
+
+}
+
+
 module.exports = {
     generateEvent,
     getAllEvents,
     getSpecificEvent,
     changeEventStatus,
-    updateEventDetails
+    updateEventDetails,
+    registerInEvent
 };
 

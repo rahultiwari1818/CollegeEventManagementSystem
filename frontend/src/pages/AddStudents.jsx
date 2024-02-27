@@ -1,10 +1,12 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { formatFileSize } from '../utils';
 import { ReactComponent as FileUploadIcon } from "../assets/Icons/FileUploadIcon.svg";
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import Overlay from "../components/Overlay";
 import AddIndividualStudent from '../components/AddIndividualStudent';
+import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 export default function AddStudents() {
 
@@ -48,6 +50,19 @@ export default function AddStudents() {
     const showCSVHandler = () =>{
         window.open(`${API_URL}/sampleFiles/Sample CSV For Student.csv`,"_blank")
     }
+
+    const user = useSelector((state)=>state.UserSlice);
+    const navigate = useNavigate();
+    
+    useEffect(()=>{
+        if(!user) return;
+        if(user.role !== "Super Admin"){
+            navigate("/home");
+        }
+        // console.log("called")
+        setShowOverLay(false)
+    },[user])
+
 
     return (
         <section className='pt-3 pb-6'>

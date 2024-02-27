@@ -8,6 +8,7 @@ import Overlay from '../components/Overlay';
 import { useDispatch, useSelector } from 'react-redux';
 import ToggleSwitch from '../components/ToggleSwitch';
 import UpdateFaculty from "../components/UpdateFaculty";
+import { useNavigate } from 'react-router-dom';
 
 export default function ViewFaculties() {
     const [facultyData, setFacultyData] = useState([]);
@@ -109,9 +110,25 @@ export default function ViewFaculties() {
         return Math.min(endIndex, totalEntries);
     };
 
-
+    const user = useSelector((state)=>state.UserSlice);
+    const navigate = useNavigate();
+    const [showOverLay,setShowOverLay] = useState(true);
+    
+    useEffect(()=>{
+        if(!user) return;
+        if(user.role !== "Super Admin"){
+            navigate("/home");
+        }
+        // console.log("called")
+        setShowOverLay(false)
+    },[user])
     return (
         <>
+        {
+            showOverLay
+            &&
+            <Overlay/>
+        }
             <section className='mx-2 my-2 p-2'>
                 <section className="grid grid-cols-1 md:grid-cols-2  gap-2 md:gap-3 lg:gap-5 p-2">
                     <Search placeholder="Search Student" searchValue={searchParams?.search} changeSearch={changeSearch} />
