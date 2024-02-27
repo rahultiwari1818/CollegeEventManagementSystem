@@ -8,7 +8,9 @@ const {
     getSpecificEvent,
     changeEventStatus,
     updateEventDetails,
-    registerInEvent
+    registerInEvent,
+    getRegistrationDataOfEvent,
+    approveOrRejectRegistrationRequest
 } = require("../controllers/events.controller.js");
 const fetchUser = require("../middlewares/fetchUser.js");
 const checkIsAdmin = require("../middlewares/checkIsAdmin.js");
@@ -31,6 +33,10 @@ router.patch("/changeEventStatus/:id",checkIsAdmin,changeEventStatus);
 router.patch("/updateEventDetails/:id",checkIsAdmin,upload.fields([{ name: 'eposter' }, { name: 'ebrochure' }]),updateEventDetails);
 
 router.post("/registerInEvent",fetchUser,registerInEvent)
+
+router.get("/getRegistrationDataOfEvent/:id",checkIsAdmin,getRegistrationDataOfEvent);
+
+router.patch("/changeRequestStatus/:id",checkIsAdmin,approveOrRejectRegistrationRequest);
 
 router.post("/declareResult/:eventId",checkIsAdmin,async()=>{
 

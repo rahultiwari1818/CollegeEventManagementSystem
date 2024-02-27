@@ -39,14 +39,15 @@ export default function AddSubEvents({ openUpdateModal, setOpenUpdateModal, head
 
     const changeParticipationType = useCallback((value)=>{
         
-        setSubEventData((old)=>({...old,ptype:value}))
         if(value==="Individual"){
-            noOfPartcipants.current.value = 1;
+            setSubEventData((old)=>({...old,ptype:value,noOfParticipants:1}))
+
             noOfPartcipants.current.disabled = true;
         }
         else{
             noOfPartcipants.current.disabled = false;
-            noOfPartcipants.current.value = 1;
+            setSubEventData((old)=>({...old,ptype:value}))
+
         }
     },[setSubEventData])
 
@@ -114,6 +115,13 @@ export default function AddSubEvents({ openUpdateModal, setOpenUpdateModal, head
             addSubEventHandler();
         }
     }
+
+    useEffect(()=>{
+        if(openUpdateModal){
+            setSubEventData(initialState);
+            setSubEventError(initialErrorState);
+        }
+    },[openUpdateModal])
 
     return (
 

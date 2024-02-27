@@ -252,6 +252,30 @@ const registerInEvent = async(req,res)=>{
 
 }
 
+const getRegistrationDataOfEvent = async(req,res)=>{
+
+    try {
+        const eventId = req.params.id;
+        const registrationDetails = await Registration.find({eventId:eventId})
+
+        return res.status(200).json({
+            message:"Registration Data Fetched Successfully.",
+            result:true,
+            data:registrationDetails
+        })
+
+    } catch (error) {
+        return res.status(500).json({
+            message:"Some Error Occured",
+            result:false
+        })
+    }
+
+}
+
+const approveOrRejectRegistrationRequest = async(req,res)=>{
+
+}
 
 module.exports = {
     generateEvent,
@@ -259,6 +283,8 @@ module.exports = {
     getSpecificEvent,
     changeEventStatus,
     updateEventDetails,
-    registerInEvent
+    registerInEvent,
+    getRegistrationDataOfEvent,
+    approveOrRejectRegistrationRequest
 };
 

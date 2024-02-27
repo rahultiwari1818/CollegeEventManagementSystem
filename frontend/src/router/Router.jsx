@@ -14,6 +14,8 @@ import Home from '../pages/Home';
 import ErrorPage from '../pages/ErrorPage';
 import Courses from '../pages/Courses';
 import EventType from '../pages/EventType';
+import ViewRegistration from '../pages/ViewRegistration';
+
 export default function Router() {
 	return (
 		<Routes>
@@ -31,6 +33,7 @@ export default function Router() {
 			<Route path='/profile' element={<Profile/>} />
 			<Route path='/courses' element={<Courses/>} />
 			<Route path='/eventType' element={<EventType/>} />
+			<Route path='/viewRegistrations/:eventId' element={<ViewRegistration/>} />
 			<Route path="*" element={<ErrorPage/>}/>
 		</Routes>
 	)

@@ -447,6 +447,16 @@ export default function EventDetails() {
                                         Update
                                     </button>
                                 </section>
+                                <section className='my-2'>
+
+                                    <button
+                                        className=' px-5 py-3 bg-yellow-500 rounded-lg shadow-lg text-white hover:text-yellow-500 hover:bg-white hover:outline hover:outline-yellow-500'
+                                        onClick={()=>{
+                                            navigate(`/viewRegistrations/${data?._id}`);
+                                        }}>
+                                        View Participation
+                                    </button>
+                                </section>
 
 
                                 <section className='my-2'>

@@ -107,9 +107,9 @@ export default function GenerateEvent() {
 
         if (value === 'Individual') {
 
-            setData((old) => ({ ...old, ptype: value }));
+            setData((old) => ({ ...old, ptype: value ,noOfParticipants:1}));
 
-            noOfParticipants.current.value = 1;
+
             noOfParticipants.current.disabled = true;
         } else if (value === 'Group') {
             noOfParticipants.current.disabled = false;
