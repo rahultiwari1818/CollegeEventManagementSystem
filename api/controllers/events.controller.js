@@ -99,10 +99,26 @@ const generateEvent = async (req, res) => {
 
 
 
-const getAllEvents = async(req,res)=>{
-    const data = await Event.find({}).sort({edate:1});
-    return res.status(200).json({"message":"Event Fetched Successfully","data":data,"result":true})
+const getAllEvents = async (req, res) => {
+    try {
+        let query = {};
+
+        // Check if course parameter is provided
+        const { course } = req.query;
+        if (course && course !== "") {
+            // If course is provided, filter events by the course parameter
+            query = { eligibleCourses: { $in: [course] } };
+        }
+        // console.log(query)
+        // Fetch events based on the query
+        const data = await Event.find(query).sort({ edate: 1 });
+        return res.status(200).json({ "message": "Event Fetched Successfully", "data": data, "result": true });
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ "message": "Some Error Occured", "result": false });
+    }
 }
+
 
 
  const getSpecificEvent = async(req,res)=>{

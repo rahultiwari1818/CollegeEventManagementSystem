@@ -15,13 +15,15 @@ export default function AllEvents() {
     // const labels = useMemo(()=>{
     //   return data.length > 0 ? Object.keys(data[0]):[];
     // },[data]);
+    
+    const userCourse = useSelector((state)=>state.UserSlice.course);
 
 
 
     useEffect(() => {
         // fetchEvents();
-        dispatch(fetchAllEvents());
-    }, [dispatch])
+        dispatch(fetchAllEvents(userCourse));
+    }, [dispatch,userCourse])
 
 
     return (

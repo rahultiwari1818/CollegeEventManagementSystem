@@ -528,6 +528,7 @@ const loginStudent = async (req, res) => {
                 id: user._id,
                 role: "Student",
                 name: user.studentName,
+                course:user.course,
             }
         };
         console.log(data)
