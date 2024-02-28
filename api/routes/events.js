@@ -34,9 +34,9 @@ router.patch("/updateEventDetails/:id",checkIsAdmin,upload.fields([{ name: 'epos
 
 router.post("/registerInEvent",fetchUser,registerInEvent)
 
-router.get("/getRegistrationDataOfEvent/:id",checkIsAdmin,getRegistrationDataOfEvent);
+router.get("/getRegistrationDataOfEvent",checkIsAdmin,getRegistrationDataOfEvent);
 
-router.patch("/changeRequestStatus/:id",checkIsAdmin,approveOrRejectRegistrationRequest);
+router.patch("/changeRequestStatus",checkIsAdmin,approveOrRejectRegistrationRequest);
 
 router.post("/declareResult/:eventId",checkIsAdmin,async()=>{
 

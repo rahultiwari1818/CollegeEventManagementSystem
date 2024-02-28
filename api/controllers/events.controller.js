@@ -200,7 +200,7 @@ const updateEventDetails = async (req, res) => {
         return res.status(200).json({ "message": "Event Updated Successfully", "result": true });
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ "message": "Failed to update event", "result": false });
+        return res.status(500).json({ "message": "Some Error Occured", "result": false });
     }
 }
 
@@ -218,6 +218,23 @@ const registerInEvent = async(req,res)=>{
         }
 
         const studentData = JSON.parse(req.body.studentData)
+
+
+        // Check if any sid in studentData is already registered in the same event and subevent
+        for (let student of studentData) {
+            const existingRegistration = await Registration.findOne({
+                eventId: eventId,
+                sId: sId,
+                'studentData.sid': student.sid
+            });
+            if (existingRegistration) {
+                return res.status(400).json({
+                    message: `Student with SID ${student.sid} is already registered in the same event ${sId ? 'and subevent.' : '.'} `,
+                    result: false
+                });
+            }
+        }
+
         for(let student of studentData){
             if(!student?.sid){
                 return res.status(400).json({
@@ -252,28 +269,57 @@ const registerInEvent = async(req,res)=>{
 
 }
 
-const getRegistrationDataOfEvent = async(req,res)=>{
-
+const getRegistrationDataOfEvent = async (req, res) => {
     try {
-        const eventId = req.params.id;
-        const registrationDetails = await Registration.find({eventId:eventId})
+        const {eventId,status } = req.query;// Extracting status query parameter
+
+        // Constructing the filter object based on the presence of status
+        const filter = { eventId };
+        if (status !== undefined && status !== '') {
+            filter.status = status;
+        }
+        // Finding registration details based on the constructed filter
+        const registrationDetails = await Registration.find(filter);
 
         return res.status(200).json({
-            message:"Registration Data Fetched Successfully.",
-            result:true,
-            data:registrationDetails
+            message: "Registration Data Fetched Successfully.",
+            result: true,
+            data: registrationDetails
+        });
+    } catch (error) {
+        return res.status(500).json({
+            message: "Some Error Occurred",
+            result: false
+        });
+    }
+};
+
+
+const approveOrRejectRegistrationRequest = async(req,res)=>{
+
+    try {
+        
+        const {reqId,status} = req.body;
+
+        const updatedRegData = await Registration.updateOne(
+            {_id:reqId},
+            {
+                $set:{
+                    status:status,
+                    updatedAt:Date.now()
+                }
+            }
+        )
+
+        return res.status(200).json({
+            message:`Request Status ${status} Successfully.`,
+            result:true
         })
 
     } catch (error) {
-        return res.status(500).json({
-            message:"Some Error Occured",
-            result:false
-        })
+        console.error(error);
+        return res.status(500).json({ "message": "Some Error Occured", "result": false });
     }
-
-}
-
-const approveOrRejectRegistrationRequest = async(req,res)=>{
 
 }
 

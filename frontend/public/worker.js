@@ -41,17 +41,19 @@ self.addEventListener("fetch", (event) => {
             );
         })
     );
+
+
     if (!navigator.onLine) {
         if (
-            event.request.url ===
-            "http://localhost:3000/static/js/main.chunk.js"
+            event.request.url.includes("/static/js/bundle.js")
         ) {
+
             event.waitUntil(
                 self.registration.showNotification(
                     "Internet",
                     {
                         body: "internet not working",
-                        icon: "logo.png",
+                        icon: "logo192.png",
                     }
                 )
             );

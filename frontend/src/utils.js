@@ -33,6 +33,28 @@ export const debounce = (func, delay) => {
 	};
 };
 
+export function throttle(func, delay) {
+    let lastCall = 0;
+    let timeoutId;
+
+    return function (...args) {
+        const now = new Date().getTime();
+        const timeSinceLastCall = now - lastCall;
+
+        if (!lastCall || timeSinceLastCall >= delay) {
+            func(...args);
+            lastCall = now;
+        } else {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => {
+                func(...args);
+                lastCall = now;
+            }, delay - timeSinceLastCall);
+        }
+    };
+}
+
+
 export const handleNumericInput = (event) => {
 	// Allow backspace, delete, and arrow keys
 	if (event.key === "Backspace" || event.key === "Delete" || event.key.includes("Arrow")) {

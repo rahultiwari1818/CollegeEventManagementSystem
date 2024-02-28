@@ -20,6 +20,7 @@ export default function EventDetails() {
 
     const [data, setData] = useState({});
     const [isLoading, setIsLoading] = useState(true);
+    const [isPageLoading,setIsPageLoading] = useState(true);
     const [dataUpdated, setDataUpdated] = useState(false);
     const [openUpdateModal, setOpenUpdateModal] = useState(false);
     const [openCancelCnfModal, setOpenCancelCnfModal] = useState(false);
@@ -124,7 +125,7 @@ export default function EventDetails() {
     }, [dataUpdated])
 
     useEffect(() => {
-        setIsLoading(false);
+        setIsPageLoading(false);
     }, [])
 
     console.log(data)
@@ -296,6 +297,8 @@ export default function EventDetails() {
                                                             <td className="py-2 px-4 border-b">{event.noOfParticipants}</td>
                                                             <td className="py-2 px-4 border-b"><View className="cursor-pointer" onClick={() => viewSubEventDetails(event)} /></td>
                                                             <td className="py-2 px-4 border-b">
+                                                           {
+                                                             !data.isCanceled && curDate <= new Date(data.rcdate) &&
                                                                 <button
                                                                     className='px-5 py-3 bg-blue-500 rounded-lg shadow-lg text-white hover:text-blue-500 hover:bg-white hover:outline hover:outline-blue-500'
                                                                     onClick={()=>handleSubEventRegister(event?.sId)}
@@ -303,7 +306,8 @@ export default function EventDetails() {
                                                                 >
                                                                     Register
                                                                 </button>
-                                                            </td>
+                                                           }
+                                                           </td>
                                                         </tr>
                                                     })
                                             }
@@ -437,7 +441,7 @@ export default function EventDetails() {
                         {/* Conditional Rendering for Admins */}
                         {
                             (userData.role === "Admin" || userData.role === "Super Admin") &&
-                            <section className="my-2 py-2 block  md:flex justify-around  items-center">
+                            <section className="my-2 py-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3  ">
 
                                 <section className='my-2'>
 

@@ -13,7 +13,7 @@ export default function EventCard({ data, isLoading }) {
   }
 
   return (
-    <section className='card-bg-image text-white  p-5 mt-3 rounded-lg shadow-lg bg-white h-[250px] w-[350px] outline outline-blue-400 sm:mt-5 flex justify-between'>
+    <section className='card-bg-image text-white  p-5 mt-3 rounded-lg shadow-lg bg-white h-[250px] w-[300px] md:w-[330px] outline outline-blue-400 sm:mt-5 flex justify-between'>
       <section className="flex-1 flex flex-col justify-between">
         <p className={`${!isLoading ? '' :'self-start'}text-base font-bold  text-nowrap`}>
           {isLoading ? (

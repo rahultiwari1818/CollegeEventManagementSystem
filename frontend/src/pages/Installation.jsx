@@ -137,7 +137,7 @@ export default function Installation() {
         <>
             {
                 isLoading &&
-                <Overlay />
+                <Overlay showWhiteBg={true} />
             }
             <section className='flex justify-center items-center '>
                 <section className='p-5 md:p-10 shadow-2xl bg-white md:outline-none outline outline-blue-500 md:mt-0 md:mb-0 mt-2 '>
