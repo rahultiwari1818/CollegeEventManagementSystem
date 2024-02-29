@@ -11,21 +11,29 @@ const Course = require("../models/Course.js");
 const transporter = require("../config/mailTransporter");
 const SECRET_KEY = process.env.SECRET_KEY;
 
-
+const nameRegex = /^[a-zA-Z.][a-zA-Z. ]*$/;
+const phnoRegex = /^\d{10}$/;
 
 
 const registerStudentsInBulk = async (req, res) => {
     let newStudentCSVFilePath = "";
-    let invalidRecordsFilePath = "";
     try {
         const studentCSVFile = req.file;
         console.log(studentCSVFile)
         newStudentCSVFilePath = `uploads/${studentCSVFile.originalname}${path.extname(studentCSVFile.originalname)}`
         await fs.rename(studentCSVFile.path, newStudentCSVFilePath)
 
+
+
         const source = await csvtojson().fromFile(`./uploads/${studentCSVFile.originalname}${path.extname(studentCSVFile.originalname)}`); // await the csvtojson promise
 
         const courses = await Course.find();
+        const students = await Student.find({}, 'sid');
+
+        // Extract the 'sid' values from the result
+        const sids = students.map(student => student.sid);
+
+
 
         const invalidRecords = [];
 
@@ -43,13 +51,28 @@ const registerStudentsInBulk = async (req, res) => {
             let flag = false;
 
             for (let course of courses) {
-                if (course.courseName === entry["course"] && course.noOfSemesters >= Number(entry["semester"])) {
+                if (course.courseName === entry["course"].trim() && course.noOfSemesters >= Number(entry["semester"])) {
                     flag = true;
                     break;
                 }
             }
 
+            if (!["male", "female"].includes(String(entry["gender"]).trim().toLowerCase())) {
+                flag = false;
+            }
 
+
+            if (sids.includes(entry["sid"].trim())) {
+                flag = false;
+            }
+
+            if (!nameRegex.test(entry["student name"].trim())) {
+                flag = false;
+            }
+
+            if(!phnoRegex.test(entry["mobile no"])){
+                flag = false;
+            }
 
             if (!flag) {
                 invalidRecords.push(entry);
@@ -64,7 +87,7 @@ const registerStudentsInBulk = async (req, res) => {
                 division: entry["division"],
                 rollno: entry["roll no"],
                 sid: entry["sid"],
-                studentName: entry["student name"],
+                studentName: entry["student name"].trim(),
                 phno: entry["mobile no"],
                 email: entry["email"],
                 gender: entry["gender"],
@@ -74,12 +97,8 @@ const registerStudentsInBulk = async (req, res) => {
             };
         });
 
-        // If there are invalid records, write them to a temporary file
-        if (invalidRecords.length > 0) {
-            invalidRecordsFilePath = 'invalid_records.csv';
-            const csvData = invalidRecords.map(record => Object.values(record).join(',')).join('\n');
-            fs.writeFile(invalidRecordsFilePath, csvData);
-        }
+        const csvData = invalidRecords.map(record => Object.values(record).join(' , ')).join('\n');
+
 
         // If there are valid records, insert them into the database
         const validRecordsToInsert = arrayToInsert.filter(record => record); // Filter out undefined records
@@ -88,20 +107,11 @@ const registerStudentsInBulk = async (req, res) => {
         }
 
         // Send response
-        // console.log(invalidRecords,"\n",validRecordsToInsert.length)
         if (invalidRecords.length > 0) {
             // Send the temporary file containing invalid records to the user for download
-            res.download(invalidRecordsFilePath, 'invalid_records.csv', (err) => {
-                if (err) {
-                    console.error('Error sending file:', err);
-                    res.status(500).json({ success: false, message: 'Error sending file' });
-                } else {
-                    // Cleanup after successful download
-                    fs.unlink(invalidRecordsFilePath);
-                    res.status(200).json({ result: true, message: "Students registered with some errors. Check the downloaded file for invalid records." });
-                }
-            });
-        } else {
+            res.status(200).json({ result: true, message: "Students registered with some errors. Check the downloaded file for invalid records.", invalidRecords });
+        }
+        else {
             // If there are no invalid records, send success response
             res.status(200).json({ result: true, message: "Students registered successfully." });
         }
@@ -153,6 +163,14 @@ const registerStudentIndividually = async (req, res) => {
                 result: false
             })
         }
+
+        if (!nameRegex.test(studentName.trim())) {
+            return res.status(400).json({
+                message: "Name Should Only have Alphabets and Spaces",
+                result: false
+            })
+        }
+
         let profilePicPath = "";
         const profilePicName = profilePic ? profilePic.originalname : "";
 
@@ -262,7 +280,7 @@ const getStudents = async (req, res) => {
         const currentPage = Math.min(Math.max(page, 1), totalPages);
 
         // Calculate the number of documents to skip
-        const skip = ((currentPage - 1) * limit) >=0 ?((currentPage - 1) * limit)  : 0;
+        const skip = ((currentPage - 1) * limit) >= 0 ? ((currentPage - 1) * limit) : 0;
 
         // Find students based on search criteria with pagination, excluding the password field
         const data = await Student.find(searchCriteria)
@@ -357,8 +375,8 @@ const getIndividualStudentsFromId = async (req, res) => {
                     name: student.studentName,
                     email: student.email,
                     _id: student._id,
-                    profilePicName:student.profilePicName,
-                    profilePicPath:student.profilePicPath
+                    profilePicName: student.profilePicName,
+                    profilePicPath: student.profilePicPath
                 },
                 "result": true
             });
@@ -523,12 +541,17 @@ const loginStudent = async (req, res) => {
             return res.status(400).json({ "message": "Invalid Password", result: false });
         }
 
+        if (user.status !== "Active") {
+            return res.status(400).json({ "message": "Login Locked.. Contact Admin", result: false });
+
+        }
+
         const data = {
             user: {
                 id: user._id,
                 role: "Student",
                 name: user.studentName,
-                course:user.course,
+                course: user.course,
             }
         };
         console.log(data)
@@ -611,55 +634,54 @@ const updateStudentData = async (req, res) => {
 
 }
 
-const changeUserProfilePic = async(req,res)=>{
+const changeUserProfilePic = async (req, res) => {
 
     try {
-        
+
         const profilePic = req.file;
-        if(!profilePic){
+        if (!profilePic) {
             return res.status(400).json({
-                message:"Please Provide Profile Photo",
-                result:false
+                message: "Please Provide Profile Photo",
+                result: false
             })
         }
-        const userData = await Student.findOne({_id:req.user.id})
-        
+        const userData = await Student.findOne({ _id: req.user.id })
+
 
 
         const profilePicName = profilePic.originalname;
         const result = await uploadToCloudinary(profilePic.path, "image");
-        if(result.message==="Fail"){
+        if (result.message === "Fail") {
             return res.status(500).json({
-                message:"Some Error Occued...",
-                result:false
+                message: "Some Error Occued...",
+                result: false
             })
         }
         const newProfilePicPath = result.url;
 
-        if(userData.profilePicName !== "."){
+        if (userData.profilePicName !== ".") {
             const publicId = userData.profilePicPath.split('/').slice(-1)[0].split('.')[0];
             await deleteFromCloudinary(publicId);
         }
 
 
-        const updatedData = await Student.updateOne(
+        const updatedData = await Student.findOneAndUpdate(
             { _id: req.user.id },
             {
                 $set: {
-                    profilePicName:profilePicName,
-                    profilePicPath:newProfilePicPath
+                    profilePicName: profilePicName,
+                    profilePicPath: newProfilePicPath
                 }
             },
-            { new: true } 
+            { new: true }
         )
-        
-        console.log(updatedData)
+
 
         return res.status(200).json({
-            message:"Profile Photo Uploaded Sucessfully",
-            result:true,
-            data:{
-                profilePicPath:newProfilePicPath,
+            message: "Profile Photo Uploaded Sucessfully",
+            result: true,
+            data: {
+                profilePicPath: newProfilePicPath,
                 profilePicName
             }
         })
@@ -668,46 +690,46 @@ const changeUserProfilePic = async(req,res)=>{
     } catch (error) {
         console.log(error)
         return res.status(500).json({
-            message:"Some Error Occured",
-            result:true
+            message: "Some Error Occured",
+            result: true
         })
     }
 
 }
 
-const changePassword = async(req,res)=>{
+const changePassword = async (req, res) => {
     try {
-        
-        const {currentPassword,newPassword} = req.body;
+
+        const { currentPassword, newPassword } = req.body;
         const userId = req.user.id;
 
-        const user = await Student.findOne({_id:userId});
+        const user = await Student.findOne({ _id: userId });
 
-        if(!user){
+        if (!user) {
             return res.status(400).json({
-                message:"Invalid User",
-                result:false
+                message: "Invalid User",
+                result: false
             })
         }
 
-        const comparedPassword = await bcrypt.compare(currentPassword,user.password);
-         if(!comparedPassword){
-            return res.status(400).json({"message":"Invalid Password",result:false});
-         }
-         
-         const salt = await bcrypt.genSalt(10);
-         const secPass = await bcrypt.hash(newPassword,salt);
-         
-         const userData = await Student.updateOne(
-            {_id:userId},
+        const comparedPassword = await bcrypt.compare(currentPassword, user.password);
+        if (!comparedPassword) {
+            return res.status(400).json({ "message": "Invalid Password", result: false });
+        }
+
+        const salt = await bcrypt.genSalt(10);
+        const secPass = await bcrypt.hash(newPassword, salt);
+
+        const userData = await Student.updateOne(
+            { _id: userId },
             {
-                $set:{
-                    password:secPass
+                $set: {
+                    password: secPass
                 }
             }
-         )
+        )
 
-         const mailOptions = {
+        const mailOptions = {
             from: process.env.EMAIL_ID,
             to: user.email,
             subject: 'Password Changed in CEMS',
@@ -731,14 +753,67 @@ const changePassword = async(req,res)=>{
             }
         });
 
-        return res.status(200).json({"message":"Password Updated  Successfully!","result":true});
+        return res.status(200).json({ "message": "Password Updated  Successfully!", "result": true });
 
 
     } catch (error) {
-        return res.status(500).json({"message":"Some Error Occured!","result":false});
+        return res.status(500).json({ "message": "Some Error Occured!", "result": false });
 
     }
 }
 
+const changeStudentStatus = async (req, res) => {
 
-module.exports = { registerStudentsInBulk, getStudents, getDivisions, getIndividualStudentsFromSid, studentForgotPassword, verifyOTP, resetPassword, loginStudent, getIndividualStudentsFromId, registerStudentIndividually, updateStudentData,changeUserProfilePic,changePassword };
+    try {
+        const { id, newStatus } = req.body;
+
+        if (!id || !newStatus) {
+            return res.status(400).json({
+                message: "Id and New Status is Required",
+                result: false
+            })
+        }
+
+
+        const newData = await Student.findOneAndUpdate(
+            { _id: id },
+            {
+                $set:
+                {
+                    status: newStatus
+                }
+            },
+            { new: true } // To return the updated document
+
+        )
+
+        return res.status(200).json({
+            message: "Student Status Changed Successfully",
+            result: true,
+            updatedFacultyData: newData
+        })
+
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ "message": "Some Error Occured!", "result": false });
+
+    }
+
+}
+
+module.exports = {
+    registerStudentsInBulk,
+    getStudents,
+    getDivisions,
+    getIndividualStudentsFromSid,
+    studentForgotPassword,
+    verifyOTP,
+    resetPassword,
+    loginStudent,
+    getIndividualStudentsFromId,
+    registerStudentIndividually,
+    updateStudentData,
+    changeUserProfilePic,
+    changePassword,
+    changeStudentStatus
+};

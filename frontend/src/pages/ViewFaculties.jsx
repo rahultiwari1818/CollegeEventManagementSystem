@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import ToggleSwitch from '../components/ToggleSwitch';
 import UpdateFaculty from "../components/UpdateFaculty";
 import { useNavigate } from 'react-router-dom';
+import LockingConfirmation from '../components/LockingConfirmation';
 
 export default function ViewFaculties() {
     const [facultyData, setFacultyData] = useState([]);
@@ -25,6 +26,11 @@ export default function ViewFaculties() {
 
     const [openUpdateModal,setOpenUpdateModal] = useState(false);
     const [dataToBeUpdated,setDataUpdated] = useState({});
+
+    const [isOpenChangeStatusModal,setIsOpenChangeStatusModal] = useState({
+        isOpen:false,
+        data:{}
+    })
 
 
     const changeSearch = useCallback((value) => {
@@ -110,12 +116,27 @@ export default function ViewFaculties() {
         return Math.min(endIndex, totalEntries);
     };
 
+    const closeChangeStatusModal = () =>{
+        setIsOpenChangeStatusModal((old)=>({isOpen:false,data:{}}))
+    }
+
+
+    const updateStateData = useCallback((data)=>{
+        setFacultyData((old)=>{
+
+            return old?.map((faculty)=>{
+                return faculty._id === data._id ? data : faculty;
+            })
+        })
+    },[])
+
+
     const user = useSelector((state)=>state.UserSlice);
     const navigate = useNavigate();
     const [showOverLay,setShowOverLay] = useState(true);
     
     useEffect(()=>{
-        if(!user) return;
+        if(!user || user?.role === undefined || user?.role === "") return;
         if(user.role !== "Super Admin"){
             navigate("/home");
         }
@@ -270,11 +291,20 @@ export default function ViewFaculties() {
                                                 </button>
                                             </td>
                                             <td className="border px-4 py-2 min-w-[10%]">
-                                                <ToggleSwitch
-                                                    headingText={""}
-                                                    selected={faculty.status === "Active"}
-                                                    updateSelected={() => { }}
-                                                />
+                                                {
+                                                    faculty.role !== "Super Admin"
+                                                    &&
+                                                    <ToggleSwitch
+                                                        headingText={""}
+                                                        selected={faculty.status === "Active"}
+                                                        updateSelected={() => {
+                                                            setIsOpenChangeStatusModal({
+                                                                isOpen:true,
+                                                                data:faculty
+                                                            })
+                                                        }}
+                                                    />
+                                                }
                                                 <p className="my-1 text-center">{faculty.status}</p>
                                             </td>
 
@@ -331,8 +361,10 @@ export default function ViewFaculties() {
                 </section>
 
             </section>
-            <UpdateFaculty isOpen={openUpdateModal} close={setOpenUpdateModal} heading={"Update Student Data"} dataToBeUpdated={dataToBeUpdated}/>
-
+            <UpdateFaculty isOpen={openUpdateModal} close={setOpenUpdateModal} heading={"Update Student Data"} dataToBeUpdated={dataToBeUpdated} updateStateData={updateStateData}/>
+            <LockingConfirmation isOpen={isOpenChangeStatusModal.isOpen} close={closeChangeStatusModal} user={"Faculty"} data={isOpenChangeStatusModal.data} updateStateData={updateStateData}/>
         </>
     );
 }
+
+

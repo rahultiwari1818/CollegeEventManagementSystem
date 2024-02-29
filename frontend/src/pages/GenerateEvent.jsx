@@ -262,7 +262,7 @@ export default function GenerateEvent() {
     const navigate = useNavigate();
     
     useEffect(()=>{
-        if(!user) return;
+        if(!user || user?.role === "") return;
         if(user.role === "Student"){
             navigate("/home");
         }

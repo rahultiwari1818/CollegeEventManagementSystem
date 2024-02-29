@@ -9,7 +9,7 @@ import { fetchAllCourses } from '../store/CourseSlice';
 import axios from 'axios';
 import {toast} from "react-toastify"
 import Overlay from './Overlay';
-export default function UpdateStudent({ isOpen, close, heading, dataToBeUpdated = {} }) {
+export default function UpdateStudent({ isOpen, close, heading, dataToBeUpdated = {},updateStateData }) {
 
 
     const token = localStorage.getItem("token");
@@ -98,7 +98,8 @@ export default function UpdateStudent({ isOpen, close, heading, dataToBeUpdated 
             })
             
             if(response.data.result){
-                toast.success(response.data.message)
+                toast.success(response.data.message);
+                updateStateData(response.data.updatedStudent);
                 close()
             }
 

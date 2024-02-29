@@ -10,6 +10,7 @@ import { fetchAllCourses } from '../store/CourseSlice';
 import ToggleSwitch from '../components/ToggleSwitch';
 import UpdateStudent from '../components/UpdateStudent';
 import { useNavigate } from 'react-router-dom';
+import LockingConfirmation from '../components/LockingConfirmation';
 
 export default function ViewStudents() {
     const [studentData, setStudentData] = useState([]);
@@ -31,6 +32,12 @@ export default function ViewStudents() {
 
     const [openUpdateModal,setOpenUpdateModal] = useState(false);
     const [dataToBeUpdated,setDataUpdated] = useState({});
+
+    const [isOpenChangeStatusModal,setIsOpenChangeStatusModal] = useState({
+        isOpen:false,
+        data:{}
+    })
+
 
 
     const coursesData = useSelector((state)=>state.CourseSlice.data);
@@ -103,6 +110,7 @@ export default function ViewStudents() {
             setTotalPages(Math.ceil(data.totalItems / entriesPerPage));
             setTotalEntries(data.totalItems);  // Update total pages based on selected entries per page
         } catch (error) {
+            
             console.error("Error fetching student data:", error);
         } finally {
             setIsDataLoading(false);
@@ -169,19 +177,35 @@ export default function ViewStudents() {
         return Math.min(endIndex, totalEntries);
     };
 
+    const closeChangeStatusModal = () =>{
+        setIsOpenChangeStatusModal((old)=>({isOpen:false,data:{}}))
+    }
+
+
+
+    const updateStateData = useCallback((data)=>{
+        setStudentData((old)=>{
+            return old?.map((student)=>{
+                return student._id === data._id ? data : student;
+            })
+        })
+    },[])
+
 
     const user = useSelector((state)=>state.UserSlice);
     const navigate = useNavigate();
     const [showOverLay,setShowOverLay] = useState(true);
     
     useEffect(()=>{
-        if(!user) return;
+        if(!user || user?.role === "") return;
         if(user.role !== "Super Admin"){
             navigate("/home");
         }
         // console.log("called")
         setShowOverLay(false)
     },[user])
+
+
 
 
     return (
@@ -374,7 +398,13 @@ export default function ViewStudents() {
                                                 <ToggleSwitch
                                                     headingText={""}
                                                     selected={student.status==="Active"}
-                                                    updateSelected={()=>{}}
+                                                    updateSelected={()=>{
+                                                        setIsOpenChangeStatusModal(()=>({
+                                                            isOpen:true,
+                                                            data:student
+                                                        }))
+                                                    }
+                                                    }
                                                     />
                                                     <p className="my-1 text-center">{student.status}</p>
                                                     
@@ -434,7 +464,9 @@ export default function ViewStudents() {
             </section>
 
 
-            <UpdateStudent isOpen={openUpdateModal} close={setOpenUpdateModal} heading={"Update Student Data"} dataToBeUpdated={dataToBeUpdated}/>
+            <UpdateStudent isOpen={openUpdateModal} close={setOpenUpdateModal} heading={"Update Student Data"} dataToBeUpdated={dataToBeUpdated} updateStateData={updateStateData}/>
+            <LockingConfirmation isOpen={isOpenChangeStatusModal.isOpen} close={closeChangeStatusModal} user={"Student"} data={isOpenChangeStatusModal.data} updateStateData={updateStateData}/>
+
         </>
     );
 }

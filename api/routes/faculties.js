@@ -1,5 +1,5 @@
 const express = require("express");
-const { setUpSystem, getFaculties,registerIndividualFaculties, loginFaculty, registerFacultiesInBulk, getIndividualFaculty, facultyForgotPassword, verifyOTP, resetPassword, updateFacultyData, changeFacultyProfilePic, changePassword } = require("../controllers/faculties.controller");
+const { setUpSystem, getFaculties,registerIndividualFaculties, loginFaculty, registerFacultiesInBulk, getIndividualFaculty, facultyForgotPassword, verifyOTP, resetPassword, updateFacultyData, changeFacultyProfilePic, changePassword, changeFacultyStatus } = require("../controllers/faculties.controller");
 const {checkSetUp} = require("../controllers/college.controller");
 const fetchUser = require("../middlewares/fetchUser");
 const checkIsAdmin = require("../middlewares/checkIsAdmin.js");
@@ -16,6 +16,8 @@ router.post("/registerInBulk",checkIsSuperAdmin,upload.single("facultycsv"),regi
 router.post("/updateFacultyData",checkIsSuperAdmin,updateFacultyData);
 router.post("/changeProfilePhoto",checkIsSuperAdmin,upload.single("profilePic"),changeFacultyProfilePic);
 router.post("/changePassword",fetchUser,changePassword)
+
+router.patch("/changeStatus",checkIsSuperAdmin,changeFacultyStatus);
 
 router.post("/forgotPassword",facultyForgotPassword);
 router.post("/verifyOTP",verifyOTP);

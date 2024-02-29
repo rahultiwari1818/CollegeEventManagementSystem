@@ -34,10 +34,31 @@ export default function AddFaculties() {
                 },
             })
 
-            if (data?.success) {
+            if (data?.result) {
                 toast.success(data?.message);
+                if (data?.invalidRecords) {
+                    // Convert each object in invalidRecords to a string representation
+                    const content = data.invalidRecords.map(record => JSON.stringify(record)).join('\n');
+            
+                    // Create a Blob object with the content and set its type
+                    const blob = new Blob([content], { type: 'text/plain' });
+                
+                    // Create a URL for the Blob object
+                    const url = URL.createObjectURL(blob);
+                
+                    // Create a link element with the URL and other attributes
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = "invalid_records.txt";
+                
+                    // Simulate a click on the link to trigger the download
+                    link.click();
+                
+                    // Clean up
+                    URL.revokeObjectURL(url);
+                }
             }
-
+            
             setFileToUpload(null);
 
 
@@ -58,12 +79,13 @@ export default function AddFaculties() {
     const user = useSelector((state)=>state.UserSlice);
     const navigate = useNavigate();
     
+
     useEffect(()=>{
-        if(!user) return;
+        if(!user || user?.role === "") return;
         if(user.role !== "Super Admin"){
             navigate("/home");
         }
-        console.log("called")
+        // console.log("called")
         setShowOverLay(false)
     },[user])
 

@@ -5,7 +5,7 @@ const multer = require("multer");
 const upload = multer({dest:"uploads/"});
 const fetchUser = require("../middlewares/fetchUser.js");
 const checkIsSuperAdmin = require("../middlewares/checkIsSuperAdmin.js");
-const { registerStudentsInBulk ,getStudents, getDivisions, getIndividualStudentsFromSid, studentForgotPassword, verifyOTP, resetPassword, loginStudent, getIndividualStudentsFromId, registerStudentIndividually, updateStudentData, changeUserProfilePic, changePassword} = require("../controllers/students.controller.js");
+const { registerStudentsInBulk ,getStudents, getDivisions, getIndividualStudentsFromSid, studentForgotPassword, verifyOTP, resetPassword, loginStudent, getIndividualStudentsFromId, registerStudentIndividually, updateStudentData, changeUserProfilePic, changePassword, changeStudentStatus} = require("../controllers/students.controller.js");
 
 
 
@@ -17,6 +17,7 @@ router.post("/registerIndividual",checkIsSuperAdmin,upload.single("profilePic"),
 router.post("/updateStudentData",checkIsSuperAdmin,updateStudentData)
 router.post("/changeProfilePhoto",fetchUser,upload.single("profilePic"),changeUserProfilePic)
 router.post("/changePassword",fetchUser,changePassword)
+router.patch("/changeStatus",checkIsSuperAdmin,changeStudentStatus);
 
 router.post("/forgotPassword",studentForgotPassword);
 router.post("/verifyOTP",verifyOTP);

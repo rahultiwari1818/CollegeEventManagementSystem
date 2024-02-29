@@ -5,7 +5,9 @@ export default function ToggleSwitch({ headingText, selected, updateSelected }) 
   const [enabled, setEnabled] = useState(selected)
 
   useEffect(() => {
-    updateSelected(enabled);
+    if(enabled!==selected){
+      updateSelected(enabled);
+    }
   }, [enabled])
 
   return (

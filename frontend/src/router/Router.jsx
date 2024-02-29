@@ -15,6 +15,7 @@ import ErrorPage from '../pages/ErrorPage';
 import Courses from '../pages/Courses';
 import EventType from '../pages/EventType';
 import ViewRegistration from '../pages/ViewRegistration';
+import AdminDashboard from '../pages/AdminDashboard';
 
 export default function Router() {
 	return (
@@ -22,6 +23,7 @@ export default function Router() {
 			<Route exact path="/" element={<Installation />} />
 			<Route path="/generateevent" element={<GenerateEvent />} />
 			<Route path="/login" element={<Login />} />
+			<Route path="/adminDashboard" element={<AdminDashboard/>} />
 			<Route path="/home" element={<Home />} />
 			<Route path="/eventdetails/:id" element={<EventDetail />} />
 			<Route path="/registerInEvent/:eid" element={<RegisterInEvent />} />

@@ -60,7 +60,12 @@ export default function Login() {
                     name: response.data.data.name,
                     role: response.data.data.role,
                 }))
-                navigate("/home");
+                if(response.data.data.role === "Super Admin"){
+                    navigate("/adminDashboard");
+                }
+                else{
+                    navigate("/home");
+                }
             }
             else {
                 toast.error(response?.data.message);

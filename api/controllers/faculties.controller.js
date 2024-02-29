@@ -10,6 +10,8 @@ const { generateOTP, uploadToCloudinary, deleteFromCloudinary } = require("../ut
 const { client } = require("../config/redisConfig");
 
 const SECRET_KEY = process.env.SECRET_KEY;
+const nameRegex = /^[a-zA-Z.][a-zA-Z. ]*$/;
+const phnoRegex = /^\d{10}$/;
 
 const registerIndividualFaculties = async(req,res)=>{
     try {
@@ -104,7 +106,51 @@ const registerFacultiesInBulk = async(req,res) =>{
          await fs.rename(facultyCSVFile.path,newfacultyCSVFilePath)
         const source = await csvtojson().fromFile(`./uploads/${facultyCSVFile.originalname}${path.extname(facultyCSVFile.originalname)}`); // await the csvtojson promise
 
-        const arrayToInsert = source.map(entry => ({
+        const courses = await Course.find();
+        const faculties = await Faculties.find({});
+
+        // Extract the 'sid' values from the result
+        const emails = faculties.map(faculty => faculty.email);
+        const mobileNos = faculties.map(faculty => faculty.phno);
+
+        const invalidRecords = [];
+
+        const arrayToInsert = source.map(entry => {
+
+            let flag = fakse;
+
+            for (let course of courses) {
+                if (course.courseName === entry["course"].trim() ) {
+                    flag = true;
+                    break;
+                }
+            }
+
+
+            if(emails.includes(entry["email"])){
+                flag = false;
+            }
+
+            if (!nameRegex.test(entry["name"].trim())) {
+                flag = false;
+            }
+
+            if(!phnoRegex.test(entry["mobile"])){
+                flag = false;
+            }
+
+
+            if(mobileNos.includes(entry["mobile"])){
+                flag = false;
+            }
+
+            if (!flag) {
+                invalidRecords.push(entry);
+                return;
+            }
+
+
+            return {
             profilePicName:".",
             profilePicPath:".",
             salutation:entry["saultation"],
@@ -115,12 +161,31 @@ const registerFacultiesInBulk = async(req,res) =>{
             course:entry["course"],
             password:entry["email"],
             status:"Active"
-        }));
-        const result = await Faculties.insertMany(arrayToInsert);
-       return res.status(200).json({ success: true, message: "Faculties registered successfully." });
+            }
+        });
+
+        const csvData = invalidRecords.map(record => Object.values(record).join(' , ')).join('\n');
+
+
+        // If there are valid records, insert them into the database
+        const validRecordsToInsert = arrayToInsert.filter(record => record); // Filter out undefined records
+        if (validRecordsToInsert.length > 0) {
+            await Faculties.insertMany(validRecordsToInsert);
+        }
+
+        // Send response
+        if (invalidRecords.length > 0) {
+            // Send the temporary file containing invalid records to the user for download
+            res.status(200).json({ result: true, message: "Faculties registered with some errors. Check the downloaded file for invalid records.", invalidRecords });
+        }
+        else {
+            // If there are no invalid records, send success response
+            res.status(200).json({ result: true, message: "Faculties registered successfully." });
+        }
+
     } catch (error) {
         // console.error("Error registering students:", error);
-       return res.status(500).json({ success: false, message: "An error occurred while registering Faculties . Please Check Your CSV File format.",error:error });
+       return res.status(500).json({ result: false, message: "An error occurred while registering Faculties . Please Check Your CSV File format.",error:error });
     }
     finally{
         fs.unlink(newfacultyCSVFilePath);
@@ -146,6 +211,11 @@ const loginFaculty = async(req,res)=>{
             return res.status(400).json({"message":"Invalid Password",result:false});
          }
          
+         if(user.status !== "Active"){
+            return res.status(400).json({ "message": "Login Locked.. Contact Admin", result: false });
+
+        }
+
          const data = {
             user:{
                 id:user._id,
@@ -163,6 +233,7 @@ const loginFaculty = async(req,res)=>{
         return res.status(400).json({"message":"Error Occured",result:false});
     }
 }
+
 
 const getFaculties = async (req, res) => {
     try {
@@ -560,6 +631,45 @@ const changePassword = async(req,res)=>{
     }
 }
 
+const changeFacultyStatus = async(req,res)=>{
+    
+    try {
+        const {id,newStatus} = req.body;
+
+        if(!id || !newStatus){
+            return res.status(400).json({
+                message:"Id and New Status is Required",
+                result:false
+            })
+        }
+
+
+        const newData = await Faculties.findOneAndUpdate(
+            {_id:id},
+            {
+                $set:
+                {
+                    status:newStatus
+                }
+            },
+            { new: true } // To return the updated document
+
+        )
+
+        return res.status(200).json({
+            message:"Faculty Status Changed Successfully",
+            result:true,
+            updatedFacultyData:newData
+        })
+
+    } catch (error) {
+        console.log(error)
+                return res.status(500).json({"message":"Some Error Occured!","result":false});
+
+    }
+
+}
+
 module.exports = {
     registerIndividualFaculties,
     registerFacultiesInBulk,
@@ -572,5 +682,6 @@ module.exports = {
     resetPassword,
     updateFacultyData,
     changeFacultyProfilePic,
-    changePassword
+    changePassword,
+    changeFacultyStatus
 };

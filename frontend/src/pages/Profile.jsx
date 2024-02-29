@@ -41,7 +41,6 @@ export default function Profile() {
             profilePicPath:data.profilePicPath,
             profilePicName:data.profilePicName
         }))
-        console.log(profileData)
     },[])
 
     useEffect(() => {

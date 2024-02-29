@@ -1,7 +1,7 @@
 import { Popover, Transition } from '@headlessui/react'
 import { Fragment } from 'react'
 import { Link } from 'react-router-dom'
-import { ReactComponent as UpIcon } from '../assets/Icons/up_arrow.svg';
+import { ReactComponent as UpIcon } from '../assets/Icons/BlueUpArrow.svg';
 
 
 
@@ -20,8 +20,8 @@ export default function Example({options,label,closeSideBar}) {
           <>
             <Popover.Button
               className={`
-                ${open ? 'text-white' : 'text-white/90'}
-                py-3 px-4 bg-green-500  text-white shadow-lg rounded-lg mx-3 w-full flex justify-between items-center`}
+                ${open ? 'text-blue-500' : 'text-blue-500'}
+                py-3 px-4 bg-white  text-blue-500 shadow-lg hover:bg-blue-500 hover:text-white hover:border hover:border-white rounded-lg mx-3 w-full flex justify-between items-center`}
             >
               <span>{label}</span>
               <UpIcon className={`md:h-5 md:w-5 w-3 h-3 ${!open ? 'transform rotate-180' : ''} float-right mx-3`} />
@@ -46,7 +46,7 @@ export default function Example({options,label,closeSideBar}) {
                     key={item.to}
                   >
                     <section className="w-full">
-                      <p className="py-3 px-4 hover:text-green-500 hover:bg-white bg-green-500 text-white shadow-lg text-nowrap ">
+                      <p className="py-3 px-4 hover:text-white hover:bg-blue-500 bg-white text-blue-500 shadow-lg text-nowrap ">
                         {item.label}
                       </p>
                     </section>
