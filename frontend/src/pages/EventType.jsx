@@ -11,13 +11,13 @@ export default function EventType() {
     const [showOverLay,setShowOverLay] = useState(true);
     
     useEffect(()=>{
-        if(!user) return;
+        if(!user || user?.role === "" || user?.role === undefined) return;
         if(user.role !== "Super Admin"){
             navigate("/home");
         }
         // console.log("called")
         setShowOverLay(false)
-    },[user])
+    },[user,navigate])
 
     return (
         <>
@@ -26,8 +26,8 @@ export default function EventType() {
             &&
             <Overlay/>
         }
-            <section className='flex justify-center items-center'>
-                <section>
+            <section className='flex justify-center items-center my-5'>
+                <section className='lg:flex justify-center items-start gap-5'>
                     <AddEventType />
                     <ViewEventType />
                 </section>

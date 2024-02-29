@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Overlay from '../components/Overlay';
-import { handleNumericInput, validatePhno } from '../utils';
+import { handleNumericInput, isValidName, isValidPassword, validatePhno } from '../utils';
 import Dropdown from '../components/Dropdown';
 export default function Installation() {
 
@@ -22,7 +22,8 @@ export default function Installation() {
         sadminnameErr: "",
         sadminemailErr: "",
         sadminphnoErr: "",
-        sadminpasswordErr: ""
+        sadminpasswordErr: "",
+        sadminsalutationErr:""
     })
     const [isLoading, setIsLoading] = useState(true);
 
@@ -48,19 +49,33 @@ export default function Installation() {
         }
     }, [data.sadminphno])
 
+    useEffect(() => {
+        if (isValidPassword(data.sadminpassword)) {
+            setErrors((old) => ({ ...old, sadminpasswordErr: "" }));
+        }
+        else {
+            setErrors((old) => ({
+                ...old, sadminpasswordErr: `Password Should Have at least 1 UpperCase Letter , 1 LowerCase Letter , 1 Digit and 1 Special Character.
+            its length should be greater than 8` }));
+        }
+
+    }, [data.sadminpassword])
+
+
+
     const fetchFacultiesData = useCallback(async () => {
 
         try {
 
             const response = await axios.get(`${API_URL}/api/faculties/isSetUpDone`);
             // console.log(response)
-            if(response.data.isSetUp){
+            if (response.data.isSetUp) {
                 navigate("/login");
             }
             setIsLoading(false);
 
         } catch (error) {
-            if(!navigator.onLine){
+            if (!navigator.onLine) {
                 console.log("offline");
             }
         }
@@ -70,12 +85,37 @@ export default function Installation() {
     }, [])
 
 
+    const validateData = () =>{
+        if (data.sadminsalutation==="") {
+            setErrors((old) => ({ ...old, sadminsalutationErr: "Select Super Admin's Salutation" }));
+        }
+        else {
+            setErrors((old) => ({
+                ...old, sadminsalutationErr: `` }));
+        }
+
+        if ( !isValidName(data.sadminname)) {
+            setErrors((old) => ({ ...old, sadminnameErr: "Super Admin Name Must Have Alphabets and Spaces only." }));
+        }
+        else {
+            setErrors((old) => ({
+                ...old, sadminsalutationErr: `` }));
+        }
+
+        
+
+    }
+
 
 
     const onSubmitHandler = async (e) => {
-        setIsLoading(() => true);
         e.preventDefault();
-        console.log("logged")
+        
+        validateData();
+
+        if (haveError) return;
+        setIsLoading(() => true);
+
         try {
             const response = await axios.post(`${API_URL}/api/faculties/setup`,
                 data
@@ -94,7 +134,7 @@ export default function Installation() {
         } catch ({ response }) {
             console.log(response)
             toast.error(response.data.message)
-            
+
         }
         finally {
             setIsLoading(() => false);
@@ -213,6 +253,13 @@ export default function Installation() {
                                 name={"sadminsalutation"}
                                 label={"Select Salutation"}
                             />
+                            {
+                                errors.sadminsalutationErr !== ""
+                                &&
+                                <p className="text-red-500 my-2">
+                                    {errors.sadminsalutationErr}
+                                </p>
+                            }
                         </section>
 
                         <section className='md:p-2 md:m-2 p-1 m-1'>
@@ -226,6 +273,15 @@ export default function Installation() {
                                 className='w-full shadow-lg md:p-3 rounded-lg md:m-2 p-2 m-1'
                                 required
                             />
+                            {
+                                errors.sadminnameErr !== ""
+                                &&
+                                <p className="text-red-500 my-2">
+                                    {
+                                        errors.sadminnameErr
+                                    }
+                                </p>
+                            }
                         </section>
                         <section className='md:p-2 md:m-2 p-1 m-1'>
                             <label htmlFor="sadminemail">Super Admin's Email:</label>
@@ -253,7 +309,7 @@ export default function Installation() {
                             />
                             {
                                 errors && errors.sadminphnoErr !== "" &&
-                                <p className="text-red-500">
+                                <p className="text-red-500 my-2">
                                     {
                                         errors.sadminphnoErr
                                     }
@@ -272,6 +328,15 @@ export default function Installation() {
                                 required
                             />
 
+                            {
+                                errors.sadminpasswordErr !== ""
+                                &&
+                                <p className="text-red-500 my-2">
+                                    {
+                                        errors.sadminpasswordErr
+                                    }
+                                </p>
+                            }
                         </section>
                         <section className='md:p-2 md:m-2  p-1 m-1'>
                             <input type="submit" value="Finish Set Up" className='cursor-pointer text-red-500 bg-white rounded-lg shadow-lg px-5 py-3 w-full m-2 outline outline-red-500 hover:text-white hover:bg-red-500 '

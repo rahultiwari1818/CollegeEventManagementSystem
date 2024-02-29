@@ -85,6 +85,21 @@ export default function Navbar() {
     },
   ];
 
+  const eventRoutes = [
+    {
+      to:"eventType",
+      label:"Manage Event Types"
+    },
+    {
+      to: "home",
+      label:"View Events",
+    },
+    {
+      to: "generateevent",
+      label:"Generate Event",
+    },
+  ];
+
 
   return (
 
@@ -108,15 +123,25 @@ export default function Navbar() {
                   isLoggedIn ?
                     <>
 
-                      <Link to="/adminDashboard" className='py-3 px-4 hover:border hover:border-white  hover:bg-blue-500 hover:text-white bg-white text-blue-500  shadow-lg rounded-lg mx-3' > Dashboard </Link>
-                      <Link to="/home" className='py-3 px-4 hover:border hover:border-white  hover:bg-blue-500 hover:text-white bg-white text-blue-500  shadow-lg rounded-lg mx-3' > Home </Link>
+                      {
+                        userData.role !== "Student"
+                        &&
+                        <Link to="/adminDashboard" className='py-3 px-4 hover:border hover:border-white  hover:bg-blue-500 hover:text-white bg-white text-blue-500  shadow-lg rounded-lg mx-3' > Dashboard </Link>
+                      }
+
+                      {
+                        userData.role === "Student"
+                        &&
+                        <Link to="/home" className='py-3 px-4 hover:border hover:border-white  hover:bg-blue-500 hover:text-white bg-white text-blue-500  shadow-lg rounded-lg mx-3' > Home </Link>
+                      }
 
                       {
                         userData.role !== "Student"
                         &&
                         <>
-                          <Link to="generateevent" className='py-3 px-4 hover:border hover:border-white  hover:bg-blue-500 hover:text-white bg-white text-blue-500  shadow-lg rounded-lg mx-3' > Generate Event </Link>
+                          <PopoverComponent options={eventRoutes} label="Manage Events" />
                           <PopoverComponent options={userRoutes} label="Manage Users" />
+                          <Link to="/courses" className='py-3 px-4 hover:border hover:border-white  hover:bg-blue-500 hover:text-white bg-white text-blue-500  shadow-lg rounded-lg mx-3' > Manage Courses </Link>
                         </>
                       }
                       <ProfilePopOver logoutHandler={logoutHandler} />
@@ -164,7 +189,7 @@ export default function Navbar() {
                     :
                     isLoggedIn ?
                       <>
-                      
+
                         <section className="flex justify-center items-center w-full mt-[20vh] mb-[5vh]">
                           <section className='bg-white py-3 px-3 rounded-full cursor-pointer w-fit'>
                             <Link to="/profile" onClick={closeSideBar}>
@@ -173,10 +198,14 @@ export default function Navbar() {
                           </section>
                         </section>
 
-                        <Link to="/adminDashboard" className='w-full block py-3 px-4 hover:border hover:border-white  hover:bg-blue-500 hover:text-white bg-white text-blue-500   shadow-lg rounded-lg mx-3' onClick={() => closeSideBar()} > Dashboard </Link>
+                        {
+                          userData.role !== "Student"
+                          &&
+                          <Link to="/adminDashboard" className='w-full block py-3 px-4 hover:border hover:border-white  hover:bg-blue-500 hover:text-white bg-white text-blue-500   shadow-lg rounded-lg mx-3' onClick={() => closeSideBar()} > Dashboard </Link>
+                        }
                         <Link to="/home" className=' w-full block py-3 px-4 hover:border hover:border-white  hover:bg-blue-500 hover:text-white bg-white text-blue-500   shadow-lg rounded-lg mx-3 my-2' onClick={() => closeSideBar()} > Home </Link>
-                        
-                        
+
+
                         {
                           userData.role !== "Student"
                           &&

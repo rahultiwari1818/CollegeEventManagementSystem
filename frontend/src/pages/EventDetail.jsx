@@ -175,6 +175,9 @@ export default function EventDetails() {
                                         duration={0.9}
                                     />
                                     :
+                                    data.isCanceled ?
+                                    <p className='text-red-500'>Event Canceled</p>
+                                    :
                                     curDate > new Date(data.edate)
                                         ?
                                         <p className='text-red-500'>Event Expired</p>

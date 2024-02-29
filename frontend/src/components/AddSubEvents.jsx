@@ -168,7 +168,7 @@ export default function AddSubEvents({ openUpdateModal, setOpenUpdateModal, head
                             onChange={updateData}
                             onBlur={(e) => {
                                 if (e.target.name === "noOfPartcipants") {
-                                    if (e.target.value < 1) {
+                                    if (Number(e.target.value) < 1) {
                                         setSubEventData({ ...subEventData, [e.target.name]: 1 });
                                         return;
                                     }

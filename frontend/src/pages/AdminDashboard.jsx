@@ -14,7 +14,7 @@ export default function AdminDashboard() {
             navigate("/home");
         }
         setShowOverLay(false);
-    },[userData])
+    },[userData,navigate])
 
 
   return (
@@ -25,7 +25,8 @@ export default function AdminDashboard() {
         <Overlay showWhiteBg={true}/>
     }
     <section>
-      
+        {/* College Name from DB */}
+        {/* {Counts} */}
     </section>
     </>
   )

@@ -14,9 +14,38 @@ export default function AddCourse() {
         courseName:"",
         noOfSemesters:0
     });
+
+    const [errors,setErrors] = useState({
+        courseNameErr:"",
+        noOfSemestersErr:""
+    })
+
+
+    const validateData = () =>{
+        let flag = true;
+        if(data.noOfSemesters === 0){
+            setErrors((old)=>({...old,noOfSemestersErr:"No Of Semester Must Be Greater Than 0.!"}))
+            flag = false;
+        }
+        else{
+            setErrors((old)=>({...old,noOfSemestersErr:""}))
+        }
+        if(data.courseName.trim().length === 0){
+            setErrors((old)=>({...old,courseNameErr:"Course Name Should Contain Alphabets and Spaces Only.!"}))
+            flag = false;
+        }
+        else{
+            setErrors((old)=>({...old,courseNameErr:""}))
+        }
+        return flag;
+    }
+
     const dispatch = useDispatch();
 
     const addCourseHandler = async () => {
+
+        if(!validateData()) return;
+
         try {
             const response = await axios.post(
                 `${API_URL}/api/course/addCourse`,
@@ -61,6 +90,15 @@ export default function AddCourse() {
                     className='w-full shadow-lg md:p-3 rounded-lg p-2 my-2'
                     required
                 />
+                {
+                    errors.courseNameErr !== ""
+                    &&
+                    <p className="text-red-500 my-2">
+                        {
+                            errors.courseNameErr
+                        }
+                    </p>
+                }
             </section>
             <section className='md:p-2 md:m-2 p-1 m-1'>
                 <label htmlFor="ename">No of Semesters:</label>
@@ -74,6 +112,15 @@ export default function AddCourse() {
                     onKeyDown={handleNumericInput}
                     required
                 />
+                {
+                    errors.noOfSemestersErr !== ""
+                    &&
+                    <p className="text-red-500 my-2">
+                        {
+                            errors.noOfSemestersErr
+                        }
+                    </p>
+                }
             </section>
             <section className='md:p-2 md:m-2 p-1 m-1'>
                 <button

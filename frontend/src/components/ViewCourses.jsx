@@ -17,7 +17,7 @@ export default function ViewCourses() {
     }, [dispatch])
 
   return (
-    <section>
+    <section className='my-2'>
         <section className='overflow-x-auto'>
 			<table className='table-auto min-w-full bg-white shadow-md rounded-lg overflow-hidden'>
 				<thead className='bg-blue-500 text-white'>

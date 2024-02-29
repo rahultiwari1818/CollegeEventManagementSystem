@@ -1,6 +1,6 @@
 const express = require("express");
 const { setUpSystem, getFaculties,registerIndividualFaculties, loginFaculty, registerFacultiesInBulk, getIndividualFaculty, facultyForgotPassword, verifyOTP, resetPassword, updateFacultyData, changeFacultyProfilePic, changePassword, changeFacultyStatus } = require("../controllers/faculties.controller");
-const {checkSetUp} = require("../controllers/college.controller");
+const {checkSetUp, getCollegeData} = require("../controllers/college.controller");
 const fetchUser = require("../middlewares/fetchUser");
 const checkIsAdmin = require("../middlewares/checkIsAdmin.js");
 const multer = require("multer");
@@ -27,4 +27,7 @@ router.get("/isSetUpDone",checkSetUp)
 router.get("/getfaculties",checkIsAdmin,getFaculties);
 router.get("/getSpecificFaculty/:id",checkIsFaculty,getIndividualFaculty)
 router.post("/setup",setUpSystem);
+
+router.get("/getCollegeData",checkIsSuperAdmin,getCollegeData);
+
 module.exports = router;

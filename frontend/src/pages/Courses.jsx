@@ -11,13 +11,14 @@ export default function Courses() {
     const [showOverLay,setShowOverLay] = useState(true);
     
     useEffect(()=>{
-        if(!user) return;
+        if(!user || user?.role == "" || user?.role === undefined) return;
+        console.log("role",user.role)
         if(user.role !== "Super Admin"){
             navigate("/home");
         }
         // console.log("called")
         setShowOverLay(false)
-    },[user])
+    },[user,navigate])
 
     return (
         <>
@@ -26,8 +27,8 @@ export default function Courses() {
             &&
             <Overlay/>
         }
-        <section className='flex justify-center items-center'>
-            <section>
+        <section className='flex justify-center items-center my-5'>
+            <section className='lg:flex justify-center items-start gap-10'>
                 <AddCourse />
                 <ViewCourses />
             </section>

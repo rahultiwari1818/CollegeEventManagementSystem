@@ -7,7 +7,7 @@ import { formatMongoDate } from '../utils';
 import Skeleton from 'react-loading-skeleton';
 import ChangeProfilPic from '../components/ChangeProfilePic';
 import ChangePassword from '../components/ChangePassword';
-
+import UpdateFaculty from "../components/UpdateFaculty";
 
 export default function Profile() {
 
@@ -20,6 +20,8 @@ export default function Profile() {
     const [isDataLoading, setIsDataLoading] = useState(true);
     const [isOpenChangeProfilePicModal, setIsOpenChangeProfilePicModal] = useState(false);
     const [isOpenChangePasswordModal,setIsOpenChangePasswordModal] = useState(false);
+    const [openUpdateModal,setOpenUpdateModal] = useState(false);
+
     const openProfilePicModal = () => {
         setIsOpenChangeProfilePicModal(true)
     }
@@ -35,12 +37,24 @@ export default function Profile() {
         setIsOpenChangePasswordModal(false);
     }
 
+    const openUpdateProfilModal = () =>{
+        setOpenUpdateModal(true);
+    }
+
+    const closeUpdateProfilModal = () =>{
+        setOpenUpdateModal(false);
+    }
+
     const changeProfilePicURL = useCallback((data)=>{
         setProfileData((old)=>({
             ...old,
             profilePicPath:data.profilePicPath,
             profilePicName:data.profilePicName
         }))
+    },[])
+
+    const updateProfileData = useCallback((data)=>{
+        setProfileData(data)
     },[])
 
     useEffect(() => {
@@ -388,7 +402,16 @@ export default function Profile() {
                                 </section>
                         }
                     </section>
-                    <section className="my-2 flex justify-center">
+                    <section className="my-2 flex justify-center gap-5">
+                   {
+                    user.role === "Super Admin"
+                    &&
+                    <button className='px-5 py-3 bg-yellow-500 rounded-lg shadow-lg text-white hover:text-yellow-500 hover:bg-white hover:outline hover:outline-yellow-500'
+                   onClick={ openUpdateProfilModal}
+                    >
+                            Update Profile Data
+                        </button>
+                   }
                         <button className='px-5 py-3 bg-yellow-500 rounded-lg shadow-lg text-white hover:text-yellow-500 hover:bg-white hover:outline hover:outline-yellow-500'
                         onClick={openChangePasswordModal}
                         >
@@ -397,6 +420,7 @@ export default function Profile() {
                     </section>
                 </section>
             </section>
+            <UpdateFaculty isOpen={openUpdateModal} close={closeUpdateProfilModal} heading={"Update Student Data"} dataToBeUpdated={profileData} updateStateData={updateProfileData} />
             <ChangeProfilPic isOpen={isOpenChangeProfilePicModal} close={closeProfilePicModal} heading={"Change Profile Pic"} imgUrl={profileData?.profilePicPath} changeProfilePicURL={changeProfilePicURL} />
             <ChangePassword isOpen={isOpenChangePasswordModal} close={closeChangePasswordModal} heading={"Change Password"}/>
         </section>

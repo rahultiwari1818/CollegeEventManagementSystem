@@ -203,7 +203,7 @@ export default function ViewStudents() {
         }
         // console.log("called")
         setShowOverLay(false)
-    },[user])
+    },[user,navigate])
 
 
 
@@ -382,7 +382,7 @@ export default function ViewStudents() {
                                             <td className="border px-2 py-2 md:px-4 min-w-[5%]">{student.rollno}</td>
                                             <td className="border px-2 py-2 md:px-4 min-w-[10%]">{student.phno}</td>
                                             <td className="border px-2 py-2 md:px-4 min-w-[10%]">{student.email}</td>
-                                            <td className="border px-2 py-2 md:px-4 min-w-[5%]">{student.gender}</td>
+                                            <td className="border px-2 py-2 md:px-4 min-w-[5%]">{student.gender.toLowerCase()}</td>
                                             <td className="border px-2 py-2 md:px-4 min-w-[5%]">
                                                 <button 
                                                 className='px-5 py-3 bg-yellow-500 rounded-lg shadow-lg text-white hover:text-yellow-500 hover:bg-white hover:outline hover:outline-yellow-500'

@@ -268,7 +268,7 @@ export default function GenerateEvent() {
         }
         // console.log("called")
         setIsLoading(false)
-    },[user])
+    },[user,navigate])
 
     
 
@@ -442,7 +442,7 @@ export default function GenerateEvent() {
                                         onChange={updateData}
                                         onBlur={(e) => {
                                             if (e.target.name === "noOfParticipants") {
-                                                if (e.target.value < 1) {
+                                                if (Number(e.target.value) < 1) {
                                                     setData({ ...data, [e.target.name]: 1 });
                                                     return;
                                                 }

@@ -7,6 +7,7 @@ import Overlay from "../components/Overlay";
 import AddIndividualFaculty from '../components/AddIndividualFaculty';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { ReactComponent as DownloadIcon } from "../assets/Icons/DownloadIcon.svg"
 
 
 
@@ -39,30 +40,30 @@ export default function AddFaculties() {
                 if (data?.invalidRecords) {
                     // Convert each object in invalidRecords to a string representation
                     const content = data.invalidRecords.map(record => JSON.stringify(record)).join('\n');
-            
+
                     // Create a Blob object with the content and set its type
                     const blob = new Blob([content], { type: 'text/plain' });
-                
+
                     // Create a URL for the Blob object
                     const url = URL.createObjectURL(blob);
-                
+
                     // Create a link element with the URL and other attributes
                     const link = document.createElement('a');
                     link.href = url;
                     link.download = "invalid_records.txt";
-                
+
                     // Simulate a click on the link to trigger the download
                     link.click();
-                
+
                     // Clean up
                     URL.revokeObjectURL(url);
                 }
             }
-            
+
             setFileToUpload(null);
 
 
-        } catch ({response}) {
+        } catch ({ response }) {
             toast.error(response.data.message);
         }
         finally {
@@ -76,18 +77,18 @@ export default function AddFaculties() {
         window.open(`${API_URL}/sampleFiles/Sample CSV For Faculties.csv`, "_blank")
     }
 
-    const user = useSelector((state)=>state.UserSlice);
+    const user = useSelector((state) => state.UserSlice);
     const navigate = useNavigate();
-    
 
-    useEffect(()=>{
-        if(!user || user?.role === "") return;
-        if(user.role !== "Super Admin"){
+
+    useEffect(() => {
+        if (!user || user?.role === "") return;
+        if (user.role !== "Super Admin") {
             navigate("/home");
         }
         // console.log("called")
         setShowOverLay(false)
-    },[user])
+    }, [user,navigate])
 
 
     return (
@@ -99,10 +100,16 @@ export default function AddFaculties() {
             <section className='md:p-2 md:m-2  p-1 m-1'>
                 <section className="md:flex justify-start gap-5 items-center">
                     <p className='lg:py-2 lg:px-3 lg:text-base py-1 px-2  bg-blue-500 text-white w-fit rounded-lg shadow-md'>Add Faculty Data in Bulk </p>
-                    <button className='lg:py-2 lg:px-3 lg:text-base py-1 px-2 my-2 md:my-0  bg-blue-500 text-white w-fit rounded-lg shadow-md'
+
+                    <button className='lg:py-2 lg:px-3 lg:text-base py-1 px-2 my-3 md:my-0 rounded-lg shadow-lg text-white bg-blue-500  hover:outline hover:outline-blue-700'
                         onClick={showCSVHandler}
+
                     >
-                        Download Sample CSV
+                        <section className="flex justify-between items-center gap-5">
+                            <p>Download Sample CSV</p>
+                            <DownloadIcon />
+                        </section>
+
                     </button>
                 </section>
                 <form method="post" onSubmit={fileUploadHandler} className='px-3 py-2'>
@@ -148,10 +155,10 @@ export default function AddFaculties() {
                     </section>
                 </form>
                 <section className="w-full border border-blue-500 my-2"></section>
-            <section className='mx-4'>
-            <p className='lg:py-2 lg:px-3 lg:text-base py-1 px-2  bg-blue-500 text-white w-fit rounded-lg shadow-md'>Add Faculty Data individually </p>
-                <AddIndividualFaculty/>
-            </section>
+                <section className='mx-4'>
+                    <p className='lg:py-2 lg:px-3 lg:text-base py-1 px-2  bg-blue-500 text-white w-fit rounded-lg shadow-md'>Add Faculty Data individually </p>
+                    <AddIndividualFaculty />
+                </section>
             </section>
         </>
 

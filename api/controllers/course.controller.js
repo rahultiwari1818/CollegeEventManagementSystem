@@ -10,7 +10,7 @@ const addCourse = async (req, res) => {
             })
         }
         const course = await Course.create({
-            courseName: courseName,
+            courseName: courseName.trim(),
             noOfSemesters:noOfSemesters
         });
 

@@ -27,7 +27,7 @@ const addEventType = async(req,res)=>{
         }
 
         const eventType = await EventType.create({
-            eventTypeName:eventTypeName,
+            eventTypeName:eventTypeName.trim(),
             eventTypeLogo:eventLogoName,
             eventTypeLogoPath:eventLogoPath
         })

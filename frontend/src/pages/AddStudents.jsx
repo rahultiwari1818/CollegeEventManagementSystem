@@ -7,6 +7,7 @@ import Overlay from "../components/Overlay";
 import AddIndividualStudent from '../components/AddIndividualStudent';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import {ReactComponent as DownloadIcon} from "../assets/Icons/DownloadIcon.svg"
 
 export default function AddStudents() {
 
@@ -82,7 +83,7 @@ export default function AddStudents() {
         }
         // console.log("called")
         setShowOverLay(false)
-    },[user])
+    },[user,navigate])
 
 
     return (
@@ -94,10 +95,15 @@ export default function AddStudents() {
             <section className='md:p-2 md:m-2  p-1 m-1'>
                 <section className="md:flex justify-start gap-5 items-center">
                     <p className='lg:py-2 lg:px-3 lg:text-base py-1 px-2  bg-blue-500 text-white w-fit rounded-lg shadow-md'>Add Student Data in Bulk </p>
-                    <button className='lg:py-2 lg:px-3 my-2 md:my-0 lg:text-base py-1 px-2  bg-blue-500 text-white w-fit rounded-lg shadow-md'
+                    <button className='lg:py-2 lg:px-3 lg:text-base py-1 px-2 my-3 md:my-0 rounded-lg shadow-lg text-white bg-blue-500  hover:outline hover:outline-blue-700'
                         onClick={showCSVHandler}
+
                     >
-                        Download Sample CSV 
+                        <section className="flex justify-between items-center gap-5">
+                            <p>Download Sample CSV</p>
+                            <DownloadIcon />
+                        </section>
+
                     </button>
                 </section>
                 <form method="post" onSubmit={fileUploadHandler} className='px-3 py-2'>

@@ -142,7 +142,7 @@ export default function ViewFaculties() {
         }
         // console.log("called")
         setShowOverLay(false)
-    },[user])
+    },[user,navigate])
     return (
         <>
         {
@@ -152,7 +152,7 @@ export default function ViewFaculties() {
         }
             <section className='mx-2 my-2 p-2'>
                 <section className="grid grid-cols-1 md:grid-cols-2  gap-2 md:gap-3 lg:gap-5 p-2">
-                    <Search placeholder="Search Student" searchValue={searchParams?.search} changeSearch={changeSearch} />
+                    <Search placeholder="Search Faculty" searchValue={searchParams?.search} changeSearch={changeSearch} />
                     <Dropdown dataArr={courses} selected={searchParams.searchCourse} setSelected={changeSearchCourse} name="searchCourse" label="Select Course" />
                 </section>
 
