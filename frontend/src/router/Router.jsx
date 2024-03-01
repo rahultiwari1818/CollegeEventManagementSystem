@@ -16,6 +16,8 @@ import Courses from '../pages/Courses';
 import EventType from '../pages/EventType';
 import ViewRegistration from '../pages/ViewRegistration';
 import AdminDashboard from '../pages/AdminDashboard';
+import Students from '../pages/Students';
+import Faculties from '../pages/Faculties';
 
 export default function Router() {
 	return (
@@ -36,6 +38,11 @@ export default function Router() {
 			<Route path='/courses' element={<Courses/>} />
 			<Route path='/eventType' element={<EventType/>} />
 			<Route path='/viewRegistrations/:eventId' element={<ViewRegistration/>} />
+
+			<Route path='/students' element={<Students/>} />
+			<Route path='/faculties' element={<Faculties/>} />
+
+			
 			<Route path="*" element={<ErrorPage/>}/>
 		</Routes>
 	)

@@ -29,22 +29,38 @@ const getCollegeData = async (req,res) =>{
     try {
         
         const collegeData = await College.find();
-        const courseData = await Course.find();
-        const studentData = await Students.find();
-        const facultyData = await Faculties.find();
-        const eventsData = await Events.find();
-        const eventTypesData = await EventType.find();
+        const courseData = await Course.countDocuments();
+        const studentData = await Students.countDocuments();
+        const facultyData = await Faculties.countDocuments();
+        const eventsData = await Events.countDocuments();
+        const eventTypesData = await EventType.countDocuments();
 
         return res.status(200).json({
             message:"College Data Fetched Successfully",
             result:true,
             data:[
                 collegeData,
-                courseData,
-                studentData,
-                facultyData,
-                eventsData,
-                eventTypesData
+                {
+                    label : "Courses",
+                    data:courseData
+                },
+                {
+                    label : "Students",
+                    data:studentData
+                },
+                {
+                    label : "Faculties",
+                    data:facultyData
+                },
+                {
+                    label : "Event Types",
+                    data:eventTypesData
+                },
+                {
+                    label : "Events",
+                    data:eventsData
+                }
+                
             ]
         })
 

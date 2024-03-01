@@ -5,7 +5,7 @@ import Dropdown from '../components/Dropdown'; // Import the Dropdown component
 import { debounce, transformCourseData } from '../utils';
 import Skeleton from 'react-loading-skeleton';
 import Overlay from '../components/Overlay';
-import { useDispatch, useSelector } from 'react-redux';
+import {  useSelector } from 'react-redux';
 import ToggleSwitch from '../components/ToggleSwitch';
 import UpdateFaculty from "../components/UpdateFaculty";
 import { useNavigate } from 'react-router-dom';
@@ -43,7 +43,6 @@ export default function ViewFaculties() {
     }, [setSearchParams]);
 
     const coursesData = useSelector((state) => state.CourseSlice.data);
-    const dispatch = useDispatch();
 
 
     const token = localStorage.getItem("token");

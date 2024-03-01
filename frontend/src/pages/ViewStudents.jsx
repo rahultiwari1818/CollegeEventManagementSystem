@@ -63,7 +63,7 @@ export default function ViewStudents() {
 
     const changeSearchDivision = useCallback((value) => {
         setSearchParams((old) => ({ ...old, searchdivision: value }));
-    });
+    },[setSearchParams]);
 
     const token = localStorage.getItem("token");
     const API_URL = process.env.REACT_APP_BASE_URL;

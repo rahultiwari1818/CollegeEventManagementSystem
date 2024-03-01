@@ -51,13 +51,31 @@ const registerStudentsInBulk = async (req, res) => {
             let flag = false;
 
             for (let course of courses) {
-                if (course.courseName === entry["course"].trim() && course.noOfSemesters >= Number(entry["semester"])) {
+                if (course.courseName.toLowerCase() === entry["course"].trim().toLowerCase() && course.noOfSemesters >= Number(entry["semester"])) {
+                   
                     flag = true;
                     break;
                 }
             }
 
             if (!["male", "female"].includes(String(entry["gender"]).trim().toLowerCase())) {
+                flag = false;
+                console.log("gender",entry["gender"])
+            }
+
+            if(isNaN(entry["division"])){
+                console.log("division",entry["division"])
+                flag = false;
+            }
+
+            if(isNaN(entry["roll no"])){
+                console.log("rollno",entry["roll no"])
+                flag = false;
+            }
+
+            if(isNaN(entry["sid"])){
+                console.log("sid",entry["sid"])
+
                 flag = false;
             }
 
@@ -83,14 +101,14 @@ const registerStudentsInBulk = async (req, res) => {
                 profilePicName: ".",
                 profilePicPath: ".",
                 course: entry["course"],
-                semester: entry["semester"],
-                division: entry["division"],
-                rollno: entry["roll no"],
-                sid: entry["sid"],
+                semester: Number(entry["semester"]),
+                division: Number(entry["division"]),
+                rollno: Number(entry["roll no"]),
+                sid: Number(entry["sid"]),
                 studentName: entry["student name"].trim(),
                 phno: entry["mobile no"],
                 email: entry["email"],
-                gender: entry["gender"],
+                gender: entry["gender"]?.toLowerCase(),
                 dob: dob,
                 password: dob, // Assuming password is also "Date Of Birth"
                 status: "Active",
@@ -132,7 +150,42 @@ const registerStudentIndividually = async (req, res) => {
         const { course, semester, division, rollno, sid, studentName, phno, gender, dob, password, email } = req.body;
         const profilePic = req?.file;
 
-        const doesSidAlreadyExists = await Student.find({ sid: sid });
+        const doesSidAlreadyExists = await Student.find({ sid: Number(sid) });
+
+        let message = "";
+        let flag = false;
+
+        if (!["male", "female"].includes(gender?.trim()?.toLowerCase())) {
+            flag = true;
+            message += "Gender Must be Male or Female.!";
+        }
+
+        if(isNaN(division)){
+            flag = true;
+            message += "Division Must be a Number!";
+        }
+
+        if(isNaN(rollno)){
+            flag = true;
+            message += "Roll no Must be a Number!";
+        }
+
+        if(isNaN(sid)){
+            flag = true;
+            message += "SID Must be a Number";
+        }
+
+        if(isNaN(semester)){
+            flag = true;
+            message += "Semester Must be a Number!";
+        }
+
+        if(flag){
+            return res.status(200).json({
+                message:message,
+                result:false
+            })
+        }
 
         if (doesSidAlreadyExists.length >= 1) {
             return res.status(400).json({
@@ -171,6 +224,9 @@ const registerStudentIndividually = async (req, res) => {
             })
         }
 
+        
+
+
         let profilePicPath = "";
         const profilePicName = profilePic ? profilePic.originalname : "";
 
@@ -188,13 +244,13 @@ const registerStudentIndividually = async (req, res) => {
             profilePicName,
             profilePicPath,
             course,
-            semester,
-            division,
-            rollno,
-            sid,
+            semester:Number(semester),
+            division:Number(division),
+            rollno:Number(rollno),
+            sid:Number(sid),
             studentName,
             phno,
-            gender,
+            gender:gender?.toLowerCase(),
             dob,
             password: secPass,
             email,
@@ -240,33 +296,33 @@ const registerStudentIndividually = async (req, res) => {
 
 const getStudents = async (req, res) => {
     try {
-        const searchQuery = req.query.search || "";
-        const courseFilter = req.query.course || "";
-        const semesterFilter = req.query.semester || "";
-        const divisionFilter = req.query.division || "";
+        const searchQuery = req.query.search || '';
+        const courseFilter = req.query.course || '';
+        const semesterFilter = parseInt(req.query.semester) || '';
+        const divisionFilter = parseInt(req.query.division) || '';
         const page = parseInt(req.query.page) || 1; // Current page, default is 1
         const limit = parseInt(req.query.limit) || 10; // Number of items per page, default is 10
-        const sidFilter = req.query?.sid || "";
-        // console.log(sidFilter)
+        const sidFilter = parseInt(req.query.sid) || ''; // Convert to number
+        const rollnoFilter = parseInt(req.query.rollno) || ''; // Convert to number
+
+
         // Define the search criteria
         const searchCriteria = {
             $and: [
                 searchQuery ? {
                     $or: [
                         { course: { $regex: searchQuery, $options: 'i' } },
-                        { semester: { $regex: searchQuery, $options: 'i' } },
-                        { division: { $regex: searchQuery, $options: 'i' } },
-                        { rollno: { $regex: searchQuery, $options: 'i' } },
-                        { sid: { $regex: searchQuery, $options: 'i' } },
                         { studentName: { $regex: searchQuery, $options: 'i' } },
                         { phno: { $regex: searchQuery, $options: 'i' } },
-                        { gender: { $regex: searchQuery, $options: 'i' } }
+                        { gender: { $regex: searchQuery, $options: 'i' } },
+                        {sid : searchQuery}
                     ]
                 } : {},
                 courseFilter ? { course: courseFilter } : {},
-                semesterFilter ? { semester: semesterFilter } : {},
-                divisionFilter ? { division: divisionFilter } : {},
-                sidFilter ? { sid: { $regex: sidFilter, $options: 'i' } } : {}
+                semesterFilter ? { semester: semesterFilter } : {}, // Direct comparison for numeric fields
+                divisionFilter ? { division: divisionFilter } : {}, // Direct comparison for numeric fields
+                sidFilter ? { sid: sidFilter } : {}, // Direct comparison for numeric fields
+                rollnoFilter ? { rollno: rollnoFilter } : {} // Direct comparison for numeric fields
             ]
         };
 
@@ -289,7 +345,7 @@ const getStudents = async (req, res) => {
             .limit(limit);
 
         return res.status(200).json({
-            message: "Students Data Fetched Successfully.",
+            message: 'Students Data Fetched Successfully.',
             data: data,
             result: true,
             currentPage: currentPage,
@@ -297,11 +353,10 @@ const getStudents = async (req, res) => {
             totalItems: totalDocuments
         });
     } catch (error) {
-        console.log(error)
-        return res.status(400).json({ message: "Some Error Occurred.", result: false });
+        console.error(error);
+        return res.status(400).json({ message: 'Some Error Occurred.', result: false });
     }
 };
-
 
 
 
@@ -801,6 +856,57 @@ const changeStudentStatus = async (req, res) => {
 
 }
 
+const promoteStudentsToNextSemester = async (req,res) =>{
+    
+    try {
+        
+        const { courseName } = req.body;
+
+        // Find the course
+        const course = await Course.findOne({ courseName });
+    
+        // Update student data based on the course's number of semesters
+        const result = await Student.updateMany(
+            { course: courseName },
+            [
+                {
+                    $set: {
+                        semester: {
+                            $cond: {
+                                if: { $eq: ["$semester", course.noOfSemesters] },
+                                then: 0,
+                                else: { $add: ["$semester", 1]  }
+                            }
+                        },
+                        status: {
+                            $cond: {
+                                if: { $eq: ["$semester", course.noOfSemesters] },
+                                then: "Inactive",
+                                else: "$status"
+                            }
+                        }
+                    }
+                }
+            ]
+        );
+    
+        console.log("Number of students updated:", result.nModified);
+    
+        // Now you can send a response back to the client
+        res.status(200).json({ message: "Student data updated successfully", nModified: result.nModified });
+
+
+    } catch (error) {
+        
+        return res.status(500).json({
+            message:"Some Error Occred",
+            result:false
+        })
+
+    }
+
+}
+
 module.exports = {
     registerStudentsInBulk,
     getStudents,
@@ -815,5 +921,6 @@ module.exports = {
     updateStudentData,
     changeUserProfilePic,
     changePassword,
-    changeStudentStatus
+    changeStudentStatus,
+    promoteStudentsToNextSemester
 };

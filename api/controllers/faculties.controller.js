@@ -120,7 +120,7 @@ const registerFacultiesInBulk = async(req,res) =>{
             let flag = fakse;
 
             for (let course of courses) {
-                if (course.courseName === entry["course"].trim() ) {
+                if (course.courseName.toLowerCase() === entry["course"].trim().toLowerCase() ) {
                     flag = true;
                     break;
                 }

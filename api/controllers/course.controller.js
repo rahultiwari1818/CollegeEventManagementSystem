@@ -9,6 +9,18 @@ const addCourse = async (req, res) => {
                 result:false
             })
         }
+
+        const existingCoursesObject = await Course.find();
+
+        const existingCourses = existingCoursesObject.map(course=>course.courseName.toLowerCase());
+
+        if(existingCourses.includes(courseName.trim().toLowerCase())){
+            return res.status(400).json({
+                message:"Course Name Already Exists.",
+                result:false
+            })
+        }
+
         const course = await Course.create({
             courseName: courseName.trim(),
             noOfSemesters:noOfSemesters

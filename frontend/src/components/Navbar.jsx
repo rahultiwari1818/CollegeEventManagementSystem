@@ -87,16 +87,16 @@ export default function Navbar() {
 
   const eventRoutes = [
     {
-      to:"eventType",
-      label:"Manage Event Types"
+      to: "eventType",
+      label: "Manage Event Types"
     },
     {
       to: "home",
-      label:"View Events",
+      label: "View Events",
     },
     {
       to: "generateevent",
-      label:"Generate Event",
+      label: "Generate Event",
     },
   ];
 
@@ -190,10 +190,10 @@ export default function Navbar() {
                     isLoggedIn ?
                       <>
 
-                        <section className="flex justify-center items-center w-full mt-[20vh] mb-[5vh]">
+                        <section className={`flex justify-center items-center w-full ${userData.role==="Student" ? "mt-[20vh]" : "mt-[15vh]" }  mb-[5vh]`}>
                           <section className='bg-white py-3 px-3 rounded-full cursor-pointer w-fit'>
                             <Link to="/profile" onClick={closeSideBar}>
-                              <ProfileIcon className="md:h-[10vh] md:w-[10vw] h-[11vh] w-[12vh]" />
+                              <ProfileIcon className={`${userData.role==="Student" ? "md:h-[10vh] md:w-[10vw] h-[11vh] w-[12vh]" : "md:h-[8vh] md:w-[8vw] h-[8vh] w-[8vh]" } `} />
                             </Link>
                           </section>
                         </section>
@@ -210,8 +210,9 @@ export default function Navbar() {
                           userData.role !== "Student"
                           &&
                           <>
-                            <Link to="generateevent" className='w-full block py-3 px-4 hover:border hover:border-white  hover:bg-blue-500 hover:text-white bg-white text-blue-500   shadow-lg rounded-lg mx-3 my-2' onClick={() => closeSideBar()}> Generate Event </Link>
-                            <PopoverComponent options={userRoutes} label="Manage Users" closeSideBar={closeSideBar} />
+                            <PopoverComponent options={eventRoutes} label=" Events" />
+                            <PopoverComponent options={userRoutes} label=" Users" closeSideBar={closeSideBar} />
+                            <Link to="/courses" className='py-3 px-4 hover:border hover:border-white  hover:bg-blue-500 hover:text-white bg-white text-blue-500  shadow-lg rounded-lg mx-3 my-3 block w-full' >  Courses </Link>
 
                           </>
                         }

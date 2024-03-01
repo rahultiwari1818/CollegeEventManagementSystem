@@ -16,19 +16,19 @@ const StudentSchema = new Schema({
         required: true
     },
     semester: {
-        type: String,
+        type: Number,
         required:true
     },
     division: {
-        type: String,
+        type: Number,
         required:true
     },
     rollno: {
-        type: String,
+        type: Number,
         required:true
     },
     sid: {
-        type: String,
+        type: Number,
         required:true,
         unique:true
     },
@@ -45,7 +45,9 @@ const StudentSchema = new Schema({
         required: true,
     },
     gender: {
-        type: String,
+        type:String,
+        enum: ['male', 'female','others'],
+        default:"male",
         required:true
     },
     dob: {
@@ -59,6 +61,8 @@ const StudentSchema = new Schema({
     },
     status:{
         type:String,
+        enum: ['Active', 'Inactive'],
+        default:"Active",
         required:true
     }
 

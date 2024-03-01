@@ -42,8 +42,10 @@ const FacultySchema = new Schema({
         type:String
     },
     status:{
-        required:true,
-        type:String
+        type:String,
+        enum: ['Active', 'Inactive'],
+        default:"Active",
+        required:true
     }
 
 });
