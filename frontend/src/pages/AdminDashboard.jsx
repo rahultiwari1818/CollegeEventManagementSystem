@@ -24,7 +24,6 @@ export default function AdminDashboard() {
 	useEffect(() => {
 		if (!userData || userData?.role === "" || userData?.role === undefined) return;
 		if (userData.role !== "Super Admin") {
-			alert(JSON.stringify(userData))
 			navigate("/home");
 		}
 		setShowOverLay(false);
@@ -57,7 +56,7 @@ export default function AdminDashboard() {
 
 	}, [])
 
-	const imagesArr = [CourseImage, StudentImage, FacultyImage, EventImage, StudentImage];
+	const imagesArr = [CourseImage, StudentImage, FacultyImage, EventImage, EventImage];
 	const routesArr = ["/courses", "/students", "/faculties", "/eventType", "/home"];
 
 	return (
@@ -69,9 +68,9 @@ export default function AdminDashboard() {
 			}
 			<section className='w-full h-full py-3 '>
 				<section className="flex justify-center items-center">
-					<section className='bg-blue-500 text-white px-3 py-3 text-base md:text-lg shadow-lg rounded-lg'>
+					<section className='bg-blue-500 text-white px-3 py-3 text-base md:text-lg shadow-lg rounded-lg md:w-[80vw] lg:w-[50vw]'>
 
-						<p>College Event Management System of </p>
+						<p className='text-center'>College Event Management System of </p>
 						<p className="text-center">
 							{
 								isLoading ?

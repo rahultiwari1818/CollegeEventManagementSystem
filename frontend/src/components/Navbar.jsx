@@ -132,7 +132,10 @@ export default function Navbar() {
                       {
                         userData.role === "Student"
                         &&
+                        <>
                         <Link to="/home" className='py-3 px-4 hover:border hover:border-white  hover:bg-blue-500 hover:text-white bg-white text-blue-500  shadow-lg rounded-lg mx-3' > Home </Link>
+                        <Link to="/myEvents" className='py-3 px-4 hover:border hover:border-white  hover:bg-blue-500 hover:text-white bg-white text-blue-500  shadow-lg rounded-lg mx-3' > My Events </Link>
+                        </>
                       }
 
                       {
@@ -203,8 +206,15 @@ export default function Navbar() {
                           &&
                           <Link to="/adminDashboard" className='w-full block py-3 px-4 hover:border hover:border-white  hover:bg-blue-500 hover:text-white bg-white text-blue-500   shadow-lg rounded-lg mx-3' onClick={() => closeSideBar()} > Dashboard </Link>
                         }
-                        <Link to="/home" className=' w-full block py-3 px-4 hover:border hover:border-white  hover:bg-blue-500 hover:text-white bg-white text-blue-500   shadow-lg rounded-lg mx-3 my-2' onClick={() => closeSideBar()} > Home </Link>
 
+                      {
+                        userData.role === "Student"
+                        &&
+                        <>
+                        <Link to="/home" className=' w-full block py-3 px-4 hover:border hover:border-white  hover:bg-blue-500 hover:text-white bg-white text-blue-500   shadow-lg rounded-lg mx-3 my-2' onClick={() => closeSideBar()} > Home </Link>
+                        <Link to="/myEvents" className=' w-full block py-3 px-4 hover:border hover:border-white  hover:bg-blue-500 hover:text-white bg-white text-blue-500   shadow-lg rounded-lg mx-3 my-2' onClick={() => closeSideBar()} > My Events </Link>
+                        </>
+                      }
 
                         {
                           userData.role !== "Student"

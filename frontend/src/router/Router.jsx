@@ -18,6 +18,8 @@ import ViewRegistration from '../pages/ViewRegistration';
 import AdminDashboard from '../pages/AdminDashboard';
 import Students from '../pages/Students';
 import Faculties from '../pages/Faculties';
+import EventResultDeclaration from '../pages/EventResultDeclaration';
+import MyEvents from '../pages/MyEvents';
 
 export default function Router() {
 	return (
@@ -38,7 +40,8 @@ export default function Router() {
 			<Route path='/courses' element={<Courses/>} />
 			<Route path='/eventType' element={<EventType/>} />
 			<Route path='/viewRegistrations/:eventId' element={<ViewRegistration/>} />
-
+			<Route path='/declareResult/:eventId' element={<EventResultDeclaration/>} />
+			<Route path="/myEvents" element={<MyEvents/>} />
 			<Route path='/students' element={<Students/>} />
 			<Route path='/faculties' element={<Faculties/>} />
 

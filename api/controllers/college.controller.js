@@ -23,8 +23,70 @@ const checkSetUp = async(req,res)=>{
     }
 }
 
+const getCollegeData = async(req,res) =>{
 
-const getCollegeData = async (req,res) =>{
+    try {
+        
+        const collegeData = await College.find();
+
+        return res.status(200).json({
+            message:"College Data Fetched Successfully",
+            result:true,
+            data:collegeData
+        })
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message:"Some Error Occured",
+            result:false
+        })
+    }
+
+}
+
+
+const updateCollegeData = async(req,res)=>{
+
+    try {
+
+        const {newCollegeName,id} = req.body;
+
+        if(!newCollegeName || newCollegeName.trim()===""){
+            return res.status(400).json({
+                message:"Please Provide Valid College Name",
+                result:false
+            })
+        }
+
+        const updatedCollegeName = await College.findOneAndUpdate(
+            {_id:id},
+            {
+                $set:{
+                    collegename:newCollegeName
+                }
+            },
+            { new: true } // To return the updated document
+        )
+
+        return res.status(200).json({
+            message:"College Data Updated Successfully",
+            result:true,
+            data:updatedCollegeName
+        })
+        
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message:"Some Error Occured",
+            result:false
+        })
+    }
+
+}
+
+
+const getWholeCollegeData = async (req,res) =>{
 
     try {
         
@@ -77,5 +139,7 @@ const getCollegeData = async (req,res) =>{
 
 module.exports = {
     checkSetUp,
-    getCollegeData
+    getCollegeData,
+    getWholeCollegeData,
+    updateCollegeData
 };

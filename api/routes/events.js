@@ -10,7 +10,8 @@ const {
     updateEventDetails,
     registerInEvent,
     getRegistrationDataOfEvent,
-    approveOrRejectRegistrationRequest
+    approveOrRejectRegistrationRequest,
+    studentParticipatedEvents
 } = require("../controllers/events.controller.js");
 const fetchUser = require("../middlewares/fetchUser.js");
 const checkIsAdmin = require("../middlewares/checkIsAdmin.js");
@@ -37,6 +38,8 @@ router.post("/registerInEvent",fetchUser,registerInEvent)
 router.get("/getRegistrationDataOfEvent",checkIsAdmin,getRegistrationDataOfEvent);
 
 router.patch("/changeRequestStatus",checkIsAdmin,approveOrRejectRegistrationRequest);
+
+router.get('/studentParticipatedEvents/:studentId',fetchUser,studentParticipatedEvents)
 
 router.post("/declareResult/:eventId",checkIsAdmin,async()=>{
 

@@ -58,7 +58,8 @@ const registerStudentsInBulk = async (req, res) => {
                 }
             }
 
-            if (!["male", "female"].includes(String(entry["gender"]).trim().toLowerCase())) {
+
+            if (!["male", "female","others"].includes(String(entry["gender"]).trim().toLowerCase())) {
                 flag = false;
                 console.log("gender",entry["gender"])
             }
@@ -200,11 +201,12 @@ const registerStudentIndividually = async (req, res) => {
             semester: semester,
             division: division,
             rollno: rollno,
+            status:"Active"
         });
 
         if (doesRollNoInSameDivExists) {
             return res.status(400).json({
-                message: "A student with the same roll number already exists in this division, semester, and course.",
+                message: "A student with the same roll number already exists in this division of semester of the same course.",
                 result: false
             });
         }
@@ -307,6 +309,8 @@ const getStudents = async (req, res) => {
 
 
         // Define the search criteria
+
+
         const searchCriteria = {
             $and: [
                 searchQuery ? {
@@ -315,9 +319,11 @@ const getStudents = async (req, res) => {
                         { studentName: { $regex: searchQuery, $options: 'i' } },
                         { phno: { $regex: searchQuery, $options: 'i' } },
                         { gender: { $regex: searchQuery, $options: 'i' } },
-                        {sid : searchQuery}
+                        {sid :isNaN(searchQuery) ? "" : Number(searchQuery)}
                     ]
                 } : {},
+                { status: "Active" }, // Filter for active status
+                { semester: { $gt: 0 } }, // Filter for semester > 0        
                 courseFilter ? { course: courseFilter } : {},
                 semesterFilter ? { semester: semesterFilter } : {}, // Direct comparison for numeric fields
                 divisionFilter ? { division: divisionFilter } : {}, // Direct comparison for numeric fields
@@ -325,6 +331,7 @@ const getStudents = async (req, res) => {
                 rollnoFilter ? { rollno: rollnoFilter } : {} // Direct comparison for numeric fields
             ]
         };
+
 
         // Count total number of documents matching the search criteria
         const totalDocuments = await Student.countDocuments(searchCriteria);
@@ -856,15 +863,13 @@ const changeStudentStatus = async (req, res) => {
 
 }
 
-const promoteStudentsToNextSemester = async (req,res) =>{
-    
+const promoteStudentsToNextSemester = async (req, res) => {
     try {
-        
         const { courseName } = req.body;
 
         // Find the course
         const course = await Course.findOne({ courseName });
-    
+
         // Update student data based on the course's number of semesters
         const result = await Student.updateMany(
             { course: courseName },
@@ -872,40 +877,110 @@ const promoteStudentsToNextSemester = async (req,res) =>{
                 {
                     $set: {
                         semester: {
-                            $cond: {
-                                if: { $eq: ["$semester", course.noOfSemesters] },
-                                then: 0,
-                                else: { $add: ["$semester", 1]  }
-                            }
+                            $cond: [
+                                { $eq: ["$semester", course.noOfSemesters] },
+                                0,
+                                {
+                                    $cond: [
+                                        { $eq: ["$semester", 0] },
+                                        0,
+                                        { $add: ["$semester", 1] }
+                                    ]
+                                }
+                            ]
                         },
                         status: {
-                            $cond: {
-                                if: { $eq: ["$semester", course.noOfSemesters] },
-                                then: "Inactive",
-                                else: "$status"
-                            }
+                            $cond: [
+                                { $eq: ["$semester", course.noOfSemesters] },
+                                "Inactive",
+                                "$status"
+                            ]
                         }
                     }
                 }
             ]
         );
-    
-        console.log("Number of students updated:", result.nModified);
-    
+
+
         // Now you can send a response back to the client
-        res.status(200).json({ message: "Student data updated successfully", nModified: result.nModified });
-
-
+        res.status(200).json({ message: "Student Promoted  successfully",result:true,data:result, });
     } catch (error) {
-        
-        return res.status(500).json({
-            message:"Some Error Occred",
-            result:false
-        })
-
+        console.error(error);
+        return res.status(500).json({ message: "Some Error Occurred", result: false });
     }
+};
 
-}
+const getStudentCountCourseWise = async (req, res) => {
+    try {
+        // Aggregate pipeline to count students by course and gender
+        const pipeline = [
+            // Match documents where semester > 0 and status is Active
+            {
+                $match: {
+                    semester: { $gt: 0 },
+                    status: "Active"
+                }
+            },
+            // Group by course and gender and count documents
+            {
+                $group: {
+                    _id: {
+                        course: "$course",
+                        gender: "$gender"
+                    },
+                    count: { $sum: 1 }
+                }
+            },
+            // Group by course to sum counts for each gender
+            {
+                $group: {
+                    _id: "$_id.course",
+                    totalStudents: { $sum: "$count" },
+                    maleStudents: {
+                        $sum: {
+                            $cond: { if: { $eq: ["$_id.gender", "male"] }, then: "$count", else: 0 }
+                        }
+                    },
+                    femaleStudents: {
+                        $sum: {
+                            $cond: { if: { $eq: ["$_id.gender", "female"] }, then: "$count", else: 0 }
+                        }
+                    },
+                    otherStudents: {
+                        $sum: {
+                            $cond: [
+                                { $in: ["$_id.gender", ["male", "female"]] },  // Check if gender is not Male or Female
+                                0,  // If Male or Female, don't include in "otherStudents" count
+                                "$count"  // Otherwise, include in "otherStudents" count
+                            ]
+                        }
+                    }
+                }
+            },
+            // Project to reshape the output
+            {
+                $project: {
+                    _id: 0,
+                    course: "$_id",
+                    totalStudents: 1,
+                    maleStudents: 1,
+                    femaleStudents: 1,
+                    otherStudents: 1
+                }
+            }
+        ];
+
+        // Execute the aggregation pipeline
+        const result = await Student.aggregate(pipeline);
+
+        // Return the result
+        return res.status(200).json({ message: "Student counts by course and gender", data: result, result: true });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Some Error Occurred", result: false });
+    }
+};
+
 
 module.exports = {
     registerStudentsInBulk,
@@ -922,5 +997,6 @@ module.exports = {
     changeUserProfilePic,
     changePassword,
     changeStudentStatus,
-    promoteStudentsToNextSemester
+    promoteStudentsToNextSemester,
+    getStudentCountCourseWise
 };

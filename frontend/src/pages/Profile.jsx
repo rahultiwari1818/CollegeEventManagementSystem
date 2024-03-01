@@ -8,6 +8,8 @@ import Skeleton from 'react-loading-skeleton';
 import ChangeProfilPic from '../components/ChangeProfilePic';
 import ChangePassword from '../components/ChangePassword';
 import UpdateFaculty from "../components/UpdateFaculty";
+import Modal from '../components/Modal';
+import { toast } from 'react-toastify';
 
 export default function Profile() {
 
@@ -21,6 +23,10 @@ export default function Profile() {
     const [isOpenChangeProfilePicModal, setIsOpenChangeProfilePicModal] = useState(false);
     const [isOpenChangePasswordModal,setIsOpenChangePasswordModal] = useState(false);
     const [openUpdateModal,setOpenUpdateModal] = useState(false);
+    const [isOpenCollegeUpdateModal,setIsOpenCollegeUpdateModal] = useState(false);
+
+    const [collegeData,setCollegeData] = useState();
+
 
     const openProfilePicModal = () => {
         setIsOpenChangeProfilePicModal(true)
@@ -45,6 +51,14 @@ export default function Profile() {
         setOpenUpdateModal(false);
     }
 
+    const openCollegeUpdateModal = () =>{
+        setIsOpenCollegeUpdateModal(true);
+    }
+
+    const closeCollegeUpdateModal = () =>{
+        setIsOpenCollegeUpdateModal(false);
+    }
+
     const changeProfilePicURL = useCallback((data)=>{
         setProfileData((old)=>({
             ...old,
@@ -56,6 +70,11 @@ export default function Profile() {
     const updateProfileData = useCallback((data)=>{
         setProfileData(data)
     },[])
+
+    const updateCollegeData = useCallback((data)=>{
+        setCollegeData(data)
+    },[])
+
 
     useEffect(() => {
         const route = user.role === "Student" ? `students/getSpecificStudents/${user._id}` : `faculties/getSpecificFaculty/${user._id}`;
@@ -77,8 +96,31 @@ export default function Profile() {
             }
 
         }
+
+        const fetchCollegeData = async()=>{
+
+            try {
+                
+                const {data} = await axios.get(`${API_URL}/api/faculties/getCollegeDetails`,{
+                    headers:{
+                        "auth-token":token,
+                    }
+                })
+
+                setCollegeData(data.data[0])
+
+
+            } catch (error) {
+                console.log(error)
+            }
+
+            
+        }
+
+
         if (user?.role !== "") {
             fetchUserData();
+            fetchCollegeData();
         }
     }, [user])
 
@@ -117,11 +159,31 @@ export default function Profile() {
                             </section>
                         </section>
                     </section>
+                    <section className='px-8 pt-8'>
+                    <section className="mt-4 grid grid-cols-2">
+                                            <p className="text-gray-500">College Name:</p>
+                                            <p className="mt-1 text-md sm:text-lg leading-tight font-medium text-black">
+                                                {
+                                                    isDataLoading ?
+                                                        <Skeleton
+                                                            count={1}
+                                                            height="80%"
+                                                            width="80%"
+                                                            baseColor="#4299e1"
+                                                            highlightColor="#f7fafc"
+                                                            duration={0.9}
+                                                        />
+                                                        :
+                                                        collegeData?.collegename
+                                                }
+                                            </p>
+                                        </section>
+                    </section>
                     <section className="">
                         {
                             user.role === "Student"
                                 ?
-                                <section className="p-8 md:justify-between border">
+                                <section className="px-8 pb-8 md:justify-between ">
                                     <section className="">
                                         <section className="mt-4 grid grid-cols-2">
                                             <p className="text-gray-500">Name:</p>
@@ -300,7 +362,7 @@ export default function Profile() {
                                     </section>
                                 </section>
                                 :
-                                <section className="p-8 md:justify-between border">
+                                <section className="px-8 pb-8 md:justify-between ">
                                     <section className="">
                                         <section className="mt-4 grid grid-cols-2">
                                             <p className="text-gray-500">Salutation:</p>
@@ -402,17 +464,25 @@ export default function Profile() {
                                 </section>
                         }
                     </section>
-                    <section className="my-2 flex justify-center gap-5">
+                    <section className="my-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 px-5">
                    {
                     user.role === "Super Admin"
                     &&
-                    <button className='px-5 py-3 bg-yellow-500 rounded-lg shadow-lg text-white hover:text-yellow-500 hover:bg-white hover:outline hover:outline-yellow-500'
+                    <>
+                    <button className='px-5 py-3 my-2 block w-full bg-yellow-500 rounded-lg shadow-lg text-white hover:text-yellow-500 hover:bg-white hover:outline hover:outline-yellow-500'
                    onClick={ openUpdateProfilModal}
                     >
                             Update Profile Data
                         </button>
+                        <button className='px-5 py-3 my-2 block w-full bg-yellow-500 rounded-lg shadow-lg text-white hover:text-yellow-500 hover:bg-white hover:outline hover:outline-yellow-500'
+                   onClick={ openCollegeUpdateModal}
+                    >
+                            Update College Data
+                        </button>
+                        </>
+
                    }
-                        <button className='px-5 py-3 bg-yellow-500 rounded-lg shadow-lg text-white hover:text-yellow-500 hover:bg-white hover:outline hover:outline-yellow-500'
+                        <button className='px-5 mx-2 py-3 my-2 block w-full bg-yellow-500 rounded-lg shadow-lg text-white hover:text-yellow-500 hover:bg-white hover:outline hover:outline-yellow-500'
                         onClick={openChangePasswordModal}
                         >
                             Change Password
@@ -423,9 +493,97 @@ export default function Profile() {
             <UpdateFaculty isOpen={openUpdateModal} close={closeUpdateProfilModal} heading={"Update Student Data"} dataToBeUpdated={profileData} updateStateData={updateProfileData} />
             <ChangeProfilPic isOpen={isOpenChangeProfilePicModal} close={closeProfilePicModal} heading={"Change Profile Pic"} imgUrl={profileData?.profilePicPath} changeProfilePicURL={changeProfilePicURL} />
             <ChangePassword isOpen={isOpenChangePasswordModal} close={closeChangePasswordModal} heading={"Change Password"}/>
+            <ChangeCollegeNameModal  isOpen={isOpenCollegeUpdateModal} close={closeCollegeUpdateModal} heading={"Update College Name"} dataToBeUpdated={collegeData} updateStateData={updateCollegeData}/>
         </section>
     )
 }
 
 
+const ChangeCollegeNameModal = ({isOpen,close,heading,dataToBeUpdated,updateStateData}) =>{
+
+    const API_URL = process.env.REACT_APP_BASE_URL;
+    const token = localStorage.getItem("token");
+
+    const [formData,setFormData] = useState({});
+
+    const [errors,setErrors] = useState({
+        collegenameErr:""
+    })
+
+    const handleUpdateCollegeData = async ( ) =>{
+
+        if(formData.collegename.trim().length==0){
+            setErrors((old)=>({...old,collegenameErr:"Enter a Valid College Name.!"}))
+            return;
+        }
+
+        try {
+            
+            const {data} = await axios.patch(`${API_URL}/api/faculties/updateCollegeData`,{
+                newCollegeName:formData.collegename.trim(),
+                id:formData._id
+            },{
+                headers:{
+                    "auth-token":token,
+                }
+            })
+
+            if(data.result){
+                toast.success(data.message);
+                updateStateData(data.data);
+                close();
+            }
+
+
+        } catch (error) {
+            console.log(error)
+            toast.error(error?.response?.data?.message)
+        }
+    }
+
+    useEffect(()=>{
+        if(dataToBeUpdated?.collegename){
+            setFormData(dataToBeUpdated);
+        }
+    },[isOpen,close,heading,updateStateData,dataToBeUpdated])
+    
+
+
+    return (
+        <Modal isOpen={isOpen} close={close} heading={heading}>
+            <section className='my-2 py-3 px-3'>
+            <section className='md:p-2 md:m-2 p-1 m-1'>
+                            <label htmlFor="ename">College Name:</label>
+                            <input
+                                type="text"
+                                name="collegename"
+                                value={formData?.collegename}
+                                onChange={(e)=>{
+                                    setFormData((old)=>({...old,collegename:e.target.value}))
+                                }}
+                                placeholder='Enter College Name'
+                                className='w-full shadow-lg md:p-3 rounded-lg md:m-2 p-2 m-1'
+                                required
+                            />
+                            {
+                                errors.collegenameErr !== ""
+                                &&
+                                <p className="text-red-500 my-2">
+                                    {
+                                        errors.collegenameErr
+                                    }
+                                </p>
+                            }
+                        </section>
+                        <section className='md:p-2 md:m-2 p-1 m-1'>
+                                <button className="px-5 py-2 shadow-lg rounded-lg bg-yellow-500 text-white hover:outline hover:outline-yellow-500 hover:bg-white hover:text-yellow-500"
+                                onClick={handleUpdateCollegeData}
+                                >
+                                    Update College Data
+                                </button>
+                        </section>
+            </section>
+        </Modal>
+    )
+}
 

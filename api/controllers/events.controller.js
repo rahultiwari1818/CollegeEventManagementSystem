@@ -339,6 +339,29 @@ const approveOrRejectRegistrationRequest = async(req,res)=>{
 
 }
 
+const studentParticipatedEvents = async (req, res) => {
+    try {
+        const { studentId } = req.params;
+
+        // Find registrations where studentData contains an object with the specified studentId
+        const registrations = await Registration.find({
+            'studentData._id': studentId
+        });
+
+        return res.status(200).json({
+            message: "Registration documents fetched successfully",
+            result: true,
+            data: registrations
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: "Some Error Occurred",
+            result: false
+        });
+    }
+};
+
 module.exports = {
     generateEvent,
     getAllEvents,
@@ -347,6 +370,7 @@ module.exports = {
     updateEventDetails,
     registerInEvent,
     getRegistrationDataOfEvent,
-    approveOrRejectRegistrationRequest
+    approveOrRejectRegistrationRequest,
+    studentParticipatedEvents
 };
 
