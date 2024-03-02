@@ -19,7 +19,11 @@ const checkSetUp = async(req,res)=>{
             return res.status(200).json({"message":"Need Set Up First.","isSetUp":false})
         }
     } catch (error) {
-        
+        console.log(error);
+        return res.status(500).json({
+            message:"Some Error Occured",
+            result:false
+        })
     }
 }
 

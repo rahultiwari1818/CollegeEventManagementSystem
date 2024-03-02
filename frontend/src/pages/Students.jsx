@@ -7,7 +7,8 @@ import Skeleton from 'react-loading-skeleton';
 import MaleImage from "../assets/images/MaleIcon.png"
 import FemaleImage from "../assets/images/FemaleIcon.png"
 import OtherImage from "../assets/images/OtherIcon.png"
-import {toast} from "react-toastify";
+import { toast } from "react-toastify";
+import { ReactComponent as BackIcon } from "../assets/Icons/BackIcon.svg";
 
 export default function Students() {
 
@@ -20,7 +21,6 @@ export default function Students() {
 	const [studentData, setStudentData] = useState([]);
 	const userData = useSelector((state) => state.UserSlice);
 	const navigate = useNavigate();
-
 
 	const fetchStudentData = async () => {
 
@@ -50,17 +50,17 @@ export default function Students() {
 
 	}
 
-	const promoteStudentsToNextSemester = async(courseName) =>{
+	const promoteStudentsToNextSemester = async (courseName) => {
 		setShowOverLay(true);
 		try {
-			
-			const {data} = await axios.patch(`${API_URL}/api/students/promoteStudentsToNextSemester`,{courseName},{
-				headers:{
-					"auth-token":token,
+
+			const { data } = await axios.patch(`${API_URL}/api/students/promoteStudentsToNextSemester`, { courseName }, {
+				headers: {
+					"auth-token": token,
 				}
 			});
 
-			if(data?.result){
+			if (data?.result) {
 				toast.success(data.message);
 				fetchStudentData();
 			}
@@ -68,7 +68,7 @@ export default function Students() {
 		} catch (error) {
 			console.log(error)
 		}
-		finally{
+		finally {
 			setShowOverLay(false);
 		}
 
@@ -97,6 +97,13 @@ export default function Students() {
 				<Overlay />
 			}
 			<section className='w-full h-full py-3 '>
+
+				<BackIcon className="absolute left-8 md:left-12 top-18 cursor-pointer"
+				onClick={()=>{
+					navigate("/adminDashboard");
+				}}
+				/>
+
 				<section className="flex justify-center items-center">
 					<section className=' text-blue-500 px-3 py-3 mb-3 text-base md:text-xl shadow-lg rounded-lg'>
 
@@ -120,15 +127,15 @@ export default function Students() {
 					</section>
 				</section>
 				<section className="my-5 md:flex justify-end items-center gap-5 mx-5">
-				<Link to="/addstudents" className='px-5 py-2 shadow-lg rounded-lg bg-yellow-500 text-white hover:outline hover:outline-yellow-500 hover:bg-white hover:text-yellow-500'>
-							Add Students
+					<Link to="/addstudents" className='px-5 py-2 block my-2 shadow-lg rounded-lg bg-yellow-500 text-white hover:outline hover:outline-yellow-500 hover:bg-white hover:text-yellow-500'>
+						Add Students
 					</Link>
-					<Link to="/viewstudents" className='px-5 py-2 shadow-lg rounded-lg bg-yellow-500 text-white hover:outline hover:outline-yellow-500 hover:bg-white hover:text-yellow-500'>
-							View Students
+					<Link to="/viewstudents" className='px-5 py-2 block my-2 shadow-lg rounded-lg bg-yellow-500 text-white hover:outline hover:outline-yellow-500 hover:bg-white hover:text-yellow-500'>
+						View Students
 					</Link>
-					
+
 				</section>
-				<section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 pb-5">
+				<section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 pb-5 h-[50vh] overflow-scroll pt-5">
 					{
 						isLoading ?
 							Array.from({ length: 6 }, (_, idx) => ({ name: idx + 1 })).map((data, id) => {
@@ -220,7 +227,7 @@ export default function Students() {
 										</section>
 										<section className="flex justify-center items-center mt-3">
 											<button className='py-2 rounded-lg shadow-lg px-5 bg-blue-500 text-white '
-											onClick={()=>promoteStudentsToNextSemester(course.course)}
+												onClick={() => promoteStudentsToNextSemester(course.course)}
 											>
 												Promote Students to Next Semester
 											</button>

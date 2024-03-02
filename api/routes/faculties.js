@@ -1,5 +1,5 @@
 const express = require("express");
-const { setUpSystem, getFaculties,registerIndividualFaculties, loginFaculty, registerFacultiesInBulk, getIndividualFaculty, facultyForgotPassword, verifyOTP, resetPassword, updateFacultyData, changeFacultyProfilePic, changePassword, changeFacultyStatus } = require("../controllers/faculties.controller");
+const { setUpSystem, getFaculties,registerIndividualFaculties, loginFaculty, registerFacultiesInBulk, getIndividualFaculty, facultyForgotPassword, verifyOTP, resetPassword, updateFacultyData, changeFacultyProfilePic, changePassword, changeFacultyStatus, countFacultiesByCourse } = require("../controllers/faculties.controller");
 const {checkSetUp, getCollegeData, getWholeCollegeData, updateCollegeData} = require("../controllers/college.controller");
 const fetchUser = require("../middlewares/fetchUser");
 const checkIsAdmin = require("../middlewares/checkIsAdmin.js");
@@ -33,5 +33,7 @@ router.get("/getCollegeData",checkIsSuperAdmin,getWholeCollegeData);
 router.get("/getCollegeDetails",fetchUser,getCollegeData);
 
 router.patch("/updateCollegeData",checkIsSuperAdmin,updateCollegeData);
+
+router.get("/countFacultiesByCourse",checkIsSuperAdmin,countFacultiesByCourse);
 
 module.exports = router;

@@ -245,7 +245,10 @@ export default function EventDetails() {
                                                 <th className="py-2 px-4 border-b text-blue-500">Participation Type</th>
                                                 <th className="py-2 px-4 border-b text-blue-500">No Of Participant Allowed</th>
                                                 <th className="py-2 px-4 border-b text-blue-500">View Details</th>
+                                                {
+                                                             !data.isCanceled && curDate <= new Date(data.rcdate)  && userData?.role === "Student" &&
                                                 <th className="py-2 px-4 border-b text-blue-500">Register</th>
+}
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -299,9 +302,10 @@ export default function EventDetails() {
                                                             <td className="py-2 px-4 border-b">{event.ptype}</td>
                                                             <td className="py-2 px-4 border-b">{event.noOfParticipants}</td>
                                                             <td className="py-2 px-4 border-b"><View className="cursor-pointer" onClick={() => viewSubEventDetails(event)} /></td>
+                                                            {
+                                                             !data.isCanceled && curDate <= new Date(data.rcdate)  && userData?.role === "Student" &&
                                                             <td className="py-2 px-4 border-b">
-                                                           {
-                                                             !data.isCanceled && curDate <= new Date(data.rcdate) &&
+
                                                                 <button
                                                                     className='px-5 py-3 bg-blue-500 rounded-lg shadow-lg text-white hover:text-blue-500 hover:bg-white hover:outline hover:outline-blue-500'
                                                                     onClick={()=>handleSubEventRegister(event?.sId)}
@@ -309,8 +313,8 @@ export default function EventDetails() {
                                                                 >
                                                                     Register
                                                                 </button>
-                                                           }
                                                            </td>
+                                                    }
                                                         </tr>
                                                     })
                                             }
@@ -343,8 +347,14 @@ export default function EventDetails() {
                                                             duration={0.9}
                                                         />
                                                         :
-                                                        data.ptype}</td>
-                                                {
+                                                        <p className='text-center'>
+                                                      {  data.ptype}
+                                                        </p>
+
+                                                        
+                                                        }
+                                                        </td>
+                                                
 
                                                     <td className="py-2 px-4 border-b">{
                                                         isLoading ?
@@ -357,8 +367,13 @@ export default function EventDetails() {
                                                                 duration={0.9}
                                                             />
                                                             :
-                                                            data.noOfParticipants}</td>
-                                                }
+                                                            <p className="text-center">
+                                                                {data.noOfParticipants}
+                                                            </p>
+                                                            
+                                                            }
+                                                    </td>
+                                                
 
                                             </tr>
                                         </tbody>
@@ -428,7 +443,7 @@ export default function EventDetails() {
 
                         {/* Conditional Rendering  for Participants -- where user is not admin */}
                         {
-                            (!data?.hasSubEvents && !data.isCanceled && curDate <= new Date(data.rcdate)) &&
+                            (!data?.hasSubEvents && !data.isCanceled && curDate <= new Date(data.rcdate) && userData?.role === "Student") &&
                             <section className="my-2 py-2">
                                 <button
                                     className='px-5 py-3 bg-blue-500 rounded-lg shadow-lg text-white hover:text-blue-500 hover:bg-white hover:outline hover:outline-blue-500'
@@ -464,8 +479,11 @@ export default function EventDetails() {
                                         View Participation
                                     </button>
                                 </section>
-
-
+                            
+                            {
+                                // curDate >= new Date(data.edate)
+                                true
+                                &&
                                 <section className='my-2'>
                                     <button
                                         className='px-5 py-3 bg-green-500 rounded-lg shadow-lg text-white hover:text-green-500 hover:bg-white hover:outline hover:outline-green-500'
@@ -476,6 +494,8 @@ export default function EventDetails() {
                                         Declare Result
                                     </button>
                                 </section>
+                            }
+
 
                                 {/* to cancel event */}
                                 {(!data.isCanceled) &&

@@ -1,21 +1,23 @@
 const jwtToken = require("jsonwebtoken");
 const SECRET_KEY = process.env.SECRET_KEY;
 
-const fetchUser = async(req,res,next) =>{
+const fetchUser = async (req, res, next) => {
 
-    const authToken = req.header("auth-token");
-    if(!authToken){
-        return res.status(401).json({"message":"Unauthorized User.","error":true});
-    }
 
     try {
-        
-        const data = jwtToken.verify(authToken,SECRET_KEY);
+        const authToken = req.header("auth-token");
+        if (!authToken) {
+            return res.status(401).json({ "message": "Unauthorized User.", "error": true });
+        }
+
+        const data = jwtToken.verify(authToken, SECRET_KEY);
         req.user = data.user;
         next();
 
     } catch (error) {
-        return res.status(401).json({"message":"Invalid Token.!","error":true});
+
+        console.log(error)
+        return res.status(500).json({ "message": "Some Error Occured.!", "result": false });
     }
 
 };

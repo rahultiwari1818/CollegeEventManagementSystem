@@ -6,6 +6,7 @@ import axios from 'axios';
 import RejectedImage from "../assets/images/RejectedIcon.png"
 import PendingImage from "../assets/images/PendingIcon.png"
 import ApprovalImage from "../assets/images/ApprovalIcon.png"
+import moment from "moment";
 
 export default function MyEvents() {
 
@@ -78,6 +79,7 @@ export default function MyEvents() {
                                     <td className='px-2 py-2 md:px-4'>Semester</td>
                                     <td className='px-2 py-2 md:px-4'>Division</td>
                                     <td className='px-2 py-2 md:px-4'>Mobile No.</td>
+                                    <td className='px-2 py-2 md:px-4'>Registration Date & Time.</td>
                                     <td className='px-2 py-2 md:px-4'>Request Status</td>
                                 </tr>
                             </thead>
@@ -90,7 +92,7 @@ export default function MyEvents() {
                                                 return (
                                                     <tr key={event._id}>
                                                         {
-                                                            stdIdx == 0 &&
+                                                            stdIdx === 0 &&
                                                             <>
                                                                 <td
                                                                     className='border px-2 py-2 md:px-4 '
@@ -147,6 +149,13 @@ export default function MyEvents() {
                                                                 student.phno
                                                             }
                                                             </td>
+                                                            <td className="border px-2 py-2 md:px-4">
+                                                            
+                                                                    {
+                                                                        moment(event.createdAt).format("lll")
+                                                                    }
+                                                            
+                                                            </td>
                                                             {
                                                                 stdIdx === 0
                                                                 &&
@@ -156,13 +165,13 @@ export default function MyEvents() {
                                                                     {
                                                                      event.status === "pending"
                                                                         ?
-                                                                       <img src={PendingImage} className='w-10'/>
+                                                                       <img src={PendingImage} className='w-10' alt="pending"/>
                                                                         :
                                                                         event.status === "rejected"
                                                                         ?
-                                                                        <img src={RejectedImage} className='w-10'/>
+                                                                        <img src={RejectedImage} className='w-10' alt="rejected"/>
                                                                         :
-                                                                       <img src={ApprovalImage} className='w-10'/>
+                                                                       <img src={ApprovalImage} className='w-10' alt="approval"/>
                                                                     }
                                                                 </td>
                                                             }

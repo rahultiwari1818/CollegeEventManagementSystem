@@ -2,10 +2,10 @@ import React, { Fragment } from 'react'
 import { Image, Text, View, Page, Document, StyleSheet } from '@react-pdf/renderer';
 import CollegeLogo from "../assets/images/CollegeLogo.png"
 
-export default function ParticipationListPdf({ eventData, registrationData }) {
+export default function ParticipationListPdf({ eventData, registrationData,collegeData }) {
     const styles = StyleSheet.create({
         page: {
-            fontSize: 11,
+            fontSize: 12,
             paddingTop: 30,
             paddingLeft: 40,
             paddingRight: 40,
@@ -15,7 +15,7 @@ export default function ParticipationListPdf({ eventData, registrationData }) {
         },
         titleContainer: {
             flexDirection: 'row',
-            marginTop: 24,
+            marginTop: 10,
         },
         subTitleContainer:{
             flexDirection: 'row',
@@ -28,20 +28,20 @@ export default function ParticipationListPdf({ eventData, registrationData }) {
             color: "#3E3E3E",
         },
         logo: {
-            width: 50,
+            width: 70,
         },
         CollegeName:{
-            fontSize: 18,
+            fontSize: 17,
             textAlign: 'center',
-            marginLeft:30,
+            marginLeft:10,
         },
         reportTitle: {
-            fontSize: 16,
+            fontSize: 14,
             textAlign: 'center',
-            marginLeft:50,
+            marginLeft:80,
         },
         subEventHeading:{
-            fontSize: 14,
+            fontSize: 12,
             textAlign: 'center',
             marginLeft:30,
         },
@@ -81,8 +81,8 @@ export default function ParticipationListPdf({ eventData, registrationData }) {
             maxWidth:30,
         },
         nameColumn:{
-            width:"100%",
-            maxWidth:130,
+            width:"140%",
+            maxWidth:160,
         },
         sidColumn:{
             width:"70%",
@@ -106,12 +106,14 @@ export default function ParticipationListPdf({ eventData, registrationData }) {
         }
     });
 
-    const CollegeHeader = () => (
+    const CollegeHeader = ({collegeData}) => (
         <View style={styles.titleContainer}>
             <View style={styles.spaceBetween}>
                 <Image style={styles.logo} src={CollegeLogo} />
                 <Text style={styles.CollegeName}>
-                    Amroli Self Finance Colleges
+                    {
+                        collegeData?.collegename
+                    }
                 </Text>
             </View>
         </View>
@@ -119,9 +121,7 @@ export default function ParticipationListPdf({ eventData, registrationData }) {
 
     const ParticiPationListTitle = () => (
         <View style={styles.subTitleContainer}>
-            <View style={styles.spaceBetween}>
-                <Text style={styles.reportTitle}>Participation List of {eventData?.ename}</Text>
-            </View>
+                    <Text style={styles.reportTitle}>Participation List of {eventData?.ename}</Text>
         </View>
     );
 
@@ -205,7 +205,7 @@ export default function ParticipationListPdf({ eventData, registrationData }) {
     return (
         <Document>
             <Page size="A4" style={styles.page}>
-                <CollegeHeader/>
+                <CollegeHeader collegeData={collegeData}/>
                 <ParticiPationListTitle />
                 {eventData.hasSubEvents ?
                  (

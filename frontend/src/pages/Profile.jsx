@@ -322,7 +322,7 @@ export default function Profile() {
                                     </section>
                                     <section className="mt-4 grid grid-cols-2">
                                         <p className="text-gray-500">Email :</p>
-                                        <p className="mt-1 text-md sm:text-lg leading-tight font-medium text-black">
+                                        <p className="mt-1 text-md sm:text-lg leading-tight font-medium text-black break-words">
                                             {
 
                                                 isDataLoading ?
@@ -444,7 +444,7 @@ export default function Profile() {
                                     </section>
                                     <section className="mt-4 grid grid-cols-2">
                                         <p className="text-gray-500">Email :</p>
-                                        <p className="mt-1 text-md sm:text-lg leading-tight font-medium text-black">
+                                        <p className="mt-1 text-md sm:text-lg leading-tight font-medium text-black break-words">
                                             {
 
                                                 isDataLoading ?
@@ -512,7 +512,7 @@ const ChangeCollegeNameModal = ({isOpen,close,heading,dataToBeUpdated,updateStat
 
     const handleUpdateCollegeData = async ( ) =>{
 
-        if(formData.collegename.trim().length==0){
+        if(formData.collegename.trim().length===0){
             setErrors((old)=>({...old,collegenameErr:"Enter a Valid College Name.!"}))
             return;
         }

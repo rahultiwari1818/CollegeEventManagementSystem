@@ -113,6 +113,7 @@ export default function GenerateEvent() {
             noOfParticipants.current.disabled = true;
         } else if (value === 'Group') {
             noOfParticipants.current.disabled = false;
+            setData((old) => ({ ...old, ptype: value ,noOfParticipants:2}));
         }
         //   console.log(value,noOfParticipants.current,"participant")
     }, [setData]);
@@ -442,8 +443,12 @@ export default function GenerateEvent() {
                                         onChange={updateData}
                                         onBlur={(e) => {
                                             if (e.target.name === "noOfParticipants") {
-                                                if (Number(e.target.value) < 1) {
-                                                    setData({ ...data, [e.target.name]: 1 });
+                                                if (Number(e.target.value) <= 1) {
+                                                    let num  = 1;
+                                                    if(data.ptype==="Group"){
+                                                        num = 2;
+                                                    }
+                                                    setData({ ...data, [e.target.name]: num });
                                                     return;
                                                 }
                                             }

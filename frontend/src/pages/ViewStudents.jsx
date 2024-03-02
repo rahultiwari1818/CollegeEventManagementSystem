@@ -184,6 +184,10 @@ export default function ViewStudents() {
 
 
     const updateStateData = useCallback((data)=>{
+        if(!data){
+            fetchStudentData();
+            return;
+        }
         setStudentData((old)=>{
             return old?.map((student)=>{
                 return student._id === data._id ? data : student;

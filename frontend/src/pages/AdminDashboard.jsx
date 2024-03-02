@@ -93,7 +93,7 @@ export default function AdminDashboard() {
 					{
 						Array.from({ length: 5 }, (_, idx) => ({ name: idx + 1 })).map((data, id) => {
 							return (
-								<Link key={id} to={routesArr[id]} className='cursor-pointer/'>
+								<Link key={id} to={routesArr[id]} className='cursor-pointer hover:transform hover:-translate-y-3 hover:translate-x-3 hover:transition-transform my-2'>
 								<section  className='bg-white rounded-lg shadow-lg px-5 py-4 mx-3 my-3'>
 									<p className="text-center text-blue-500 text-3xl">
 										{

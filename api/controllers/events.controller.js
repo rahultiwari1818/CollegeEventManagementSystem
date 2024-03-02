@@ -122,9 +122,16 @@ const getAllEvents = async (req, res) => {
 
 
  const getSpecificEvent = async(req,res)=>{
-    const id = req.params.id;
-    const data = await Event.find({_id:id})
-    return res.status(200).json({"message":"Event Fetched Successfully","data":data,"result":true})
+
+    try {
+        const id = req.params.id;
+        const data = await Event.find({_id:id})
+        return res.status(200).json({"message":"Event Fetched Successfully","data":data,"result":true})
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ "message": "Some Error Occured", "result": false });
+    }
+
 }
 
 const changeEventStatus = async(req,res)=>{

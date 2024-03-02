@@ -13,14 +13,14 @@ const SECRET_KEY = process.env.SECRET_KEY;
 const nameRegex = /^[a-zA-Z.][a-zA-Z. ]*$/;
 const phnoRegex = /^\d{10}$/;
 
-const registerIndividualFaculties = async(req,res)=>{
+const registerIndividualFaculties = async (req, res) => {
     try {
 
-        const {name,email,phno,course,password,salutation} = req.body;
+        const { name, email, phno, course, password, salutation } = req.body;
 
-        let user = await Faculties.findOne({email:email});
-        if(user){
-            return res.status(400).json({"message":"Email Already registered.!","result":false});
+        let user = await Faculties.findOne({ email: email });
+        if (user) {
+            return res.status(400).json({ "message": "Email Already registered.!", "result": false });
         }
         const profilePic = req.file;
 
@@ -42,23 +42,23 @@ const registerIndividualFaculties = async(req,res)=>{
 
 
         const salt = await bcrypt.genSalt(10);
-        const secPass = await bcrypt.hash(password,salt);
+        const secPass = await bcrypt.hash(password, salt);
 
 
         user = await Faculties.create({
-            salutation:salutation.trim(),
-            name:name.trim(),
-            password:secPass,
-            email:email.trim(),
-            role:"Faculty",
-            phno:phno.trim(),
-            course:course.trim(),
-            profilePicName:profilePicName,
-            profilePicPath:profilePicPath,
-            status:"Active"
+            salutation: salutation.trim(),
+            name: name.trim(),
+            password: secPass,
+            email: email.trim(),
+            role: "Faculty",
+            phno: phno.trim(),
+            course: course.trim(),
+            profilePicName: profilePicName,
+            profilePicPath: profilePicPath,
+            status: "Active"
 
         });
-        
+
 
         const mailOptions = {
             from: process.env.EMAIL_ID,
@@ -87,23 +87,23 @@ const registerIndividualFaculties = async(req,res)=>{
             }
         });
 
-        return res.status(200).json({"message":"Faculty Registered Successfully!","result":true});
+        return res.status(200).json({ "message": "Faculty Registered Successfully!", "result": true });
 
 
-        
+
     } catch (error) {
         console.log(error)
-        return res.status(500).json({"message":"Error Occured",result:false});
+        return res.status(500).json({ "message": "Error Occured", result: false });
     }
 }
 
 
-const registerFacultiesInBulk = async(req,res) =>{
-    let newfacultyCSVFilePath= "";
+const registerFacultiesInBulk = async (req, res) => {
+    let newfacultyCSVFilePath = "";
     try {
         const facultyCSVFile = req.file;
-         newfacultyCSVFilePath = `uploads/${facultyCSVFile.originalname}${path.extname(facultyCSVFile.originalname)}`
-         await fs.rename(facultyCSVFile.path,newfacultyCSVFilePath)
+        newfacultyCSVFilePath = `uploads/${facultyCSVFile.originalname}${path.extname(facultyCSVFile.originalname)}`
+        await fs.rename(facultyCSVFile.path, newfacultyCSVFilePath)
         const source = await csvtojson().fromFile(`./uploads/${facultyCSVFile.originalname}${path.extname(facultyCSVFile.originalname)}`); // await the csvtojson promise
 
         const courses = await Course.find();
@@ -120,14 +120,14 @@ const registerFacultiesInBulk = async(req,res) =>{
             let flag = fakse;
 
             for (let course of courses) {
-                if (course.courseName.toLowerCase() === entry["course"].trim().toLowerCase() ) {
+                if (course.courseName.toLowerCase() === entry["course"].trim().toLowerCase()) {
                     flag = true;
                     break;
                 }
             }
 
 
-            if(emails.includes(entry["email"])){
+            if (emails.includes(entry["email"])) {
                 flag = false;
             }
 
@@ -135,12 +135,12 @@ const registerFacultiesInBulk = async(req,res) =>{
                 flag = false;
             }
 
-            if(!phnoRegex.test(entry["mobile"])){
+            if (!phnoRegex.test(entry["mobile"])) {
                 flag = false;
             }
 
 
-            if(mobileNos.includes(entry["mobile"])){
+            if (mobileNos.includes(entry["mobile"])) {
                 flag = false;
             }
 
@@ -151,16 +151,16 @@ const registerFacultiesInBulk = async(req,res) =>{
 
 
             return {
-            profilePicName:".",
-            profilePicPath:".",
-            salutation:entry["saultation"],
-            name:entry["name"],
-            email:entry["email"],
-            phno:entry["mobile"],
-            role:"Faculty",
-            course:entry["course"],
-            password:entry["email"],
-            status:"Active"
+                profilePicName: ".",
+                profilePicPath: ".",
+                salutation: entry["saultation"],
+                name: entry["name"],
+                email: entry["email"],
+                phno: entry["mobile"],
+                role: "Faculty",
+                course: entry["course"],
+                password: entry["email"],
+                status: "Active"
             }
         });
 
@@ -185,9 +185,9 @@ const registerFacultiesInBulk = async(req,res) =>{
 
     } catch (error) {
         // console.error("Error registering students:", error);
-       return res.status(500).json({ result: false, message: "An error occurred while registering Faculties . Please Check Your CSV File format.",error:error });
+        return res.status(500).json({ result: false, message: "An error occurred while registering Faculties . Please Check Your CSV File format.", error: error });
     }
-    finally{
+    finally {
         fs.unlink(newfacultyCSVFilePath);
     }
 }
@@ -196,41 +196,41 @@ const registerFacultiesInBulk = async(req,res) =>{
 
 
 
-const loginFaculty = async(req,res)=>{
-    const {email,password} = req.body;
+const loginFaculty = async (req, res) => {
+    const { email, password } = req.body;
     try {
-        
-        const user = await Faculties.findOne({email:email})
 
-        if(!user){
-            return res.status(400).json({"message":"Email Does Not Exists.!",result:false});
+        const user = await Faculties.findOne({ email: email })
+
+        if (!user) {
+            return res.status(400).json({ "message": "Email Does Not Exists.!", result: false });
         }
 
-        const comparedPassword = await bcrypt.compare(password,user.password);
-         if(!comparedPassword){
-            return res.status(400).json({"message":"Invalid Password",result:false});
-         }
-         
-         if(user.status !== "Active"){
+        const comparedPassword = await bcrypt.compare(password, user.password);
+        if (!comparedPassword) {
+            return res.status(400).json({ "message": "Invalid Password", result: false });
+        }
+
+        if (user.status !== "Active") {
             return res.status(400).json({ "message": "Login Locked.. Contact Admin", result: false });
 
         }
 
-         const data = {
-            user:{
-                id:user._id,
-                role:user.role,
-                name:user.name,
+        const data = {
+            user: {
+                id: user._id,
+                role: user.role,
+                name: user.name,
             }
-         };
+        };
 
-         const token = jwtToken.sign(data,SECRET_KEY);
+        const token = jwtToken.sign(data, SECRET_KEY);
 
-         return res.status(200).json({"message":"Logged in Successfully",data:user,result:true,token});
+        return res.status(200).json({ "message": "Logged in Successfully", data: user, result: true, token });
 
     } catch (error) {
-        
-        return res.status(400).json({"message":"Error Occured",result:false});
+        console.log(error)
+        return res.status(500).json({ "message": "Some Error Occured", "result": false });
     }
 }
 
@@ -241,7 +241,7 @@ const getFaculties = async (req, res) => {
         const courseFilter = req.query.course || "";
         const page = parseInt(req.query.page) || 1; // Current page, default is 1
         const limit = parseInt(req.query.limit) || 10; // Number of items per page, default is 10
-    
+
         // Define the search criteria
         const searchCriteria = {
             $and: [
@@ -258,22 +258,22 @@ const getFaculties = async (req, res) => {
                 courseFilter ? { course: courseFilter } : {}
             ]
         };
-    
+
         // Count total number of documents matching the search criteria
         const totalDocuments = await Faculties.countDocuments(searchCriteria);
-    
+
         // Calculate the total number of pages
         const totalPages = Math.ceil(totalDocuments / limit);
-    
+
         // Ensure the current page is within valid range
         const currentPage = Math.min(Math.max(page, 1), totalPages);
-    
+
         // Calculate the number of documents to skip
         const skip = (currentPage - 1) * limit;
-    
+
         // Find faculties based on search criteria with pagination
         const data = await Faculties.find(searchCriteria).skip(skip).limit(limit);
-    
+
         return res.status(200).json({
             message: "Faculties Data Fetched Successfully.",
             data: data,
@@ -284,77 +284,94 @@ const getFaculties = async (req, res) => {
         });
     } catch (error) {
         console.error("Error fetching faculty data:", error);
-        return res.status(400).json({ message: "Some Error Occurred.", result: false });
+        return res.status(500).json({ message: "Some Error Occurred.", result: false });
     }
-    
+
 };
 
-const getIndividualFaculty =  async(req,res)=>{
+const getIndividualFaculty = async (req, res) => {
     try {
 
         const id = req.user.id;
-        const data = await Faculties.findOne({_id:id})
+        const data = await Faculties.findOne({ _id: id })
         const user = {
-            _id:data._id,
-            salutation:data.salutation,
-            name:data.name,
-            course:data.course,
-            phno:data.phno,
-            email:data.email,
-            profilePicName:data.profilePicName,
-            profilePicPath:data.profilePicPath
+            _id: data._id,
+            salutation: data.salutation,
+            name: data.name,
+            course: data.course,
+            phno: data.phno,
+            email: data.email,
+            profilePicName: data.profilePicName,
+            profilePicPath: data.profilePicPath
         }
 
-        return res.status(200).json({"message":"Faculty Data Fetched Successfully.","data":user,"result":true})
+        return res.status(200).json({ "message": "Faculty Data Fetched Successfully.", "data": user, "result": true })
     } catch (error) {
         console.log(error)
+        return res.status(500).json({ "message": "Some Error Occured", "result": false });
     }
 }
 
-const setUpSystem =  async(req,res)=>{
+const setUpSystem = async (req, res) => {
 
     try {
 
+        const { sadminemail, sadminname, sadminphno, sadminpassword, collegename } = req.body;
+
+        if (!phnoRegex.test(sadminphno)) {
+            return res.status(400).json({
+                message: "Please Provide a valid phone no.!",
+                result: false
+            })
+        }
+
+        if (!nameRegex.test(sadminname)) {
+            return res.status(400).json({
+                message: "Please Provide a valid super admin name!",
+                result: false
+            })
+        }
 
         const salt = await bcrypt.genSalt(10);
-        const secPass = await bcrypt.hash(req.body.sadminpassword,salt);
+        const secPass = await bcrypt.hash(sadminpassword, salt);
+
 
         college = await College.create({
-            collegename:req.body.collegename.trim()
+            collegename: collegename.trim()
         })
-        
+
         user = await Faculties.create({
-            name:req.body.sadminname.trim(),
-            password:secPass,
-            email:req.body.sadminemail.trim(),
-            role:"Super Admin",
-            course:"All",
-            phno:req.body.sadminphno.trim(),
-            status:"Active",
-            profilePicName:".",
-            profilePicPath:"."
+            name: sadminname.trim(),
+            password: secPass,
+            email: sadminemail.trim(),
+            role: "Super Admin",
+            course: "All",
+            phno: sadminphno.trim(),
+            status: "Active",
+            profilePicName: ".",
+            profilePicPath: "."
         });
 
-        return res.status(200).json({"message":"System Set Up Successfull.!","result":true});
+        return res.status(200).json({ "message": "System Set Up Successfull.!", "result": true });
 
 
     } catch (error) {
         console.log(error)
-        return res.status(400).json({"result":false,"message":"Some Error Occured"});
+        return res.status(500).json({ "result": false, "message": "Some Error Occured" });
     }
 
 }
 
-const facultyForgotPassword = async(req,res)=>{
+const facultyForgotPassword = async (req, res) => {
 
     try {
-        
-        const {email} = req.body;
-        const facultyData = await Faculties.findOne({email:email});
-        if(!facultyData){
+
+        const { email } = req.body;
+        const facultyData = await Faculties.findOne({ email: email });
+        if (!facultyData) {
             return res.status(400).json({
-                message:"EmailId Not Registered.",
-                result:false
+                message: "EmailId Not Registered.",
+                result: false
             })
         }
 
@@ -369,26 +386,29 @@ const facultyForgotPassword = async(req,res)=>{
             subject: 'OTP for Forgot Password in CEMS',
             text: `Your OTP for CEMS is ${otp}. Dont share it with anyone.`
         };
-        
+
         // Send email
-        transporter.sendMail(mailOptions, function(error, info) {
+        transporter.sendMail(mailOptions, function (error, info) {
             if (error) {
                 return res.status(500).json({
-                    message:"Unable to send Email",
-                    result:false
+                    message: "Unable to send Email",
+                    result: false
                 })
             } else {
                 return res.status(200).json({
-                    message:"OTP Mailed Successfully",
-                    result:true
+                    message: "OTP Mailed Successfully",
+                    result: true
                 });
-        
+
             }
         });
 
 
     } catch (error) {
-        
+        return res.status(500).json({
+            message: "Some Error Occured",
+            result: false
+        })
     }
 
 }
@@ -428,7 +448,11 @@ const verifyOTP = async (req, res) => {
         }
 
     } catch (error) {
-        console.log(error)
+        console.log(error);
+        return res.status(500).json({
+            message: "Some Error Occured",
+            result: false
+        })
     }
 }
 
@@ -451,15 +475,20 @@ const resetPassword = async (req, res) => {
         })
 
     } catch (error) {
-        console.log(error)
+
+        console.log(error);
+        return res.status(500).json({
+            message: "Some Error Occured",
+            result: false
+        })
     }
 }
 
-const updateFacultyData = async(req,res)=>{
+const updateFacultyData = async (req, res) => {
     try {
 
 
-        const { _id, course, name, phno, email ,salutation} = req.body;
+        const { _id, course, name, phno, email, salutation } = req.body;
 
         const doesEmailAlreadyExists = await Faculties.findOne({ email: email, _id: { $ne: _id } })
 
@@ -478,7 +507,7 @@ const updateFacultyData = async(req,res)=>{
             {
                 $set: {
                     course: course,
-                    salutation:salutation,
+                    salutation: salutation,
                     name: name,
                     phno: phno,
                     email: email
@@ -503,31 +532,31 @@ const updateFacultyData = async(req,res)=>{
     }
 }
 
-const changeFacultyProfilePic = async(req,res)=>{
+const changeFacultyProfilePic = async (req, res) => {
     try {
-        
+
         const profilePic = req.file;
-        if(!profilePic){
+        if (!profilePic) {
             return res.status(400).json({
-                message:"Please Provide Profile Photo",
-                result:false
+                message: "Please Provide Profile Photo",
+                result: false
             })
         }
-        const userData = await Faculties.findOne({_id:req.user.id})
-        
+        const userData = await Faculties.findOne({ _id: req.user.id })
+
 
 
         const profilePicName = profilePic.originalname;
         const result = await uploadToCloudinary(profilePic.path, "image");
-        if(result.message==="Fail"){
+        if (result.message === "Fail") {
             return res.status(500).json({
-                message:"Some Error Occued...",
-                result:false
+                message: "Some Error Occued...",
+                result: false
             })
         }
         const newProfilePicPath = result.url;
 
-        if(userData.profilePicName !== "."){
+        if (userData.profilePicName !== ".") {
             const publicId = userData.profilePicPath.split('/').slice(-1)[0].split('.')[0];
             await deleteFromCloudinary(publicId);
         }
@@ -537,20 +566,20 @@ const changeFacultyProfilePic = async(req,res)=>{
             { _id: req.user.id },
             {
                 $set: {
-                    profilePicName:profilePicName,
-                    profilePicPath:newProfilePicPath
+                    profilePicName: profilePicName,
+                    profilePicPath: newProfilePicPath
                 }
             },
-            { new: true } 
+            { new: true }
         )
-        
+
         console.log(updatedData)
 
         return res.status(200).json({
-            message:"Profile Photo Uploaded Sucessfully",
-            result:true,
-            data:{
-                profilePicPath:newProfilePicPath,
+            message: "Profile Photo Uploaded Sucessfully",
+            result: true,
+            data: {
+                profilePicPath: newProfilePicPath,
                 profilePicName
             }
         })
@@ -559,46 +588,46 @@ const changeFacultyProfilePic = async(req,res)=>{
     } catch (error) {
         console.log(error)
         return res.status(500).json({
-            message:"Some Error Occured",
-            result:true
+            message: "Some Error Occured",
+            result: true
         })
     }
 
 }
 
-const changePassword = async(req,res)=>{
+const changePassword = async (req, res) => {
     try {
-        
-        const {currentPassword,newPassword} = req.body;
+
+        const { currentPassword, newPassword } = req.body;
         const userId = req.user.id;
 
-        const user = await Faculties.findOne({_id:userId});
+        const user = await Faculties.findOne({ _id: userId });
 
-        if(!user){
+        if (!user) {
             return res.status(400).json({
-                message:"Invalid User",
-                result:false
+                message: "Invalid User",
+                result: false
             })
         }
 
-        const comparedPassword = await bcrypt.compare(currentPassword,user.password);
-         if(!comparedPassword){
-            return res.status(400).json({"message":"Invalid Password",result:false});
-         }
-         
-         const salt = await bcrypt.genSalt(10);
-         const secPass = await bcrypt.hash(newPassword,salt);
-         
-         const userData = await Faculties.updateOne(
-            {_id:userId},
+        const comparedPassword = await bcrypt.compare(currentPassword, user.password);
+        if (!comparedPassword) {
+            return res.status(400).json({ "message": "Invalid Password", result: false });
+        }
+
+        const salt = await bcrypt.genSalt(10);
+        const secPass = await bcrypt.hash(newPassword, salt);
+
+        const userData = await Faculties.updateOne(
+            { _id: userId },
             {
-                $set:{
-                    password:secPass
+                $set: {
+                    password: secPass
                 }
             }
-         )
+        )
 
-         const mailOptions = {
+        const mailOptions = {
             from: process.env.EMAIL_ID,
             to: user.email,
             subject: 'Password Changed in CEMS',
@@ -622,34 +651,34 @@ const changePassword = async(req,res)=>{
             }
         });
 
-        return res.status(200).json({"message":"Password Updated  Successfully!","result":true});
+        return res.status(200).json({ "message": "Password Updated  Successfully!", "result": true });
 
 
     } catch (error) {
-        return res.status(500).json({"message":"Some Error Occured!","result":false});
+        return res.status(500).json({ "message": "Some Error Occured!", "result": false });
 
     }
 }
 
-const changeFacultyStatus = async(req,res)=>{
-    
-    try {
-        const {id,newStatus} = req.body;
+const changeFacultyStatus = async (req, res) => {
 
-        if(!id || !newStatus){
+    try {
+        const { id, newStatus } = req.body;
+
+        if (!id || !newStatus) {
             return res.status(400).json({
-                message:"Id and New Status is Required",
-                result:false
+                message: "Id and New Status is Required",
+                result: false
             })
         }
 
 
         const newData = await Faculties.findOneAndUpdate(
-            {_id:id},
+            { _id: id },
             {
                 $set:
                 {
-                    status:newStatus
+                    status: newStatus
                 }
             },
             { new: true } // To return the updated document
@@ -657,18 +686,50 @@ const changeFacultyStatus = async(req,res)=>{
         )
 
         return res.status(200).json({
-            message:"Faculty Status Changed Successfully",
-            result:true,
-            updatedFacultyData:newData
+            message: "Faculty Status Changed Successfully",
+            result: true,
+            updatedFacultyData: newData
         })
 
     } catch (error) {
         console.log(error)
-                return res.status(500).json({"message":"Some Error Occured!","result":false});
+        return res.status(500).json({ "message": "Some Error Occured!", "result": false });
 
     }
 
 }
+
+const countFacultiesByCourse = async (req, res) => {
+    try {
+        const pipeline = [
+            // Group by course and count documents
+            {
+                $group: {
+                    _id: "$course",
+                    count: { $sum: 1 }
+                }
+            },
+            // Project to reshape the output
+            {
+                $project: {
+                    _id: 0,
+                    course: "$_id",
+                    count: 1
+                }
+            }
+        ];
+
+        // Execute the aggregation pipeline
+        const result = await Faculties.aggregate(pipeline);
+
+        // Return the result
+        return res.status(200).json({ message: "Faculties Fetched Successfully.", data: result, result: true });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Some Error Occurred", result: false });
+    }
+};
+
 
 module.exports = {
     registerIndividualFaculties,
@@ -683,5 +744,6 @@ module.exports = {
     updateFacultyData,
     changeFacultyProfilePic,
     changePassword,
-    changeFacultyStatus
+    changeFacultyStatus,
+    countFacultiesByCourse
 };

@@ -8,12 +8,18 @@ import { debounce } from '../utils';
 import { ReactComponent as DownloadIcon } from "../assets/Icons/DownloadIcon.svg"
 import ParticipationListPdf from '../PDF_Generator/ParticipationListPdf';
 import { PDFDownloadLink } from '@react-pdf/renderer';
+import moment from "moment"
+import RejectedImage from "../assets/images/RejectedIcon.png"
+import PendingImage from "../assets/images/PendingIcon.png"
+import ApprovalImage from "../assets/images/ApprovalIcon.png"
+
 
 export default function ViewRegistration() {
     const token = localStorage.getItem("token");
     const API_URL = process.env.REACT_APP_BASE_URL;
 
     const [registrationData, setRegistrationData] = useState([]);
+    const [collegeData,setCollegeData] = useState({});
     const [searchParams, setSearchParams] = useState(""); // State to hold filter criteria
     const [eventData, setEventData] = useState({
         ename: "",
@@ -58,6 +64,31 @@ export default function ViewRegistration() {
 
         fetchRegistrationDetails();
     }, [eventId, searchParams]);
+
+    useEffect(()=>{
+
+        const fetchCollegeData = async()=>{
+
+            try {
+                
+                const {data} = await axios.get(`${API_URL}/api/faculties/getCollegeDetails`,{
+                    headers:{
+                        "auth-token":token,
+                    }
+                })
+
+                setCollegeData(data.data[0])
+
+
+            } catch (error) {
+                console.log(error)
+            }
+
+            
+        }
+
+        fetchCollegeData();
+    },[])
 
     const changeRequestStatus = async (reqId, status) => {
         try {
@@ -139,7 +170,7 @@ export default function ViewRegistration() {
                     </p>
                     <section className='md:flex justify-end items-center my-2'>
                       {  eventData?.ename &&
-                        <PDFDownloadLink document={<ParticipationListPdf eventData={eventData} registrationData={registrationData} />} fileName={`${eventData?.ename}ParticipationList.pdf`}>
+                        <PDFDownloadLink document={<ParticipationListPdf eventData={eventData} registrationData={registrationData} collegeData={collegeData} />} fileName={`${eventData?.ename}ParticipationList.pdf`}>
 
                             <button className='px-5 py-2 rounded-lg shadow-lg text-white bg-green-500  hover:outline hover:outline-green-700'>
                                 <section className="flex justify-between items-center gap-5">
@@ -180,6 +211,7 @@ export default function ViewRegistration() {
                                                         <td className='px-2 py-2 md:px-4'>Semester</td>
                                                         <td className='px-2 py-2 md:px-4'>Division</td>
                                                         <td className='px-2 py-2 md:px-4'>Mobile No.</td>
+                                                        <td className='px-2 py-2 md:px-4'>Registration Time.</td>
                                                         <td className='px-2 py-2 md:px-4'>Request Status</td>
                                                         <td className='px-2 py-2 md:px-4'>Action</td>
                                                     </tr>
@@ -199,7 +231,20 @@ export default function ViewRegistration() {
                                                                         <td className='border px-2 py-2 md:px-4 '>{team.semester}</td>
                                                                         <td className='border px-2 py-2 md:px-4 '>{team.division}</td>
                                                                         <td className='border px-2 py-2 md:px-4 '>{team.phno}</td>
-                                                                        {idx === 0 && <td className='border px-2 py-2 md:px-4 ' rowSpan={studentTeam.studentData.length}>{studentTeam.status}</td>}
+                                                                        {idx===0 && <td className='border px-2 py-2 md:px-4 ' rowSpan={studentTeam.studentData.length}>{moment(studentTeam.createdAt).format("lll")}</td>}
+                                                                        {idx === 0 && <td className='border px-2 py-2 md:px-4 ' rowSpan={studentTeam.studentData.length}>
+                                                                        {
+                                                                     studentTeam.status === "pending"
+                                                                        ?
+                                                                       <img src={PendingImage} className='w-10' alt="pending"/>
+                                                                        :
+                                                                        studentTeam.status === "rejected"
+                                                                        ?
+                                                                        <img src={RejectedImage} className='w-10' alt="rejected"/>
+                                                                        :
+                                                                       <img src={ApprovalImage} className='w-10' alt="approval"/>
+                                                                    }
+                                                                            </td>}
                                                                         {idx === 0 &&
                                                                             <td className='border px-2 py-2 md:px-4  gap-4 ' rowSpan={studentTeam.studentData.length}>
                                                                                 <section className='grid lg:grid-cols-2  grid-cols-1 gap-5 '>
@@ -253,6 +298,7 @@ export default function ViewRegistration() {
                                         <td className='px-2 py-2 md:px-4'>Semester</td>
                                         <td className='px-2 py-2 md:px-4'>Division</td>
                                         <td className='px-2 py-2 md:px-4'>Mobile No.</td>
+                                        <td className='px-2 py-2 md:px-4'>Registration Time.</td>
                                         <td className='px-2 py-2 md:px-4'>Status</td>
                                         <td className='px-2 py-2 md:px-4'>Action</td>
                                     </tr>
@@ -273,10 +319,21 @@ export default function ViewRegistration() {
                                                         <td className='border px-2 py-2 md:px-4 '>{studentTeam.semester}</td>
                                                         <td className='border px-2 py-2 md:px-4 '>{studentTeam.division}</td>
                                                         <td className='border px-2 py-2 md:px-4 '>{studentTeam.phno}</td>
+                                                        {teamIdx===0 && <td className='border px-2 py-2 md:px-4 ' rowSpan={teams.studentData.length}>{moment(teams.createdAt).format("lll")}</td>}
+
                                                         {teamIdx === 0 &&
                                                             <td className='border px-2 py-2 md:px-4 ' rowSpan={teams.studentData.length}>
-                                                                {teams.status}
-                                                            </td>
+   {
+                                                                     teams.status === "pending"
+                                                                        ?
+                                                                       <img src={PendingImage} className='w-10' alt="pending "/>
+                                                                        :
+                                                                        teams.status === "rejected"
+                                                                        ?
+                                                                        <img src={RejectedImage} className='w-10' alt="rejected "/>
+                                                                        :
+                                                                       <img src={ApprovalImage} className='w-10' alt="approval "/>
+                                                                    }                                                            </td>
                                                         }
                                                         {teamIdx === 0 &&
                                                             <td className='border px-2 py-2 md:px-4  gap-4 ' rowSpan={teams.studentData.length}>

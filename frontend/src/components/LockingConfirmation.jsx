@@ -42,7 +42,7 @@ export default function LockingConfirmation({ isOpen, close, user, data, updateS
                     <button className="px-5 py-3 rounded-lg shadow-lg bg-blue-500 text-white hover:text-blue-500 hover:bg-white hover:outline  hover:outline-blue-500"
                         onClick={() => {
                             close();
-                            updateStateData(data);
+                            updateStateData();
                         }}
                     >Cancel</button>
                     <button className="px-5 py-3 rounded-lg shadow-lg bg-red-500 text-white hover:text-red-500 hover:bg-white hover:outline  hover:outline-red-500"

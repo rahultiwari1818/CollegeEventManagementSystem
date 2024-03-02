@@ -52,30 +52,30 @@ const registerStudentsInBulk = async (req, res) => {
 
             for (let course of courses) {
                 if (course.courseName.toLowerCase() === entry["course"].trim().toLowerCase() && course.noOfSemesters >= Number(entry["semester"])) {
-                   
+
                     flag = true;
                     break;
                 }
             }
 
 
-            if (!["male", "female","others"].includes(String(entry["gender"]).trim().toLowerCase())) {
+            if (!["male", "female", "others"].includes(String(entry["gender"]).trim().toLowerCase())) {
                 flag = false;
-                console.log("gender",entry["gender"])
+                console.log("gender", entry["gender"])
             }
 
-            if(isNaN(entry["division"])){
-                console.log("division",entry["division"])
-                flag = false;
-            }
-
-            if(isNaN(entry["roll no"])){
-                console.log("rollno",entry["roll no"])
+            if (isNaN(entry["division"])) {
+                console.log("division", entry["division"])
                 flag = false;
             }
 
-            if(isNaN(entry["sid"])){
-                console.log("sid",entry["sid"])
+            if (isNaN(entry["roll no"])) {
+                console.log("rollno", entry["roll no"])
+                flag = false;
+            }
+
+            if (isNaN(entry["sid"])) {
+                console.log("sid", entry["sid"])
 
                 flag = false;
             }
@@ -89,7 +89,7 @@ const registerStudentsInBulk = async (req, res) => {
                 flag = false;
             }
 
-            if(!phnoRegex.test(entry["mobile no"])){
+            if (!phnoRegex.test(entry["mobile no"])) {
                 flag = false;
             }
 
@@ -161,30 +161,30 @@ const registerStudentIndividually = async (req, res) => {
             message += "Gender Must be Male or Female.!";
         }
 
-        if(isNaN(division)){
+        if (isNaN(division)) {
             flag = true;
             message += "Division Must be a Number!";
         }
 
-        if(isNaN(rollno)){
+        if (isNaN(rollno)) {
             flag = true;
             message += "Roll no Must be a Number!";
         }
 
-        if(isNaN(sid)){
+        if (isNaN(sid)) {
             flag = true;
             message += "SID Must be a Number";
         }
 
-        if(isNaN(semester)){
+        if (isNaN(semester)) {
             flag = true;
             message += "Semester Must be a Number!";
         }
 
-        if(flag){
+        if (flag) {
             return res.status(200).json({
-                message:message,
-                result:false
+                message: message,
+                result: false
             })
         }
 
@@ -201,7 +201,7 @@ const registerStudentIndividually = async (req, res) => {
             semester: semester,
             division: division,
             rollno: rollno,
-            status:"Active"
+            status: "Active"
         });
 
         if (doesRollNoInSameDivExists) {
@@ -226,7 +226,7 @@ const registerStudentIndividually = async (req, res) => {
             })
         }
 
-        
+
 
 
         let profilePicPath = "";
@@ -246,13 +246,13 @@ const registerStudentIndividually = async (req, res) => {
             profilePicName,
             profilePicPath,
             course,
-            semester:Number(semester),
-            division:Number(division),
-            rollno:Number(rollno),
-            sid:Number(sid),
+            semester: Number(semester),
+            division: Number(division),
+            rollno: Number(rollno),
+            sid: Number(sid),
             studentName,
             phno,
-            gender:gender?.toLowerCase(),
+            gender: gender?.toLowerCase(),
             dob,
             password: secPass,
             email,
@@ -290,7 +290,12 @@ const registerStudentIndividually = async (req, res) => {
         res.status(200).json({ result: true, message: "Student registered successfully." });
 
     } catch (error) {
-        console.log(error)
+
+        console.log(error);
+        return res.status(500).json({
+            message: "Some Error Occured",
+            result: false
+        })
     }
 
 
@@ -319,7 +324,7 @@ const getStudents = async (req, res) => {
                         { studentName: { $regex: searchQuery, $options: 'i' } },
                         { phno: { $regex: searchQuery, $options: 'i' } },
                         { gender: { $regex: searchQuery, $options: 'i' } },
-                        {sid :isNaN(searchQuery) ? "" : Number(searchQuery)}
+                        { sid: isNaN(searchQuery) ? "" : Number(searchQuery) }
                     ]
                 } : {},
                 { status: "Active" }, // Filter for active status
@@ -361,7 +366,7 @@ const getStudents = async (req, res) => {
         });
     } catch (error) {
         console.error(error);
-        return res.status(400).json({ message: 'Some Error Occurred.', result: false });
+        return res.status(500).json({ message: 'Some Error Occurred.', result: false });
     }
 };
 
@@ -383,7 +388,7 @@ const getDivisions = async (req, res) => {
             "result": true
         });
     } catch (error) {
-        return res.status(400).json({ "message": "Some Error Occurred.", "result": false });
+        return res.status(500).json({ "message": "Some Error Occurred.", "result": false });
     }
 }
 
@@ -410,15 +415,16 @@ const getIndividualStudentsFromSid = async (req, res) => {
         }
 
     } catch (error) {
-        return res.status(400).json({ "message": "Some Error Occurred.", "result": false });
+        return res.status(500).json({ "message": "Some Error Occurred.", "result": false });
     }
 }
 
 
 const getIndividualStudentsFromId = async (req, res) => {
-    const id = req.params.id;
     try {
         // Fetch all students
+        const id = req.params.id;
+
         const student = await Student.findOne({ _id: id });
 
         // Extract unique divisions from the fetched students]
@@ -453,7 +459,7 @@ const getIndividualStudentsFromId = async (req, res) => {
 
     } catch (error) {
         console.log(error)
-        return res.status(400).json({ "message": "Some Error Occurred.", "result": false });
+        return res.status(500).json({ "message": "Some Error Occurred.", "result": false });
     }
 }
 const studentForgotPassword = async (req, res) => {
@@ -515,7 +521,7 @@ const studentForgotPassword = async (req, res) => {
     } catch (error) {
         console.error("Error fetching student data:", error);
         return res.status(500).json({
-            message: "Internal Server Error.",
+            message: "Some Error Occured.",
             result: false
         });
     }
@@ -562,6 +568,10 @@ const verifyOTP = async (req, res) => {
 
     } catch (error) {
         console.log(error)
+        return res.status(500).json({
+            message: "Some Error Occured.",
+            result: false
+        });
     }
 }
 
@@ -585,6 +595,11 @@ const resetPassword = async (req, res) => {
 
     } catch (error) {
         console.log(error)
+        console.error("Error fetching student data:", error);
+        return res.status(500).json({
+            message: "Some Error Occured.",
+            result: false
+        });
     }
 }
 
@@ -623,7 +638,7 @@ const loginStudent = async (req, res) => {
 
     } catch (error) {
 
-        return res.status(400).json({ "message": "Error Occured", result: false });
+        return res.status(500).json({ "message": "Error Occured", result: false });
     }
 }
 
@@ -903,7 +918,7 @@ const promoteStudentsToNextSemester = async (req, res) => {
 
 
         // Now you can send a response back to the client
-        res.status(200).json({ message: "Student Promoted  successfully",result:true,data:result, });
+        res.status(200).json({ message: "Student Promoted  successfully", result: true, data: result, });
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: "Some Error Occurred", result: false });
