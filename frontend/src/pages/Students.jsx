@@ -97,12 +97,14 @@ export default function Students() {
 				<Overlay />
 			}
 			<section className='w-full h-full py-3 '>
+				<section className="absolute left-8 md:left-12 top-18 cursor-pointer p-3 rounded-full bg-blue-500">
+					<BackIcon
+						onClick={() => {
+							navigate("/adminDashboard");
+						}}
+					/>
+				</section>
 
-				<BackIcon className="absolute left-8 md:left-12 top-18 cursor-pointer"
-				onClick={()=>{
-					navigate("/adminDashboard");
-				}}
-				/>
 
 				<section className="flex justify-center items-center">
 					<section className=' text-blue-500 px-3 py-3 mb-3 text-base md:text-xl shadow-lg rounded-lg'>
