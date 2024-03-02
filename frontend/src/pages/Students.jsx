@@ -201,7 +201,7 @@ export default function Students() {
 														duration={0.9}
 													/>
 													:
-													course?.course
+													course?.courseName
 											}
 
 										</p>

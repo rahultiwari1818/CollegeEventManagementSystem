@@ -164,7 +164,7 @@ export default function Faculties() {
 														duration={0.9}
 													/>
 													:
-													course?.course === "All" ? "Super Admin" : course?.course
+													course?.course._id === null ? "Super Admin" : course?.course?.courseName
 											}
 
 										</p>

@@ -1,3 +1,4 @@
+const { ObjectId } = require("mongodb");
 const mongoose = require("mongoose");
 
 const {Schema} = mongoose;
@@ -34,8 +35,8 @@ const FacultySchema = new Schema({
         type:String
     },
     course:{
-        required:true,
-        type:String
+        type: Schema.Types.ObjectId,
+        ref: 'Course'
     },
     password:{
         required:true,

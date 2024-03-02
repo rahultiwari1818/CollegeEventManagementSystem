@@ -8,10 +8,14 @@ const csvtojson = require("csvtojson");
 const transporter = require("../config/mailTransporter");
 const { generateOTP, uploadToCloudinary, deleteFromCloudinary } = require("../utils");
 const { client } = require("../config/redisConfig");
+const { isValidObjectId } = require("mongoose");
+const Course = require("../models/Course");
 
 const SECRET_KEY = process.env.SECRET_KEY;
 const nameRegex = /^[a-zA-Z.][a-zA-Z. ]*$/;
 const phnoRegex = /^\d{10}$/;
+const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
 
 const registerIndividualFaculties = async (req, res) => {
     try {
@@ -19,10 +23,20 @@ const registerIndividualFaculties = async (req, res) => {
         const { name, email, phno, course, password, salutation } = req.body;
 
         let user = await Faculties.findOne({ email: email });
+
+        if (!isValidObjectId(course)) {
+            return res.status(200).json({
+                message: "Invalid Course Id Provided",
+                result: false
+            })
+        }
+
         if (user) {
             return res.status(400).json({ "message": "Email Already registered.!", "result": false });
         }
         const profilePic = req.file;
+
+
 
         if (!profilePic) {
             return res.status(400).json({
@@ -117,10 +131,11 @@ const registerFacultiesInBulk = async (req, res) => {
 
         const arrayToInsert = source.map(entry => {
 
-            let flag = fakse;
-
+            let flag = false;
+            let courseId = "";
             for (let course of courses) {
                 if (course.courseName.toLowerCase() === entry["course"].trim().toLowerCase()) {
+                    courseId = course._id;
                     flag = true;
                     break;
                 }
@@ -136,6 +151,11 @@ const registerFacultiesInBulk = async (req, res) => {
             }
 
             if (!phnoRegex.test(entry["mobile"])) {
+                flag = false;
+            }
+
+
+            if (!emailRegex.test(entry["email"])) {
                 flag = false;
             }
 
@@ -158,7 +178,7 @@ const registerFacultiesInBulk = async (req, res) => {
                 email: entry["email"],
                 phno: entry["mobile"],
                 role: "Faculty",
-                course: entry["course"],
+                course: courseId,
                 password: entry["email"],
                 status: "Active"
             }
@@ -184,7 +204,7 @@ const registerFacultiesInBulk = async (req, res) => {
         }
 
     } catch (error) {
-        // console.error("Error registering students:", error);
+        console.error("Error registering students:", error);
         return res.status(500).json({ result: false, message: "An error occurred while registering Faculties . Please Check Your CSV File format.", error: error });
     }
     finally {
@@ -234,7 +254,6 @@ const loginFaculty = async (req, res) => {
     }
 }
 
-
 const getFaculties = async (req, res) => {
     try {
         const searchQuery = req.query.search || "";
@@ -249,7 +268,6 @@ const getFaculties = async (req, res) => {
                     $or: [
                         { salutation: { $regex: searchQuery, $options: 'i' } },
                         { name: { $regex: searchQuery, $options: 'i' } },
-                        { course: { $regex: searchQuery, $options: 'i' } },
                         { phno: { $regex: searchQuery, $options: 'i' } },
                         { email: { $regex: searchQuery, $options: 'i' } },
                         { role: { $regex: searchQuery, $options: 'i' } }
@@ -271,8 +289,11 @@ const getFaculties = async (req, res) => {
         // Calculate the number of documents to skip
         const skip = (currentPage - 1) * limit;
 
-        // Find faculties based on search criteria with pagination
-        const data = await Faculties.find(searchCriteria).skip(skip).limit(limit);
+        // Find faculties based on search criteria with pagination and populate the 'course' field
+        const data = await Faculties.find(searchCriteria)
+            .populate('course') // Populate the 'course' field
+            .skip(skip)
+            .limit(limit);
 
         return res.status(200).json({
             message: "Faculties Data Fetched Successfully.",
@@ -286,37 +307,44 @@ const getFaculties = async (req, res) => {
         console.error("Error fetching faculty data:", error);
         return res.status(500).json({ message: "Some Error Occurred.", result: false });
     }
-
 };
+
 
 const getIndividualFaculty = async (req, res) => {
     try {
-
         const id = req.user.id;
-        const data = await Faculties.findOne({ _id: id })
+
+        // Find the faculty based on the user ID and populate the 'course' field
+        const data = await Faculties.findOne({ _id: id }).populate('course');
+
+        if (!data) {
+            return res.status(404).json({ message: "Faculty not found.", result: false });
+        }
+
         const user = {
             _id: data._id,
             salutation: data.salutation,
             name: data.name,
-            course: data.course,
+            course: data.course, // Now 'course' will be populated with course details
             phno: data.phno,
             email: data.email,
             profilePicName: data.profilePicName,
             profilePicPath: data.profilePicPath
         }
 
-        return res.status(200).json({ "message": "Faculty Data Fetched Successfully.", "data": user, "result": true })
+        return res.status(200).json({ "message": "Faculty Data Fetched Successfully.", "data": user, "result": true });
     } catch (error) {
-        console.log(error)
-        return res.status(500).json({ "message": "Some Error Occured", "result": false });
+        console.error(error);
+        return res.status(500).json({ "message": "Some Error Occurred", "result": false });
     }
 }
+
 
 const setUpSystem = async (req, res) => {
 
     try {
 
-        const { sadminemail, sadminname, sadminphno, sadminpassword, collegename } = req.body;
+        const {sadminsalutation, sadminemail, sadminname, sadminphno, sadminpassword, collegename } = req.body;
 
         if (!phnoRegex.test(sadminphno)) {
             return res.status(400).json({
@@ -325,9 +353,31 @@ const setUpSystem = async (req, res) => {
             })
         }
 
+
+        if(sadminsalutation.trim().length==0){
+            return res.status(400).json({
+                message: "Please Provide a admin salutation.!",
+                result: false
+            })
+        }
+
+        if(collegename.trim().length==0){
+            return res.status(400).json({
+                message: "Please Provide a valid College Name.!",
+                result: false
+            })
+        }
+
         if (!nameRegex.test(sadminname)) {
             return res.status(400).json({
                 message: "Please Provide a valid super admin name!",
+                result: false
+            })
+        }
+
+        if (!emailRegex.test(sadminemail)) {
+            return res.status(400).json({
+                message: "Please Provide a valid super admin Email!",
                 result: false
             })
         }
@@ -343,13 +393,42 @@ const setUpSystem = async (req, res) => {
         user = await Faculties.create({
             name: sadminname.trim(),
             password: secPass,
+            salutation:sadminsalutation,
             email: sadminemail.trim(),
             role: "Super Admin",
-            course: "All",
             phno: sadminphno.trim(),
             status: "Active",
             profilePicName: ".",
             profilePicPath: "."
+        });
+
+
+        const mailOptions = {
+            from: process.env.EMAIL_ID,
+            to: sadminemail,
+            subject: 'Successfull Registration in CEMS',
+            text: `Congratulations.! You Have Succesfully Set Up College Event Management System For Your College.
+                    Your Login Credentials are for CEMS are:
+                email : ${sadminemail} and Password : ${sadminpassword}.
+                please change your password after login.!
+            `
+        };
+
+        // Send email
+        transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+                // return res.status(500).json({
+                //     message:"Unable to send Email",
+                //     result:false
+                // })
+                console.log("error in sending mail", error)
+            } else {
+                // return res.status(200).json({
+                //     message:"OTP Mailed Successfully",
+                //     result:true
+                // });
+                console.log("Mail Send Successfully.");
+            }
         });
 
         return res.status(200).json({ "message": "System Set Up Successfull.!", "result": true });
@@ -488,7 +567,7 @@ const updateFacultyData = async (req, res) => {
     try {
 
 
-        const { _id, course, name, phno, email, salutation } = req.body;
+        const { _id, course, name, phno, email, salutation,role } = req.body;
 
         const doesEmailAlreadyExists = await Faculties.findOne({ email: email, _id: { $ne: _id } })
 
@@ -498,6 +577,14 @@ const updateFacultyData = async (req, res) => {
                 result: false
             })
         }
+
+        if(role !== "Super Admin" && !isValidObjectId(course)){
+            return res.status(400).json({
+                message: "Provide Course .!",
+                result: false
+            })
+        }
+
 
 
 
@@ -514,7 +601,7 @@ const updateFacultyData = async (req, res) => {
                 }
             },
             { new: true } // To return the updated document
-        );
+        ).populate('course');
 
         // Return success response with updated student data
         return res.status(200).json({
@@ -709,11 +796,23 @@ const countFacultiesByCourse = async (req, res) => {
                     count: { $sum: 1 }
                 }
             },
+            // Lookup to join with the Course collection
+            {
+                $lookup: {
+                    from: "courses", // Name of the Course collection
+                    localField: "_id",
+                    foreignField: "_id",
+                    as: "courseDetails"
+                }
+            },
             // Project to reshape the output
             {
                 $project: {
                     _id: 0,
-                    course: "$_id",
+                    course: {
+                        _id: "$_id",
+                        courseName: { $arrayElemAt: ["$courseDetails.courseName", 0] } // Get the course name from the array
+                    },
                     count: 1
                 }
             }
@@ -729,6 +828,7 @@ const countFacultiesByCourse = async (req, res) => {
         return res.status(500).json({ message: "Some Error Occurred", result: false });
     }
 };
+
 
 
 module.exports = {

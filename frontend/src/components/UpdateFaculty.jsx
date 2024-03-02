@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import Modal from './Modal'
-import { formatFileSize, handleNumericInput, isValidPassword, transformCourseData } from '../utils';
+import { formatFileSize, handleNumericInput, isValidEmail, isValidName, isValidPassword, transformCourseData } from '../utils';
 
 import { useDispatch, useSelector } from 'react-redux';
 import Dropdown from './Dropdown';
@@ -28,13 +28,16 @@ export default function UpdateStudent({ isOpen, close, heading, dataToBeUpdated 
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
+        console.log(dataToBeUpdated)
         setFormData(dataToBeUpdated)
     }, [dataToBeUpdated])
 
     const [errors, setErrors] = useState({
         courseErr: "",
         phnoErr: "",
-        salutationErr: ""
+        salutationErr: "",
+        emailErr:"",
+        nameErr:""
     })
     const coursesData = useSelector((state) => state.CourseSlice.data);
     const dispatch = useDispatch();
@@ -61,6 +64,15 @@ export default function UpdateStudent({ isOpen, close, heading, dataToBeUpdated 
     const isValidData = () => {
         let result = true;
 
+
+        if (!isValidName( formData.name)) {
+            result = false;
+            setErrors((old) => ({ ...old, nameErr: "Enter Valid Name" }))
+        }
+        else {
+            setErrors((old) => ({ ...old, nameErr: "" }))
+        }
+
         if (formData.course === "") {
             result = false;
             setErrors((old) => ({ ...old, courseErr: "Select a Course" }))
@@ -84,6 +96,13 @@ export default function UpdateStudent({ isOpen, close, heading, dataToBeUpdated 
             setErrors((old) => ({ ...old, phnoErr: "" }))
         }
 
+        if (!isValidEmail(formData.email)) {
+            result = false;
+            setErrors((old) => ({ ...old, emailErr: "Invalid Email" }))
+        }
+        else {
+            setErrors((old) => ({ ...old, emailErr: "" }))
+        }
 
         return result;
     }
@@ -97,16 +116,18 @@ export default function UpdateStudent({ isOpen, close, heading, dataToBeUpdated 
         try {
 
             setIsLoading(true);
+          const course =  typeof formData.course === "object"  ? formData.course._id : formData.course;
+            const dataToPost = {
+                course:course,
+                name:formData.name,
+                phno:formData.phno,
+                salutation:formData.salutation,
+                email:formData.email,
+                _id:formData._id
+            };
 
-            const dataToPost = new FormData();
-            dataToPost.append('course', formData.course);
-            dataToPost.append('name', formData.name);
-            dataToPost.append('phno', formData.phno);
-            dataToPost.append('salutation', formData.salutation);
-            // dataToPost.append('profilePic', formData.profilePic);
-            dataToPost.append('email', formData.email);
 
-            const { data } = await axios.post(`${API_URL}/api/faculties/updateFacultyData`, formData, {
+            const { data } = await axios.post(`${API_URL}/api/faculties/updateFacultyData`, dataToPost, {
                 headers: {
                     "auth-token": token,
                     // "Content-Type":"multipart/form-data"
@@ -179,10 +200,10 @@ export default function UpdateStudent({ isOpen, close, heading, dataToBeUpdated 
                                 label={"Select Salutation"}
                             />
                             {
-                                errors.semesterErr !== ""
+                                errors.salutationErr !== ""
                                 &&
                                 <p className="text-red-500">
-                                    {errors.semesterErr}
+                                    {errors.salutationErr}
                                 </p>
                             }
                         </section>
@@ -197,15 +218,24 @@ export default function UpdateStudent({ isOpen, close, heading, dataToBeUpdated 
                                 required
                                 placeholder='Enter Faculty Name'
                             />
+                            {
+                                errors.nameErr &&
+                                <p className="text-red-500">
+                                    {
+                                        errors.nameErr
+                                    }
+                                </p>
+                            }
                         </section>
                         <section>
                             <label htmlFor="course">Course:</label>
                             <Dropdown
                                 dataArr={coursesArr}
-                                selected={formData.course}
+                                selected={typeof formData.course === "object"  ? formData.course._id : formData.course}
                                 setSelected={changeCourse}
                                 name={"course"}
                                 label={"Select Course"}
+                                passedId={true}
                             />
                             {
                                 errors.courseErr !== ""
@@ -246,6 +276,13 @@ export default function UpdateStudent({ isOpen, close, heading, dataToBeUpdated 
                                 required
                                 placeholder='Enter Your Email'
                             />
+                            {
+                                errors.emailErr !== ""
+                                &&
+                                <p className="text-red-500">
+                                    {errors.emailErr}
+                                </p>
+                            }
                         </section>
 
                     </section>

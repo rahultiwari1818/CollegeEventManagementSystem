@@ -21,7 +21,7 @@ const generateEvent = async (req, res) => {
         };
 
         // Check if any required field is empty after trimming
-        const requiredFields = ['ename', 'etype', 'edetails','rules', 'enature'];
+        const requiredFields = ['ename', 'etype', 'edetails', 'rules', 'enature'];
         for (const field of requiredFields) {
             if (!trimmedFields[field]) {
                 return res.status(400).json({ message: `${field} cannot be empty.` });
@@ -30,10 +30,10 @@ const generateEvent = async (req, res) => {
 
         // Additional validation for specific fields if needed
         if (!hasSubEvents) {
-            if(isNaN(parseInt(noOfParticipants))){
+            if (isNaN(parseInt(noOfParticipants))) {
                 return res.status(400).json({ message: "Number of participants should be a valid number." });
             }
-            if(ptype.trim()===""){
+            if (ptype.trim() === "") {
                 return res.status(400).json({ message: "Participation Type  is a Required Field." });
             }
         }
@@ -49,16 +49,16 @@ const generateEvent = async (req, res) => {
 
         const originalBrochureName = brochure ? brochure.originalname : "";
         const originalPosterName = poster ? poster.originalname : "";
-        let newBrochurePath="",newPosterPath="";
-        
+        let newBrochurePath = "", newPosterPath = "";
+
         if (brochure) {
-            var result = await uploadToCloudinary(brochure.path,"pdf"); 
+            var result = await uploadToCloudinary(brochure.path, "pdf");
             newBrochurePath = result.url;
-            
+
         }
         if (poster) {
-            var result = await uploadToCloudinary(poster.path,"image"); 
-             newPosterPath = result.url;
+            var result = await uploadToCloudinary(poster.path, "image");
+            newPosterPath = result.url;
 
         }
 
@@ -80,7 +80,7 @@ const generateEvent = async (req, res) => {
             eposterPath: newPosterPath,
             hasSubEvents: hasSubEvents,
             subEvents: subEvents,
-            eligibleCourses:eligibleCourses,
+            eligibleCourses: eligibleCourses,
             isCanceled: false
         });
 
@@ -121,12 +121,12 @@ const getAllEvents = async (req, res) => {
 
 
 
- const getSpecificEvent = async(req,res)=>{
+const getSpecificEvent = async (req, res) => {
 
     try {
         const id = req.params.id;
-        const data = await Event.find({_id:id})
-        return res.status(200).json({"message":"Event Fetched Successfully","data":data,"result":true})
+        const data = await Event.find({ _id: id })
+        return res.status(200).json({ "message": "Event Fetched Successfully", "data": data, "result": true })
     } catch (error) {
         console.log(error)
         return res.status(500).json({ "message": "Some Error Occured", "result": false });
@@ -134,12 +134,18 @@ const getAllEvents = async (req, res) => {
 
 }
 
-const changeEventStatus = async(req,res)=>{
-    const id = req.params.id;
-    const data = req.body;
-    const result = await Event.updateOne({ _id: id },{ $set: data});
-    const message = (data.isCanceled) ? "Event Cancelled Successfully" : "Event Activated Successfully";
-    return res.status(200).json({"message":message,"result":true})
+const changeEventStatus = async (req, res) => {
+
+    try {
+        const id = req.params.id;
+        const data = req.body;
+        const result = await Event.updateOne({ _id: id }, { $set: data });
+        const message = (data.isCanceled) ? "Event Cancelled Successfully" : "Event Activated Successfully";
+        return res.status(200).json({ "message": message, "result": true })
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ "message": "Some Error Occured", "result": false });
+    }
 }
 
 const updateEventDetails = async (req, res) => {
@@ -159,7 +165,7 @@ const updateEventDetails = async (req, res) => {
         };
 
         // Check if any required field is empty after trimming
-        const requiredFields = ['ename', 'etype', 'edetails','rules', 'enature'];
+        const requiredFields = ['ename', 'etype', 'edetails', 'rules', 'enature'];
         for (const field of requiredFields) {
             if (!trimmedFields[field]) {
                 return res.status(400).json({ message: `${field} cannot be empty.` });
@@ -168,10 +174,10 @@ const updateEventDetails = async (req, res) => {
 
         // Additional validation for specific fields if needed
         if (!hasSubEvents) {
-            if(isNaN(parseInt(noOfParticipants))){
+            if (isNaN(parseInt(noOfParticipants))) {
                 return res.status(400).json({ message: "Number of participants should be a valid number." });
             }
-            if(ptype.trim()===""){
+            if (ptype.trim() === "") {
                 return res.status(400).json({ message: "Participation Type  is a Required Field." });
             }
         }
@@ -216,8 +222,8 @@ const updateEventDetails = async (req, res) => {
 
         // Update event details in the database
         const subEvents = JSON.parse(req.body.subEvents);
-        const eligibleCourses = JSON.parse(req.body.eligibleCourses ); // Parse subEvents JSON string, default to empty array if not provided
-        const dataToUpdate = { ename, etype, ptype, enature, noOfParticipants, edate, edetails, rules, rcdate, ebrochureName: originalBrochureName, ebrochurePath: newBrochurePath, eposterName: originalPosterName, eposterPath: newPosterPath, hasSubEvents, subEvents,eligibleCourses };
+        const eligibleCourses = JSON.parse(req.body.eligibleCourses); // Parse subEvents JSON string, default to empty array if not provided
+        const dataToUpdate = { ename, etype, ptype, enature, noOfParticipants, edate, edetails, rules, rcdate, ebrochureName: originalBrochureName, ebrochurePath: newBrochurePath, eposterName: originalPosterName, eposterPath: newPosterPath, hasSubEvents, subEvents, eligibleCourses };
         await Event.updateOne({ _id: id }, { $set: dataToUpdate });
 
         return res.status(200).json({ "message": "Event Updated Successfully", "result": true });
@@ -229,13 +235,13 @@ const updateEventDetails = async (req, res) => {
 
 
 
-const registerInEvent = async(req,res)=>{
+const registerInEvent = async (req, res) => {
 
     try {
-        
-        const {eventId,ename,hasSubEvents} = req.body;
-        let sId,subEventName;
-        if(hasSubEvents){
+
+        const { eventId, ename, hasSubEvents } = req.body;
+        let sId, subEventName;
+        if (hasSubEvents) {
             sId = req.body.sId;
             subEventName = req.body.subEventName;
         }
@@ -258,30 +264,30 @@ const registerInEvent = async(req,res)=>{
             }
         }
 
-        for(let student of studentData){
-            if(!student?.sid){
+        for (let student of studentData) {
+            if (!student?.sid) {
                 return res.status(400).json({
-                    message:"Please Provide Data of All Participants",
-                    result:false
+                    message: "Please Provide Data of All Participants",
+                    result: false
                 })
             }
         }
 
 
         const registrationDetails = await Registration.create({
-            eventId:eventId,
-            ename:ename,
-            sId:sId,
-            subEventName:subEventName,
-            studentData:studentData,
-            createdAt:Date.now(),
-            status:'pending',
-            updatedAt:Date.now()
+            eventId: eventId,
+            ename: ename,
+            sId: sId,
+            subEventName: subEventName,
+            studentData: studentData,
+            createdAt: Date.now(),
+            status: 'pending',
+            updatedAt: Date.now()
         })
 
         return res.status(200).json({
-            result:true,
-            message:"Registration Request Sent Successfully"
+            result: true,
+            message: "Registration Request Sent Successfully"
         })
 
     } catch (error) {
@@ -294,7 +300,7 @@ const registerInEvent = async(req,res)=>{
 
 const getRegistrationDataOfEvent = async (req, res) => {
     try {
-        const {eventId,status } = req.query;// Extracting status query parameter
+        const { eventId, status } = req.query;// Extracting status query parameter
 
         // Constructing the filter object based on the presence of status
         const filter = { eventId };
@@ -318,25 +324,25 @@ const getRegistrationDataOfEvent = async (req, res) => {
 };
 
 
-const approveOrRejectRegistrationRequest = async(req,res)=>{
+const approveOrRejectRegistrationRequest = async (req, res) => {
 
     try {
-        
-        const {reqId,status} = req.body;
+
+        const { reqId, status } = req.body;
 
         const updatedRegData = await Registration.updateOne(
-            {_id:reqId},
+            { _id: reqId },
             {
-                $set:{
-                    status:status,
-                    updatedAt:Date.now()
+                $set: {
+                    status: status,
+                    updatedAt: Date.now()
                 }
             }
         )
 
         return res.status(200).json({
-            message:`Request Status ${status} Successfully.`,
-            result:true
+            message: `Request Status ${status} Successfully.`,
+            result: true
         })
 
     } catch (error) {

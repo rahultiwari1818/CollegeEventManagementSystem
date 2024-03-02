@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Dropdown from './Dropdown';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAllCourses } from '../store/CourseSlice';
-import { formatFileSize, handleNumericInput, isValidPassword, transformCourseData } from '../utils';
+import { formatFileSize, handleNumericInput, isValidEmail, isValidName, isValidPassword, transformCourseData } from '../utils';
 import { ReactComponent as CalanderIcon } from "../assets/Icons/calander_icon.svg";
 import DatePicker from 'react-datepicker';
 import { ReactComponent as FileUploadIcon } from "../assets/Icons/FileUploadIcon.svg";
@@ -37,7 +37,9 @@ export default function AddIndividualStudent() {
         courseErr: "",
         semesterErr: "",
         phnoErr: "",
-        passwordErr: ""
+        passwordErr: "",
+        emailErr:"",
+        nameErr:"",
     })
     const [isLoading,setIsLoading] = useState(false);
     const coursesData = useSelector((state) => state.CourseSlice.data);
@@ -64,6 +66,16 @@ export default function AddIndividualStudent() {
 
     const isValidData = () => {
         let result = true;
+
+        if(!isValidName(formData.studentName)){
+            result = false;
+            setErrors((old) => ({ ...old, nameErr: "Enter Valid Name" }))
+
+        }
+        else{
+            setErrors((old) => ({ ...old, nameErr: "" }))
+
+        }
 
         if (formData.course === "") {
             result = false;
@@ -103,6 +115,14 @@ export default function AddIndividualStudent() {
         else {
             setErrors((old) => ({ ...old, passwordErr: "" }))
         }
+        if(!isValidEmail(formData.email)){
+            result = false;
+            setErrors((old) => ({ ...old, emailErr: "Enter a valid Email" }))
+        }
+        else{
+            setErrors((old) => ({ ...old, emailErr: "" }))
+        }
+
         return result;
     }
 
@@ -166,7 +186,7 @@ export default function AddIndividualStudent() {
 
     const semestersArr = useMemo(() => {
         for (let course of coursesData) {
-            if (course.courseName === formData.course) {
+            if (course._id === formData.course) {
                 let semesters = [];
                 for (let i = 1; i <= course.noOfSemesters; i++) {
                     semesters.push({ name: i });
@@ -187,7 +207,6 @@ export default function AddIndividualStudent() {
         }
             <form onSubmit={handleSubmit} className="p-4 bg-white shadow-lg rounded-lg mx-4 my-3">
                 <section className="grid md:grid-cols-2 grid-col-1 gap-4 my-3">
-
                     <section>
                         <label htmlFor="studentName" className="block mb-1">Student Name:</label>
                         <input type="text"
@@ -199,6 +218,15 @@ export default function AddIndividualStudent() {
                             required
                             placeholder='Enter Student Name'
                         />
+                        {
+                            errors.nameErr !== ""
+                            &&
+                            <p className="text-red-500">
+                                {
+                                    errors.nameErr
+                                }
+                            </p>
+                        }
                     </section>
                     <section>
                         <label htmlFor="course">Course:</label>
@@ -208,6 +236,7 @@ export default function AddIndividualStudent() {
                             setSelected={changeCourse}
                             name={"course"}
                             label={"Select Course"}
+                            passedId={true}
                         />
                         {
                             errors.courseErr !== ""
@@ -305,6 +334,13 @@ export default function AddIndividualStudent() {
                             required
                             placeholder='Enter Your Email'
                         />
+                        {
+                            errors.emailErr !== ""
+                            &&
+                            <p className="text-red-500">
+                                {errors.emailErr}
+                            </p>
+                        }
                     </section>
                     <section>
                         <label htmlFor="gender" className="block mb-1">Gender:</label>

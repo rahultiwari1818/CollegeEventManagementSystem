@@ -1,8 +1,8 @@
-import { Fragment, useRef, useState, useEffect } from 'react';
+import { Fragment, useRef, useState, useEffect, useMemo } from 'react';
 import { Listbox, Transition } from '@headlessui/react';
 import { ReactComponent as UpIcon } from '../assets/Icons/up_arrow.svg';
 
-const Dropdown = ({ dataArr, selected, setSelected, name, label, disabled }) => {
+const Dropdown = ({ dataArr, selected, setSelected, name, label, disabled,passedId }) => {
   const dropdownRef = useRef(null);
   const [menuPosition, setMenuPosition] = useState('bottom-0');
 
@@ -22,8 +22,27 @@ const Dropdown = ({ dataArr, selected, setSelected, name, label, disabled }) => 
   }, []);
 
   const handleInputChange = (e) => {
-    setSelected(e.name);
+    if(passedId){
+      setSelected(e._id)
+    }
+    else{
+      setSelected(e.name);
+    }
   };
+
+  console.log("salu",selected)
+
+  const showSelected = useMemo(()=>{
+    if(passedId){
+      const data =  dataArr.find(data=>data?._id===selected);
+      return data?.name;
+    }
+         const data =  dataArr.find(data=>data?.name===selected);
+        return data?.name
+  },[selected])
+
+  console.log("salu",selected,showSelected)
+
 
   return (
     <div className="w-full relative" ref={dropdownRef}>
@@ -34,7 +53,7 @@ const Dropdown = ({ dataArr, selected, setSelected, name, label, disabled }) => 
           <div className="relative mt-1">
             <Listbox.Button className="relative flex gap-5 justify-between w-full cursor-default rounded-lg bg-white py-3 pl-3 pr-10 text-left shadow-lg focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300"
             >
-              <span className="block truncate">{selected ? selected : label}</span>
+              <span className="block truncate">{selected ? showSelected : label}</span>
               <span>
                 <UpIcon className={`md:h-5 md:w-5 w-3 h-3 ${!open ? 'transform rotate-180' : ''} float-right`} />
               </span>

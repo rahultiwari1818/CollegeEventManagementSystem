@@ -143,7 +143,7 @@ export default function ViewStudents() {
 
     const semestersArr = useMemo(() => {
         for (let course of coursesData) {
-            if (course.courseName === searchParams.searchCourse) {
+            if (course._id === searchParams.searchCourse) {
                 let semesters = [];
                 for (let i = 1; i <= course.noOfSemesters; i++) {
                     semesters.push({ name: i });
@@ -222,7 +222,7 @@ export default function ViewStudents() {
             <section className='mx-2 my-2 p-2'>
                 <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-3 lg:gap-5 p-2">
                     <Search placeholder="Search Student" searchValue={searchParams?.search} changeSearch={changeSearch} />
-                    <Dropdown dataArr={courses} selected={searchParams.searchCourse} setSelected={changeSearchCourse} name="searchCourse" label="Select Course" />
+                    <Dropdown dataArr={courses} selected={searchParams.searchCourse} setSelected={changeSearchCourse} name="searchCourse" label="Select Course" passedId={true} />
                     <Dropdown dataArr={semestersArr} selected={searchParams.searchSemester} setSelected={changeSemesterCourse} name="searchSemester" label="Select Semester" />
                     <Dropdown dataArr={division} selected={searchParams.searchdivision} setSelected={changeSearchDivision} name="searchdivisions" label="Select Division" disabled={disablesection} />
                 </section>
@@ -380,7 +380,7 @@ export default function ViewStudents() {
                                             <td className="border px-2 py-2 md:px-4 min-w-[3%]">{idx + 1}</td>
                                             <td className="border px-2 py-2 md:px-4 min-w-[10%]">{student.sid}</td>
                                             <td className="border px-2 py-2 md:px-4 min-w-[30%]">{student.studentName}</td>
-                                            <td className="border px-2 py-2 md:px-4 min-w-[10%]">{student.course}</td>
+                                            <td className="border px-2 py-2 md:px-4 min-w-[10%]">{student.course.courseName}</td>
                                             <td className="border px-2 py-2 md:px-4 min-w-[7%]">{student.semester}</td>
                                             <td className="border px-2 py-2 md:px-4 min-w-[5%]">{student.division}</td>
                                             <td className="border px-2 py-2 md:px-4 min-w-[5%]">{student.rollno}</td>
@@ -425,7 +425,7 @@ export default function ViewStudents() {
                         <p className='text-nowrap mx-2'>No of Entries : </p>
                         <Dropdown
                             dataArr={[{ name: 15 }, { name: 30 }, { name: 50 }]} // Options for entries per page
-                            selected={entriesPerPage.toString()}
+                            selected={entriesPerPage}
                             setSelected={(value) => handleEntriesPerPageChange(Number(value))} // Convert value to number before setting
                             name="entriesPerPage"
                             label="Entries Per Page"
@@ -449,7 +449,7 @@ export default function ViewStudents() {
 
                         <Dropdown
                             dataArr={Array.from({ length: totalPages }, (_, idx) => ({ name: idx + 1 }))}
-                            selected={selectedPage.toString()}
+                            selected={selectedPage}
                             setSelected={handleSelectedPageChange}
                             name="pageDropdown"
                             label="Go to Page"

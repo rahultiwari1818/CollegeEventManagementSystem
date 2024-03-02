@@ -309,6 +309,7 @@ export default function GenerateEvent() {
                                     setSelected={changeEventNature}
                                     name={"enature"}
                                     label={"Select Event Nature"}
+                                    passedId={true}
                                 />
                                 {
                                     errors && errors.enatureErr !== ""
@@ -350,9 +351,9 @@ export default function GenerateEvent() {
                                         <input
                                             type="checkbox"
                                             id={course._id}
-                                            value={course.courseName}
-                                            checked={data.eligibleCourses.includes(course.courseName)}
-                                            onChange={() => handleCourseChange(course.courseName)}
+                                            value={course._id}
+                                            checked={data.eligibleCourses.includes(course._id)}
+                                            onChange={() => handleCourseChange(course._id)}
                                             className='mr-2 cursor-pointer'
                                         />
                                         <label htmlFor={course._id} className="cursor-pointer">{course.courseName}</label>

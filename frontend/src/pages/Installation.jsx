@@ -1,9 +1,9 @@
-import React, { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react'
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Overlay from '../components/Overlay';
-import { handleNumericInput, isValidName, isValidPassword, validatePhno } from '../utils';
+import { handleNumericInput, isValidEmail, isValidName, isValidPassword, validatePhno } from '../utils';
 import Dropdown from '../components/Dropdown';
 export default function Installation() {
 
@@ -86,7 +86,19 @@ export default function Installation() {
 
 
     const validateData = () =>{
+        let result = true;
+        if (data.collegename.trim()==="") {
+            result = false;
+            setErrors((old) => ({ ...old, collegenameErr: "Invalid College Name " }));
+        }
+        else {
+            setErrors((old) => ({
+                ...old, collegenameErr: `` }));
+        }
+
+
         if (data.sadminsalutation==="") {
+            result = false;
             setErrors((old) => ({ ...old, sadminsalutationErr: "Select Super Admin's Salutation" }));
         }
         else {
@@ -95,6 +107,7 @@ export default function Installation() {
         }
 
         if ( !isValidName(data.sadminname)) {
+            result = false;
             setErrors((old) => ({ ...old, sadminnameErr: "Super Admin Name Must Have Alphabets and Spaces only." }));
         }
         else {
@@ -102,7 +115,16 @@ export default function Installation() {
                 ...old, sadminsalutationErr: `` }));
         }
 
-        
+        if(!isValidEmail(data.sadminemail)){
+            result = false;
+            setErrors((old) => ({
+                ...old, sadminemailErr: `Invalid Email.!` }));
+        }
+        else{
+            setErrors((old) => ({
+                ...old, sadminemailErr: `` }));
+        }
+        return result;
 
     }
 
@@ -111,9 +133,8 @@ export default function Installation() {
     const onSubmitHandler = async (e) => {
         e.preventDefault();
         
-        validateData();
+       if(! validateData())return;
 
-        if (haveError) return;
         setIsLoading(() => true);
 
         try {
@@ -152,12 +173,6 @@ export default function Installation() {
     })
 
 
-    const haveError = useMemo(() => {
-        for (let error in errors) {
-            if (errors[error] !== "") return true;
-        }
-        return false;
-    }, [errors])
 
     const salutations = [
         { name: "Mr." },
@@ -194,6 +209,14 @@ export default function Installation() {
                                 className='w-full shadow-lg md:p-3 rounded-lg md:m-2 p-2 m-1'
                                 required
                             />
+                            {
+                                errors.collegenameErr &&
+                                <p className="text-red-500">
+                                    {
+                                        errors.collegenameErr
+                                    }
+                                </p>
+                            }
                         </section>
                         {/* <section className='md:flex md:justify-between md:items-center block '>
 
@@ -294,6 +317,15 @@ export default function Installation() {
                                 className='w-full shadow-lg md:p-3 rounded-lg md:m-2 p-2 m-1'
                                 required
                             />
+                            {
+                                errors.sadminemailErr !== ""
+                                &&
+                                <p className="text-red-500 my-2">
+                                    {
+                                        errors.sadminemailErr
+                                    }
+                                </p>
+                            }
                         </section>
                         <section className='md:p-2 md:m-2 p-1 m-1'>
                             <label htmlFor="sadminphno">Super Admin's Phone Number:</label>
@@ -340,7 +372,6 @@ export default function Installation() {
                         </section>
                         <section className='md:p-2 md:m-2  p-1 m-1'>
                             <input type="submit" value="Finish Set Up" className='cursor-pointer text-red-500 bg-white rounded-lg shadow-lg px-5 py-3 w-full m-2 outline outline-red-500 hover:text-white hover:bg-red-500 '
-                                disabled={haveError}
                             />
                         </section>
                     </form>

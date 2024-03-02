@@ -9,10 +9,12 @@ const jwtToken = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const Course = require("../models/Course.js");
 const transporter = require("../config/mailTransporter");
+const { isValidObjectId } = require("mongoose");
 const SECRET_KEY = process.env.SECRET_KEY;
 
 const nameRegex = /^[a-zA-Z.][a-zA-Z. ]*$/;
 const phnoRegex = /^\d{10}$/;
+const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 
 const registerStudentsInBulk = async (req, res) => {
@@ -49,10 +51,10 @@ const registerStudentsInBulk = async (req, res) => {
             }
 
             let flag = false;
-
+            let courseId = false;
             for (let course of courses) {
                 if (course.courseName.toLowerCase() === entry["course"].trim().toLowerCase() && course.noOfSemesters >= Number(entry["semester"])) {
-
+                    courseId = course._id;
                     flag = true;
                     break;
                 }
@@ -93,6 +95,10 @@ const registerStudentsInBulk = async (req, res) => {
                 flag = false;
             }
 
+            if (!emailRegex.test(entry["email"])) {
+                flag = false;
+            }
+
             if (!flag) {
                 invalidRecords.push(entry);
                 return;
@@ -101,7 +107,7 @@ const registerStudentsInBulk = async (req, res) => {
             return {
                 profilePicName: ".",
                 profilePicPath: ".",
-                course: entry["course"],
+                course: courseId,
                 semester: Number(entry["semester"]),
                 division: Number(entry["division"]),
                 rollno: Number(entry["roll no"]),
@@ -155,6 +161,13 @@ const registerStudentIndividually = async (req, res) => {
 
         let message = "";
         let flag = false;
+
+        if(!isValidObjectId(course)){
+            return res.status(200).json({
+                message:"Invalid Course Id Provided",
+                result:false
+            })
+        }
 
         if (!["male", "female"].includes(gender?.trim()?.toLowerCase())) {
             flag = true;
@@ -312,15 +325,12 @@ const getStudents = async (req, res) => {
         const sidFilter = parseInt(req.query.sid) || ''; // Convert to number
         const rollnoFilter = parseInt(req.query.rollno) || ''; // Convert to number
 
-
         // Define the search criteria
-
-
         const searchCriteria = {
             $and: [
                 searchQuery ? {
                     $or: [
-                        { course: { $regex: searchQuery, $options: 'i' } },
+
                         { studentName: { $regex: searchQuery, $options: 'i' } },
                         { phno: { $regex: searchQuery, $options: 'i' } },
                         { gender: { $regex: searchQuery, $options: 'i' } },
@@ -337,7 +347,6 @@ const getStudents = async (req, res) => {
             ]
         };
 
-
         // Count total number of documents matching the search criteria
         const totalDocuments = await Student.countDocuments(searchCriteria);
 
@@ -353,8 +362,13 @@ const getStudents = async (req, res) => {
         // Find students based on search criteria with pagination, excluding the password field
         const data = await Student.find(searchCriteria)
             .select('-password') // Exclude the password field
+            .populate({
+                path: 'course',
+                select: 'courseName'
+            }) // Populate the 'course' field and include only 'courseName'
             .skip(skip)
-            .limit(limit);
+            .limit(limit)
+            ;
 
         return res.status(200).json({
             message: 'Students Data Fetched Successfully.',
@@ -373,9 +387,10 @@ const getStudents = async (req, res) => {
 
 
 const getDivisions = async (req, res) => {
-    const course = req.query.course || "";
-    const semester = req.query.semester || "";
+
     try {
+        const course = req.query.course || "";
+        const semester = req.query.semester || "";
         // Fetch all students
         const students = await Student.find({ course: course, semester: semester });
 
@@ -395,10 +410,9 @@ const getDivisions = async (req, res) => {
 const getIndividualStudentsFromSid = async (req, res) => {
     const sid = req.params.id;
     try {
-        // Fetch all students
-        const student = await Student.find({ sid: sid });
+        // Fetch student with the provided SID and populate the 'course' field to get the course details
+        const student = await Student.findOne({ sid: sid }).populate('course');
 
-        // Extract unique divisions from the fetched students]
         if (student) {
             return res.status(200).json({
                 "message": "Student Data Fetched Successfully.",
@@ -420,19 +434,20 @@ const getIndividualStudentsFromSid = async (req, res) => {
 }
 
 
+
 const getIndividualStudentsFromId = async (req, res) => {
     try {
         // Fetch all students
         const id = req.params.id;
 
-        const student = await Student.findOne({ _id: id });
+        const student = await Student.findOne({ _id: id }).populate("course");
 
         // Extract unique divisions from the fetched students]
         if (student) {
             return res.status(200).json({
                 "message": "Student Data Fetched Successfully.",
                 "data": {
-                    course: student.course,
+                    course: student.course.courseName,
                     division: student.division,
                     dob: student.dob,
                     gender: student.gender,
@@ -692,7 +707,7 @@ const updateStudentData = async (req, res) => {
                 }
             },
             { new: true } // To return the updated document
-        );
+        ).populate('course');
 
         // Return success response with updated student data
         return res.status(200).json({
@@ -982,6 +997,30 @@ const getStudentCountCourseWise = async (req, res) => {
                     femaleStudents: 1,
                     otherStudents: 1
                 }
+            },
+            // Lookup to join with the Course collection and fetch course name
+            {
+                $lookup: {
+                    from: "courses", // Assuming the name of the Course collection is "courses"
+                    localField: "course",
+                    foreignField: "_id",
+                    as: "courseDetails"
+                }
+            },
+            // Unwind the courseDetails array
+            {
+                $unwind: "$courseDetails"
+            },
+            // Project to include only necessary fields
+            {
+                $project: {
+                    course: 1,
+                    totalStudents: 1,
+                    maleStudents: 1,
+                    femaleStudents: 1,
+                    otherStudents: 1,
+                    courseName: "$courseDetails.courseName" // Assuming the field name in Course collection is "courseName"
+                }
             }
         ];
 
@@ -995,6 +1034,7 @@ const getStudentCountCourseWise = async (req, res) => {
         return res.status(500).json({ message: "Some Error Occurred", result: false });
     }
 };
+
 
 
 module.exports = {

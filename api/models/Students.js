@@ -1,3 +1,4 @@
+const { ObjectId } = require("mongodb");
 const mongoose = require("mongoose");
 
 const {Schema} = mongoose;
@@ -12,7 +13,8 @@ const StudentSchema = new Schema({
         required:true
     },
     course: {
-        type: String,
+        type: Schema.Types.ObjectId,
+        ref: 'Course',
         required: true
     },
     semester: {

@@ -1,3 +1,4 @@
+const { ObjectId } = require("mongodb");
 const mongoose = require("mongoose");
 
 const {Schema} = mongoose;
@@ -16,7 +17,8 @@ const EventsSchema = new Schema({
     },
     enature:{
         required:true,
-        type:String
+        type: Schema.Types.ObjectId,
+        ref: 'EventType',
     },
     noOfParticipants:{
         required:true,

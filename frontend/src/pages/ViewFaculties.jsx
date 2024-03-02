@@ -152,7 +152,7 @@ export default function ViewFaculties() {
             <section className='mx-2 my-2 p-2'>
                 <section className="grid grid-cols-1 md:grid-cols-2  gap-2 md:gap-3 lg:gap-5 p-2">
                     <Search placeholder="Search Faculty" searchValue={searchParams?.search} changeSearch={changeSearch} />
-                    <Dropdown dataArr={courses} selected={searchParams.searchCourse} setSelected={changeSearchCourse} name="searchCourse" label="Select Course" />
+                    <Dropdown dataArr={courses} selected={searchParams.searchCourse} setSelected={changeSearchCourse} name="searchCourse" label="Select Course" passedId={true} />
                 </section>
 
 
@@ -274,7 +274,7 @@ export default function ViewFaculties() {
                                             <td className="border px-4 py-2 min-w-[5%]">{idx + 1}</td>
                                             <td className="border px-4 py-2 min-w-[5%]">{faculty.salutation}</td>
                                             <td className="border px-4 py-2 min-w-[30%]">{faculty.name}</td>
-                                            <td className="border px-4 py-2 min-w-[10%]">{faculty.course}</td>
+                                            <td className="border px-4 py-2 min-w-[10%]">{faculty?.course?.courseName}</td>
                                             <td className="border px-4 py-2 min-w-[10%]">{faculty.phno}</td>
                                             <td className="border px-4 py-2 min-w-[10%]">{faculty.email}</td>
                                             <td className="border px-4 py-2 min-w-[10%]">{faculty.role}</td>
@@ -319,7 +319,7 @@ export default function ViewFaculties() {
                         <p className='text-nowrap mx-2'>No of Entries : </p>
                         <Dropdown
                             dataArr={[{ name: 15 }, { name: 30 }, { name: 50 }]} // Options for entries per page
-                            selected={entriesPerPage.toString()}
+                            selected={entriesPerPage}
                             setSelected={(value) => handleEntriesPerPageChange(Number(value))} // Convert value to number before setting
                             name="entriesPerPage"
                             label="Entries Per Page"
@@ -343,7 +343,7 @@ export default function ViewFaculties() {
 
                         <Dropdown
                             dataArr={Array.from({ length: totalPages }, (_, idx) => ({ name: idx + 1 }))}
-                            selected={selectedPage.toString()}
+                            selected={selectedPage}
                             setSelected={handleSelectedPageChange}
                             name="pageDropdown"
                             label="Go to Page"

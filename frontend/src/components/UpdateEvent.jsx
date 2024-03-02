@@ -276,6 +276,7 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
                             setSelected={changeEventNature}
                             name={"enature"}
                             label={"Select Event Nature"}
+                            passedId={true}
                         />
                         {
                             errors && errors.enatureErr !== ""

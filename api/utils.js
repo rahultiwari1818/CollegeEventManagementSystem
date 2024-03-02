@@ -69,5 +69,4 @@ function generateOTP() {
 }
 
 
-
 module.exports = {storage,uploadToCloudinary,deleteFromCloudinary,generateOTP};

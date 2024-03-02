@@ -77,7 +77,7 @@ export const validatePhno = (phno) => {
 
 export function isValidName(name) {
 	// Regular expression for validating names (alphabets and spaces only)
-	const nameRegex = /^[a-zA-Z\s]+$/;
+	const nameRegex = /^(?=.*[a-zA-Z])\s*\S[a-zA-Z\s]*$/;
 
 	// Test the name against the regular expression
 	return nameRegex.test(name);
@@ -89,13 +89,18 @@ export function isValidPassword(password){
 
 }
 
+export function isValidEmail(email){
+	const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+	return regex.test(email);
+}
+
 export function transformCourseData(coursesData,requiresAll) {
 	const arr = [];
 	if(requiresAll){
 		arr.push({ name: "All" });
 	}
 	for (let course of coursesData) {
-		arr.push({ name: course.courseName });
+		arr.push({ name: course.courseName,_id:course._id });
 	}
 	return arr;
 }
@@ -105,7 +110,8 @@ export function transformEventTypesData(eventTypes) {
 	
 	for (let eventtype of eventTypes) {
 		arr.push({ name: eventtype.eventTypeName,
-		eventTypeLogoPath:eventtype.eventTypeLogoPath
+		eventTypeLogoPath:eventtype.eventTypeLogoPath,
+		_id:eventtype._id
 		});
 	}
 	return arr;

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import Modal from './Modal'
-import { formatFileSize, handleNumericInput, isValidPassword, transformCourseData } from '../utils';
+import { formatFileSize, handleNumericInput, isValidEmail, isValidName, isValidPassword, transformCourseData } from '../utils';
 import { ReactComponent as CalanderIcon } from "../assets/Icons/calander_icon.svg";
 import DatePicker from 'react-datepicker';
 import { useDispatch, useSelector } from 'react-redux';
@@ -21,7 +21,9 @@ export default function UpdateStudent({ isOpen, close, heading, dataToBeUpdated 
         courseErr: "",
         semesterErr: "",
         phnoErr: "",
-        passwordErr: ""
+        passwordErr: "",
+        emailErr:"",
+        nameErr:"",
     })
     const coursesData = useSelector((state) => state.CourseSlice.data);
     const dispatch = useDispatch();
@@ -47,6 +49,16 @@ export default function UpdateStudent({ isOpen, close, heading, dataToBeUpdated 
 
     const isValidData = () => {
         let result = true;
+
+        if(!isValidName(data.studentName)){
+            result = false;
+            setErrors((old) => ({ ...old, nameErr: "Enter Valid Name" }))
+
+        }
+        else{
+            setErrors((old) => ({ ...old, nameErr: "" }))
+
+        }
 
         if (data.course === "") {
             result = false;
@@ -76,7 +88,13 @@ export default function UpdateStudent({ isOpen, close, heading, dataToBeUpdated 
         else {
             setErrors((old) => ({ ...old, phnoErr: "" }))
         }
-
+        if (!isValidEmail(data.email)) {
+            result = false;
+            setErrors((old) => ({ ...old, emailErr: "Invalid Email" }))
+        }
+        else {
+            setErrors((old) => ({ ...old, emailErr: "" }))
+        }
         
         return result;
     }
@@ -91,7 +109,13 @@ export default function UpdateStudent({ isOpen, close, heading, dataToBeUpdated 
             
             setIsLoading(true);
 
-            const response = await axios.post(`${API_URL}/api/students/updateStudentData`,data,{
+            const dataToBeUpdated = {
+                ...data,
+                course:typeof data.course === "object"  ? data.course._id : data.course
+            }
+
+
+            const response = await axios.post(`${API_URL}/api/students/updateStudentData`,dataToBeUpdated,{
                 headers:{
                     "auth-token":token
                 }
@@ -128,8 +152,9 @@ export default function UpdateStudent({ isOpen, close, heading, dataToBeUpdated 
     }, [coursesData])
 
     const semestersArr = useMemo(() => {
+        const currentCourse = typeof data.course === "object"  ? data.course._id : data.course;
         for (let course of coursesData) {
-            if (course.courseName === data.course) {
+            if (course._id === currentCourse) {
                 let semesters = [];
                 for (let i = 1; i <= course.noOfSemesters; i++) {
                     semesters.push({ name: i });
@@ -166,15 +191,25 @@ export default function UpdateStudent({ isOpen, close, heading, dataToBeUpdated 
                                 required
                                 placeholder='Enter Student Name'
                             />
+                            {
+                            errors.nameErr !== ""
+                            &&
+                            <p className="text-red-500">
+                                {
+                                    errors.nameErr
+                                }
+                            </p>
+                        }
                         </section>
                         <section>
                             <label htmlFor="course">Course:</label>
                             <Dropdown
                                 dataArr={coursesArr}
-                                selected={data.course}
+                                selected={typeof data.course === "object"  ? data.course._id : data.course}
                                 setSelected={changeCourse}
                                 name={"course"}
                                 label={"Select Course"}
+                                passedId={true}
                             />
                             {
                                 errors.courseErr !== ""
@@ -272,6 +307,13 @@ export default function UpdateStudent({ isOpen, close, heading, dataToBeUpdated 
                                 required
                                 placeholder='Enter Your Email'
                             />
+                            {
+                                errors.emailErr !== ""
+                                &&
+                                <p className="text-red-500">
+                                    {errors.emailErr}
+                                </p>
+                            }
                         </section>
                         <section>
                             <label htmlFor="gender" className="block mb-1">Gender:</label>

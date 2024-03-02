@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Dropdown from './Dropdown';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAllCourses } from '../store/CourseSlice';
-import { formatFileSize, handleNumericInput, isValidPassword, transformCourseData } from '../utils';
+import { formatFileSize, handleNumericInput, isValidEmail, isValidName, isValidPassword, transformCourseData } from '../utils';
 import { ReactComponent as FileUploadIcon } from "../assets/Icons/FileUploadIcon.svg";
 import axios from 'axios';
 import { toast } from 'react-toastify';
@@ -32,7 +32,9 @@ export default function AddIndividualFaculty() {
         courseErr: "",
         phnoErr: "",
         passwordErr: "",
-        salutationErr:""
+        salutationErr:"",
+        emailErr:"",
+        nameErr:"",
     })
     const coursesData = useSelector((state) => state.CourseSlice.data);
     const dispatch = useDispatch();
@@ -58,6 +60,14 @@ export default function AddIndividualFaculty() {
 
     const isValidData = () => {
         let result = true;
+
+        if (!isValidName( formData.name)) {
+            result = false;
+            setErrors((old) => ({ ...old, nameErr: "Enter Valid Name" }))
+        }
+        else {
+            setErrors((old) => ({ ...old, nameErr: "" }))
+        }
 
         if (formData.course === "") {
             result = false;
@@ -91,6 +101,15 @@ export default function AddIndividualFaculty() {
         else {
             setErrors((old) => ({ ...old, passwordErr: "" }))
         }
+
+        if (!isValidEmail(formData.email)) {
+            result = false;
+            setErrors((old) => ({ ...old, emailErr: "Please Enter a Valid Email" }))
+        }
+        else {
+            setErrors((old) => ({ ...old, emailErr: "" }))
+        }
+
         return result;
     }
 
@@ -183,10 +202,10 @@ isLoading &&
                         label={"Select Salutation"}
                     />
                     {
-                        errors.semesterErr !== ""
+                        errors.salutationErr !== ""
                         &&
                         <p className="text-red-500">
-                            {errors.semesterErr}
+                            {errors.salutationErr}
                         </p>
                     }
                 </section>
@@ -201,6 +220,15 @@ isLoading &&
                         required
                         placeholder='Enter Faculty Name'
                     />
+                    {
+                        errors.nameErr !== ""
+                        &&
+                        <p className="text-red-500">
+                            {
+                                errors.nameErr
+                            }
+                        </p>
+                    }
                 </section>
                 <section>
                     <label htmlFor="course">Course:</label>
@@ -210,6 +238,7 @@ isLoading &&
                         setSelected={changeCourse}
                         name={"course"}
                         label={"Select Course"}
+                        passedId={true}
                     />
                     {
                         errors.courseErr !== ""
@@ -250,6 +279,13 @@ isLoading &&
                         required
                         placeholder='Enter Your Email'
                     />
+                    {
+                        errors.emailErr !== ""
+                        &&
+                        <p className="text-red-500">
+                            {errors.emailErr}
+                        </p>
+                    }
                 </section>
 
                 <section>
