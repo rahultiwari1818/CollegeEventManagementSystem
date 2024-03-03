@@ -28,7 +28,7 @@ export default function EventType() {
         }
             <section className='flex justify-center items-center my-5'>
                 <section className='lg:flex justify-center items-start gap-5'>
-                    <AddEventType />
+                    {/* <AddEventType /> */}
                     <ViewEventType />
                 </section>
             </section>

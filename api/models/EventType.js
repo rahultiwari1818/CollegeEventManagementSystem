@@ -12,7 +12,13 @@ const EventTypeSchema = new Schema({
     eventTypeName:{
         required:true,
         type:String
-    }
+    },
+    committeeMembers: [{
+         
+            type: Schema.Types.ObjectId,
+            ref: 'Faculties'
+        
+    }]
 });
 
 const EventType = mongoose.model("EventType",EventTypeSchema);

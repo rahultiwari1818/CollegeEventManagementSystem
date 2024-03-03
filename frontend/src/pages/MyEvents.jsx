@@ -86,6 +86,7 @@ export default function MyEvents() {
                             {/* Table body */}
                             <tbody>
                                 {
+                                    registeredEvents?.length > 0 ?
                                     registeredEvents?.map((event, eventIdx) => {
                                         return (
                                             event.studentData?.map((student, stdIdx) => {
@@ -181,6 +182,15 @@ export default function MyEvents() {
                                         )
 
                                     })
+                                    :
+                                    <tr>
+                                        <td
+                                        colSpan={11}
+                                        className='border px-2 py-2 md:px-4 text-center'
+                                        >
+                                            You Have Not Participated in any Event Till Now.
+                                        </td>
+                                    </tr>
                                 }
                             </tbody>
                         </table>

@@ -69,14 +69,14 @@
                               "Worker registration successful",
                               registration.scope
                           );
-                          return registration.pushManager
-                              .getSubscription()
-                              .then(function (subscription) {
-                                  registration.pushManager.subscribe({
-                                      userVisibleOnly: true,
-                                      applicationServerKey: determineAppServerKey(),
-                                  });
-                              });
+                        //   return registration.pushManager
+                        //       .getSubscription()
+                        //       .then(function (subscription) {
+                        //           registration.pushManager.subscribe({
+                        //               userVisibleOnly: true,
+                        //               applicationServerKey: determineAppServerKey(),
+                        //           });
+                        //       });
                       },
                       function (err) {
                           console.log("Worker registration failed", err);

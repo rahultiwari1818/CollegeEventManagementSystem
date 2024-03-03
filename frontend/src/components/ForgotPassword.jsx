@@ -103,8 +103,9 @@ export default function ForgotPassword({ openForgotPasswordModal, setOpenForgotP
                 toast.success(response.data.message)
                 setOtpSent(true);
             }
-        } catch (error) {
-
+        } catch ({response}) {
+            toast.error(response.data?.message);
+            setOpenForgotPasswordModal(false);
         }
 
 
@@ -282,7 +283,7 @@ export default function ForgotPassword({ openForgotPasswordModal, setOpenForgotP
                     <section className="p-3">
                         <section className="px-3 my-2">
                             <label htmlFor="newPassword" className='mx-2'>New Password : </label>
-                            <input type="text" name="newPassword" className='px-3 py-3 rounded-lg shadow-lg w-full' placeholder='Enter New Password' value={newPassword} onChange={(e)=>setNewPassword(e.target.value)} 
+                            <input type="password" name="newPassword" className='px-3 py-3 rounded-lg shadow-lg w-full' placeholder='Enter New Password' value={newPassword} onChange={(e)=>setNewPassword(e.target.value)} 
                             ref={newPasswordRef}
                             required />
                             {

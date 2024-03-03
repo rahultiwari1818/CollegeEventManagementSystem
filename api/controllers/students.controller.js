@@ -162,10 +162,10 @@ const registerStudentIndividually = async (req, res) => {
         let message = "";
         let flag = false;
 
-        if(!isValidObjectId(course)){
+        if (!isValidObjectId(course)) {
             return res.status(200).json({
-                message:"Invalid Course Id Provided",
-                result:false
+                message: "Invalid Course Id Provided",
+                result: false
             })
         }
 
@@ -482,55 +482,93 @@ const studentForgotPassword = async (req, res) => {
         const sid = req.body.sid;
 
         // Assuming Student is a Mongoose model
-        const studentData = await Student.find({ sid: sid });
+        const studentData = await Student.findOne({ sid: sid });
 
         // Check if studentData is empty
-        if (!studentData || studentData.length === 0) {
+        if (!studentData) {
             return res.status(200).json({
                 message: "Student not found. Enter Correct Sid",
                 result: false
             });
         }
-        const phno = studentData[0].phno;
+
+
+        // Commented code for send SMS -----------------------------------------------------
+
+        // const phno = studentData.phno;
+
+        // const otp = generateOTP();
+
+        // client.set(sid, otp);
+
+
+        // const from = "Vonage APIs";
+        // const to = "91" + studentData[0].phno;
+        // const text = `Your OTP for CEMS is ${otp}. Don't Share it with anyone.`;
+
+        // async function sendSMS() {
+        //     await vonage.sms.send({ to, from, text })
+        //         .then(resp => {
+        //             console.log('Message sent successfully');
+        //             console.log(resp);
+        //             return true;
+        //         })
+        //         .catch(err => {
+        //             console.log('There was an error sending the messages.');
+        //             console.error(err);
+        //             return false;
+        //         });
+        // }
+
+
+        // if (sendSMS()) {
+        //     return res.status(200).json({
+        //         message: `OTP sent to your mobile number ending with ${phno.slice(6, phno.length)}`,
+        //         result: true
+        //     });
+        // }
+        // else {
+        //     return res.status(500).json({
+        //         message: `Unable to send OTP`,
+        //         result: false
+        //     });
+        // }
+
+        // ------------------------------------------------------------------------------------------------------
+
+        const email = studentData.email;
 
         const otp = generateOTP();
 
         client.set(sid, otp);
 
+        const mailOptions = {
+            from: process.env.EMAIL_ID,
+            to: email,
+            subject: 'Verification',
+            text: `Your OTP for CEMS is ${otp}. Don't Share it with anyone.`
+        };
 
-        const from = "Vonage APIs";
-        const to = "91" + studentData[0].phno;
-        const text = `Your OTP for CEMS is ${otp}. Don't Share it with anyone.`;
-
-        async function sendSMS() {
-            await vonage.sms.send({ to, from, text })
-                .then(resp => {
-                    console.log('Message sent successfully');
-                    console.log(resp);
-                    return true;
-                })
-                .catch(err => {
-                    console.log('There was an error sending the messages.');
-                    console.error(err);
-                    return false;
+        // Send email
+        transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+                // return res.status(500).json({
+                //     message:"Unable to send Email",
+                //     result:false
+                // })
+                console.log("error in sending mail", error)
+            } else {
+                // return res.status(200).json({
+                //     message:"OTP Mailed Successfully",
+                //     result:true
+                // });
+                console.log("Mail Send Successfully.");
+            }
+        });
+        return res.status(200).json({
+                    message: `OTP sent to your Registered Email.`,
+                    result: true
                 });
-        }
-
-
-        if (sendSMS()) {
-            return res.status(200).json({
-                message: `OTP sent to your mobile number ending with ${phno.slice(6, phno.length)}`,
-                result: true
-            });
-        }
-        else {
-            return res.status(500).json({
-                message: `Unable to send OTP`,
-                result: false
-            });
-        }
-
-
 
 
     } catch (error) {

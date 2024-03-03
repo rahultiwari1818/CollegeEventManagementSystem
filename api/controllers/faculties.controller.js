@@ -287,7 +287,7 @@ const getFaculties = async (req, res) => {
         const currentPage = Math.min(Math.max(page, 1), totalPages);
 
         // Calculate the number of documents to skip
-        const skip = (currentPage - 1) * limit;
+        const skip = ((currentPage - 1) * limit) >= 0 ? ((currentPage - 1) * limit) : 0;
 
         // Find faculties based on search criteria with pagination and populate the 'course' field
         const data = await Faculties.find(searchCriteria)

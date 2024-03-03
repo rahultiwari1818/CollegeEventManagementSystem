@@ -30,7 +30,6 @@ const Dropdown = ({ dataArr, selected, setSelected, name, label, disabled,passed
     }
   };
 
-  console.log("salu",selected)
 
   const showSelected = useMemo(()=>{
     if(passedId){
@@ -41,7 +40,6 @@ const Dropdown = ({ dataArr, selected, setSelected, name, label, disabled,passed
         return data?.name
   },[selected])
 
-  console.log("salu",selected,showSelected)
 
 
   return (

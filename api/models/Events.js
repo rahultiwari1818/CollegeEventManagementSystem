@@ -64,6 +64,10 @@ const EventsSchema = new Schema({
         required:true,
         type:Array
     },
+    updationLog:{
+        required:true,
+        type:Array
+    },
     isCanceled:{
         type:Boolean
     }
