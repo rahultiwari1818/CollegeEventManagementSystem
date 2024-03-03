@@ -13,7 +13,7 @@ import { ReactComponent as FileUploadIcon } from "../assets/Icons/FileUploadIcon
 import { ReactComponent as AddIcon } from "../assets/Icons/add_icon.svg";
 import { ReactComponent as EditIcon } from "../assets/Icons/edit_icon.svg";
 import { ReactComponent as DeleteIcon } from "../assets/Icons/DeleteIcon.svg";
-import { formatFileSize, handleNumericInput } from '../utils';
+import { formatFileSize, handleNumericInput, transformEventTypesData } from '../utils';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAllCourses } from '../store/CourseSlice';
 
@@ -40,6 +40,8 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
     const [errors, setErrors] = useState(initialErrorState)
 
     const { id } = useParams();
+
+    const [eventNatures,setEventNatures] = useState([]);
 
     const coursesData = useSelector((state) => state.CourseSlice.data);
     const dispatch = useDispatch();
@@ -99,7 +101,7 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
         formData.append("ename", data.ename.trim());
         formData.append("etype", data.etype.trim());
         formData.append("ptype", data.ptype.trim());
-        formData.append("enature", data.enature.trim());
+        formData.append("enature", typeof data.enature === "object" ? data.enature._id : data.enature);
         formData.append("noOfParticipants", data.noOfParticipants);
         formData.append("edate", formatDate(data.edate));
         formData.append("rcdate", formatDate(data.rcdate));
@@ -200,6 +202,10 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
     }
 
 
+    
+
+
+
     const [openAddSubEventModal, setOpenAddSubEventModal] = useState(false);
 
     const formatDate = (date) => {
@@ -217,15 +223,42 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
         });
     };
 
+    const fetchEventNatures = async()=>{
+
+        try {
+            
+        const response = await axios.get(`${API_URL}/api/eventType/getEventTypes`,{
+            headers:{
+                "auth-token":token
+            }
+        })
+
+        if(response.data.result){
+
+            console.log(response.data.data)
+            setEventNatures((old)=>transformEventTypesData(response.data.data))
+        }
+        else{
+            setEventNatures([]);
+        }
+
+
+        } catch (error) {
+            
+        }
+
+    }
+
 
     useEffect(() => {
         setData(dataToUpdate)
     }, [dataToUpdate])
 
+
+
     useEffect(() => {
         // handleInputChange()
         if (noOfParticipants.current) {
-            console.log(noOfParticipants.current, "part")
             if (data?.ptype === "Individual") {
                 noOfParticipants.current.value = 1;
                 noOfParticipants.current.disabled = true;
@@ -239,16 +272,19 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
         if (coursesData?.length === 0 || !Array.isArray(coursesData)) {
             dispatch(fetchAllCourses());
         }
-
+        if(eventNatures.length===0){
+            fetchEventNatures()
+        }
     }, [data])
 
     // console.log(data,"data",errors)
+
+
 
     useEffect(()=>{
         console.log(errors,"error");
     },[errors])
 
-    const eventNatures = [{ name: "Cultural" }, { name: "IT" }, { name: "Management" }, { name: "Sports" }];
     const eventTypes = [{ name: "Intra-College" }, { name: "Inter-College" }];
 
     return (
@@ -270,9 +306,10 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
                 <section className='md:flex md:justify-start gap-10 md:items-center'>
                     <section className='md:p-2 md:m-2 p-1 m-1'>
                         <label htmlFor="etype">Event Nature:</label>
+                        
                         <Dropdown
                             dataArr={eventNatures}
-                            selected={data.enature}
+                            selected={typeof data.enature === "object" ? data.enature._id : data.enature}
                             setSelected={changeEventNature}
                             name={"enature"}
                             label={"Select Event Nature"}
@@ -317,9 +354,9 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
                                         <input
                                             type="checkbox"
                                             id={course._id}
-                                            value={course.courseName}
-                                            checked={data.eligibleCourses?.includes(course.courseName)}
-                                            onChange={() => handleCourseChange(course.courseName)}
+                                            value={course._id}
+                                            checked={data.eligibleCourses?.includes(course._id)}
+                                            onChange={() => handleCourseChange(course._id)}
                                             className='mr-2 cursor-pointer'
                                         />
                                         <label htmlFor={course._id} className="cursor-pointer">{course.courseName}</label>

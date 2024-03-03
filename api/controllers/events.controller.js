@@ -111,7 +111,7 @@ const getAllEvents = async (req, res) => {
         }
         // console.log(query)
         // Fetch events based on the query
-        const data = await Event.find(query).sort({ edate: 1 });
+        const data = await Event.find(query).sort({ edate: 1 }).populate("enature");
         return res.status(200).json({ "message": "Event Fetched Successfully", "data": data, "result": true });
     } catch (error) {
         console.log(error)
@@ -125,7 +125,7 @@ const getSpecificEvent = async (req, res) => {
 
     try {
         const id = req.params.id;
-        const data = await Event.find({ _id: id })
+        const data = await Event.find({ _id: id }).populate("enature")
         return res.status(200).json({ "message": "Event Fetched Successfully", "data": data, "result": true })
     } catch (error) {
         console.log(error)

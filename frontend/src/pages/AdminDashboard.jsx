@@ -57,7 +57,7 @@ export default function AdminDashboard() {
 	}, [])
 
 	const imagesArr = [CourseImage, StudentImage, FacultyImage, EventImage, EventImage];
-	const routesArr = ["/courses", "/students", "/faculties", "/eventType", "/home"];
+	const routesArr = ["/courses", "/students", "/faculties", "/viewEventType", "/home"];
 
 	return (
 		<>

@@ -46,7 +46,7 @@ export default function AddSubEvents({ openUpdateModal, setOpenUpdateModal, head
         }
         else{
             noOfPartcipants.current.disabled = false;
-            setSubEventData((old)=>({...old,ptype:value}))
+            setSubEventData((old)=>({...old,ptype:value,noOfParticipants:2}))
 
         }
     },[setSubEventData])
@@ -167,9 +167,13 @@ export default function AddSubEvents({ openUpdateModal, setOpenUpdateModal, head
                             value={subEventData.noOfParticipants}
                             onChange={updateData}
                             onBlur={(e) => {
-                                if (e.target.name === "noOfPartcipants") {
-                                    if (Number(e.target.value) < 1) {
-                                        setSubEventData({ ...subEventData, [e.target.name]: 1 });
+                                if (e.target.name === "noOfParticipants") {
+                                    if (Number(e.target.value) <= 1) {
+                                        let num  = 1;
+                                        if(subEventData.ptype==="Group"){
+                                            num = 2;
+                                        }
+                                        setSubEventData({ ...subEventData, [e.target.name]: num });
                                         return;
                                     }
                                 }

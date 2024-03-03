@@ -6,9 +6,10 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { fetchAllEventTypes } from '../store/EventTypeSlice';
 import { useDispatch, useSelector } from 'react-redux';
-import FacultyCombobox from './FacultyCombobox';
+import FacultyCombobox from '../components/FacultyCombobox';
 import { fetchAllCourses } from '../store/CourseSlice';
-import Overlay from './Overlay';
+import Overlay from '../components/Overlay';
+import { useNavigate } from 'react-router-dom';
 
 export default function AddEventType() {
 
@@ -166,7 +167,17 @@ export default function AddEventType() {
     }, [courseData]);
 
 
-
+    const user = useSelector((state)=>state.UserSlice);
+    const navigate = useNavigate();
+    
+    useEffect(()=>{
+        if(!user || user?.role === "" || user?.role === undefined) return;
+        if(user.role !== "Super Admin"){
+            navigate("/home");
+        }
+        // console.log("called")
+        setShowOverlay(false)
+    },[user,navigate])
 
     return (
         <>
@@ -175,122 +186,124 @@ export default function AddEventType() {
             &&
             <Overlay/>
         }
-        <section className='p-3 rounded-lg border border-blue-500 my-2 shadow-lg'>
-            <p className="text-center text-xl border-b border-blue-500 text-blue-500">
-                Add New Event Type and Committee Members
-            </p>
-            <section className='md:p-2 md:m-2 p-1 m-1'>
-                <label htmlFor="ename" className=' text-blue-500'> Event Type Name:</label>
-                <input
-                    type="text"
-                    name="eventTypeName"
-                    value={data.eventTypeName}
-                    onChange={updateData}
-                    placeholder='Enter Event Type Name'
-                    className='w-full shadow-lg md:p-3 rounded-lg p-2 my-2'
-                    required
-                />
-                {
-                    errors.eventTypeNameErr !== ""
-                    &&
-                    <p className="text-red-500 my-2">
-                        {
-                            errors.eventTypeNameErr
-                        }
-                    </p>
-                }
-            </section>
-
-
-            <section className='md:p-2 md:m-2 p-1 m-1'>
-                <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3  gap-5">
+        <secction className="flex justify-center items-center px-5 py-5">
+            <section className='p-3 rounded-lg border border-blue-500 my-2 shadow-lg'>
+                <p className="text-center text-xl border-b border-blue-500 text-blue-500">
+                    Add New Event Type and Committee Members
+                </p>
+                <section className='md:p-2 md:m-2 p-1 m-1'>
+                    <label htmlFor="ename" className=' text-blue-500'> Event Type Name:</label>
+                    <input
+                        type="text"
+                        name="eventTypeName"
+                        value={data.eventTypeName}
+                        onChange={updateData}
+                        placeholder='Enter Event Type Name'
+                        className='w-full shadow-lg md:p-3 rounded-lg p-2 my-2'
+                        required
+                    />
                     {
-                        courseData?.map((course, idx) => {
-                            return (
-                                <AddFacultiesInEventType key={course._id}
-                                    course={course}
-                                    idx={idx}
-                                    updateCourseWiseFacultiesData={updateCourseWiseFacultiesData}
-                                    setBackFlag={backToInitialState}
-                                />
-                            )
-                        })
+                        errors.eventTypeNameErr !== ""
+                        &&
+                        <p className="text-red-500 my-2">
+                            {
+                                errors.eventTypeNameErr
+                            }
+                        </p>
                     }
                 </section>
-            </section>
 
 
-            <section className='md:p-2 md:m-2 p-1 m-1'>
-                <section className="flex items-center justify-center w-full">
-                    <label
-                        htmlFor="dropzoneForEventTypeLogo"
-                        className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
-                    >
-                        <section className="flex flex-col items-center justify-center pt-5 pb-6">
-                            <FileUploadIcon className="h-10 w-10" />
-                            <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                                <span className="font-semibold">Click to Upload</span> or Drag and Drop EventType's Logo
-                            </p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">
-
-                            </p>
-                        </section>
-                        <section className="mt-2">
-                            {data.eventTypeLogo ? (
-                                <>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                                        Selected File: {data.eventTypeLogo.name}
-                                    </p>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                                        Selected File Size : {formatFileSize(data.eventTypeLogo.size)}
-                                    </p>
-                                </>
-                            ) : null}
-                        </section>
-                        <input
-                            type="file"
-                            id="dropzoneForEventTypeLogo"
-                            name="eventTypeLogo"
-                            className="hidden"
-                            accept="image/*"
-                            onChange={(e) => {
-                                const file = e.target.files[0];
-                                // console.log("brochure",file);
-                                if (file && file.size > 10485760) {
-                                    setErrors((old) => ({...old,eventTypeLogoErr:"Logo Size Should be less than 10 Mb."}));
-                                    setData({ ...data, eventTypeLogo: null });
-                                }
-                                else {
-                                    setData({ ...data, eventTypeLogo: file });
-                                    setErrors((old) => ({...old,eventTypeLogoErr:""}));
-                                }
-                            }}
-
-                            required
-                        />
+                <section className='md:p-2 md:m-2 p-1 m-1'>
+                    <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3  gap-5">
                         {
-                            errors.eventTypeLogoErr !== ""
-                            &&
-                            <p className="text-red-500 my-2">
-                                {
-                                    errors.eventTypeLogoErr
-                                }
-                            </p>
+                            courseData?.map((course, idx) => {
+                                return (
+                                    <AddFacultiesInEventType key={course._id}
+                                        course={course}
+                                        idx={idx}
+                                        updateCourseWiseFacultiesData={updateCourseWiseFacultiesData}
+                                        setBackFlag={backToInitialState}
+                                    />
+                                )
+                            })
                         }
-                    </label>
+                    </section>
+                </section>
 
+
+                <section className='md:p-2 md:m-2 p-1 m-1'>
+                    <section className="flex items-center justify-center w-full">
+                        <label
+                            htmlFor="dropzoneForEventTypeLogo"
+                            className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
+                        >
+                            <section className="flex flex-col items-center justify-center pt-5 pb-6">
+                                <FileUploadIcon className="h-10 w-10" />
+                                <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                                    <span className="font-semibold">Click to Upload</span> or Drag and Drop EventType's Logo
+                                </p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">
+
+                                </p>
+                            </section>
+                            <section className="mt-2">
+                                {data.eventTypeLogo ? (
+                                    <>
+                                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                                            Selected File: {data.eventTypeLogo.name}
+                                        </p>
+                                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                                            Selected File Size : {formatFileSize(data.eventTypeLogo.size)}
+                                        </p>
+                                    </>
+                                ) : null}
+                            </section>
+                            <input
+                                type="file"
+                                id="dropzoneForEventTypeLogo"
+                                name="eventTypeLogo"
+                                className="hidden"
+                                accept="image/*"
+                                onChange={(e) => {
+                                    const file = e.target.files[0];
+                                    // console.log("brochure",file);
+                                    if (file && file.size > 10485760) {
+                                        setErrors((old) => ({...old,eventTypeLogoErr:"Logo Size Should be less than 10 Mb."}));
+                                        setData({ ...data, eventTypeLogo: null });
+                                    }
+                                    else {
+                                        setData({ ...data, eventTypeLogo: file });
+                                        setErrors((old) => ({...old,eventTypeLogoErr:""}));
+                                    }
+                                }}
+
+                                required
+                            />
+                            {
+                                errors.eventTypeLogoErr !== ""
+                                &&
+                                <p className="text-red-500 my-2">
+                                    {
+                                        errors.eventTypeLogoErr
+                                    }
+                                </p>
+                            }
+                        </label>
+
+                    </section>
+                </section>
+
+                <section className='md:p-2 md:m-2 p-1 m-1'>
+                    <button
+                        className="text-white w-full block bg-red-500 px-5 py-3 rounded-lg shadow-lg hover:text-red-500 hover:bg-white hover:border-red-500 hover:border"
+                        onClick={addEventTypeHandler}
+                    >
+                        Add Course
+                    </button>
                 </section>
             </section>
-
-            <section className='md:p-2 md:m-2 p-1 m-1'>
-                <button
-                    className="text-white w-full block bg-red-500 px-5 py-3 rounded-lg shadow-lg hover:text-red-500 hover:bg-white hover:border-red-500 hover:border"
-                    onClick={addEventTypeHandler}
-                >
-                    Add Course
-                </button>
-            </section>
-        </section>
+        </secction>
         </>
 
     )

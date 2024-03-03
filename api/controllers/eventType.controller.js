@@ -1,3 +1,4 @@
+const { isValidObjectId } = require("mongoose");
 const EventType = require("../models/EventType");
 const { uploadToCloudinary } = require("../utils");
 
@@ -73,6 +74,59 @@ const getAllEventTypes = async (req, res) => {
     }
 };
 
+const updateEventType = async(req,res) =>{
+    try {
+
+        const {id,eventTypeName,courseWiseFaculties} = req.body;
+
+        console.log(id)
+
+        if(!id || (!isValidObjectId(id))){
+            return res.status(400).json({
+                message:"Invalid Id Provided",
+                result:false
+            })
+
+        }
+
+        if(eventTypeName.trim()===""){
+            return res.status(400).json({
+                message:"EventType Name is Required.! ",
+                result:false
+            }) 
+        }
+
+        const committeeMembers = JSON.parse(courseWiseFaculties) || [];
+
+        const updatedData = await EventType.findOneAndUpdate(
+            {_id:id},
+            {
+                $set : {
+                    eventTypeName:eventTypeName,
+                    committeeMembers:committeeMembers
+                }
+            }
+        )
 
 
-module.exports = {addEventType,getAllEventTypes};
+
+        
+        return res.status(200).json({
+            message: "Event Type Updated Successfully",
+            result: true
+        });
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({
+            message: "Some Error Occurred",
+            result: false
+        });
+    }
+}
+
+
+
+module.exports = {addEventType,
+    getAllEventTypes,
+    updateEventType
+};

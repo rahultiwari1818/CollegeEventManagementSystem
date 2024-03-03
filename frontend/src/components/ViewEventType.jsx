@@ -1,12 +1,26 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Skeleton from 'react-loading-skeleton';
 import { fetchAllEventTypes } from '../store/EventTypeSlice';
+import {ReactComponent as EditIcon} from "../assets/Icons/edit_icon.svg"
+import UpdateEventType from './UpdateEventType';
 
 const ViewEventType = () => {
   const dispatch = useDispatch();
+  const [dataToBeUpdated,setDataToBeUpdated] = useState({});
+  const [isOpenUpdateModal,setIsOpenUpdateModal] = useState(false);
   const data = useSelector((state) => state.EventTypeSlice.data);
   const isDataLoading = useSelector((state) => state.EventTypeSlice.isLoading);
+
+  const openUpdateModal = (eventType) =>{
+    setDataToBeUpdated(eventType);
+    setIsOpenUpdateModal(true);
+  }
+
+  const closeIsOpenUpdateModal = () =>{
+    setIsOpenUpdateModal(false);
+    dispatch(fetchAllEventTypes());
+  }
 
   useEffect(() => {
     dispatch(fetchAllEventTypes());
@@ -28,15 +42,17 @@ const ViewEventType = () => {
   };
 
   return (
-    <section className='my-2'>
+    <>
+    <section className='my-2 pb-5 px-5'>
       <section className='overflow-x-auto'>
-        <table className='table-auto min-w-full bg-white shadow-md rounded-lg overflow-hidden'>
+        <table className='table-auto min-w-full border-blue-500 bg-white shadow-md rounded-lg overflow-hidden'>
           <thead className='bg-blue-500 text-white'>
             <tr>
               <th className='px-4 py-2'>Sr No</th>
               <th className='px-4 py-2'>Event Type</th>
               <th className='px-4 py-2'>Event Type Logo</th>
               <th className='px-4 py-2'>Committee Members</th>
+              <th className='px-4 py-2'>Edit</th>
             </tr>
           </thead>
           <tbody className="text-gray-600 border border-blue-500">
@@ -52,17 +68,20 @@ const ViewEventType = () => {
                   <td className="border px-4 py-2 ">
                     <Skeleton count={1} height="50%" width="100%" baseColor="#4299e1" highlightColor="#f7fafc" duration={0.9} />
                   </td>
+                  <td className="border px-4 py-2 ">
+                    <Skeleton count={1} height="50%" width="100%" baseColor="#4299e1" highlightColor="#f7fafc" duration={0.9} />
+                  </td>
                 </tr>
               ))
             ) : data?.length > 0 ? (
               data?.map((eventType, idx) => (
                 <tr key={eventType._id}>
-                  <td className='border px-4 py-2'>{idx + 1}</td>
-                  <td className='border px-4 py-2'>{eventType.eventTypeName}</td>
-                  <td className='border px-4 py-2'>
+                  <td className='border border-blue-500 px-4 py-2'>{idx + 1}</td>
+                  <td className='border border-blue-500 px-4 py-2'>{eventType.eventTypeName}</td>
+                  <td className='border border-blue-500 px-4 py-2'>
                     <img src={eventType.eventTypeLogoPath} className='h-[5vh] w-[5vw]' alt="Event Type Logo" />
                   </td>
-                  <td className='border px-4 py-2'>
+                  <td className='border border-blue-500 px-4 py-2 flex justify-between items-center gap-5'>
                     {groupByCourse(eventType.committeeMembers).map((courseGroup, index) => (
                       <section key={index} className="mb-4 border border-blue-500">
                         <h3 className="text-lg px-2 py-2 font-semibold mb-2 border-b border-blue-500">{courseGroup.courseName}</h3>
@@ -80,6 +99,13 @@ const ViewEventType = () => {
                       </section>
                     ))}
                   </td>
+                  <td className='border border-blue-500 px-4 py-2' >
+                            <EditIcon className="cursor-pointer" 
+                            onClick={()=>{
+                              openUpdateModal(eventType)
+                            }}
+                            />
+                  </td>
                 </tr>
               ))
             ) : (
@@ -91,6 +117,8 @@ const ViewEventType = () => {
         </table>
       </section>
     </section>
+    <UpdateEventType isOpen={isOpenUpdateModal} close={closeIsOpenUpdateModal} dataToBeUpdated={dataToBeUpdated}/>
+    </>
   );
 };
 

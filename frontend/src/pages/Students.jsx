@@ -97,7 +97,7 @@ export default function Students() {
 				<Overlay />
 			}
 			<section className='w-full h-full py-3 '>
-				<section className="absolute left-8 md:left-12 top-18 cursor-pointer p-3 rounded-full bg-blue-500">
+				<section className="absolute left-8 md:left-12 top-18 cursor-pointer p-2 md:p-3 rounded-full bg-blue-500">
 					<BackIcon
 						onClick={() => {
 							navigate("/adminDashboard");
@@ -142,7 +142,7 @@ export default function Students() {
 						isLoading ?
 							Array.from({ length: 6 }, (_, idx) => ({ name: idx + 1 })).map((data, id) => {
 								return (
-									<section className='bg-white rounded-lg shadow-lg px-5 py-4 mx-3 my-3'>
+									<section className='bg-white rounded-lg shadow-lg px-5 py-4 mx-3 my-3' key={id}>
 										<p className="text-center text-blue-500 text-xl md:text-2xl lg:text-3xl">
 											<Skeleton
 												count={1}

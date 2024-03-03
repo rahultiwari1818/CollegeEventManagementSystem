@@ -87,8 +87,12 @@ export default function Navbar() {
 
   const eventRoutes = [
     {
-      to: "eventType",
-      label: "Manage Event Types"
+      to: "addEventType",
+      label: "Add Event Types"
+    },
+    {
+      to: "viewEventType",
+      label: "View Event Types"
     },
     {
       to: "home",

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import AddEventType from '../components/AddEventType'
-import ViewEventType from '../components/ViewEventType'
+import ViewEventTypeComp from '../components/ViewEventType'
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import Overlay from '../components/Overlay';
+import { ReactComponent as BackIcon } from "../assets/Icons/BackIcon.svg";
 
-export default function EventType() {
+export default function ViewEventTypes() {
     const user = useSelector((state)=>state.UserSlice);
     const navigate = useNavigate();
     const [showOverLay,setShowOverLay] = useState(true);
@@ -26,10 +26,17 @@ export default function EventType() {
             &&
             <Overlay/>
         }
-            <section className='flex justify-center items-center my-5'>
-                <section className='lg:flex justify-center items-start gap-5'>
-                    {/* <AddEventType /> */}
-                    <ViewEventType />
+            <section className=''>
+				<section className="absolute left-8 md:left-12 top-20 lg:top-24 cursor-pointer p-2 md:p-3 rounded-full bg-blue-500">
+					<BackIcon
+						onClick={() => {
+							navigate("/adminDashboard");
+						}}
+					/>
+				</section>
+
+                <section className='mt-14'>
+                    <ViewEventTypeComp />
                 </section>
             </section>
         </>

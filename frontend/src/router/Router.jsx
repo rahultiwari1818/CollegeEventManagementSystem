@@ -13,13 +13,14 @@ import Profile from '../pages/Profile';
 import Home from '../pages/Home';
 import ErrorPage from '../pages/ErrorPage';
 import Courses from '../pages/Courses';
-import EventType from '../pages/EventType';
 import ViewRegistration from '../pages/ViewRegistration';
 import AdminDashboard from '../pages/AdminDashboard';
 import Students from '../pages/Students';
 import Faculties from '../pages/Faculties';
 import EventResultDeclaration from '../pages/EventResultDeclaration';
 import MyEvents from '../pages/MyEvents';
+import AddEventType from '../pages/AddEventTypes';
+import ViewEventTypes from '../pages/ViewEventTypes';
 
 export default function Router() {
 	return (
@@ -38,14 +39,15 @@ export default function Router() {
 			<Route path='/viewfaculties' element={<ViewFaculties/>} />
 			<Route path='/profile' element={<Profile/>} />
 			<Route path='/courses' element={<Courses/>} />
-			<Route path='/eventType' element={<EventType/>} />
+			<Route path='/viewEventType' element={<ViewEventTypes/>} />
 			<Route path='/viewRegistrations/:eventId' element={<ViewRegistration/>} />
 			<Route path='/declareResult/:eventId' element={<EventResultDeclaration/>} />
 			<Route path="/myEvents" element={<MyEvents/>} />
 			<Route path='/students' element={<Students/>} />
 			<Route path='/faculties' element={<Faculties/>} />
 
-			
+			<Route path="/addEventType" element={<AddEventType/>} />
+
 			<Route path="*" element={<ErrorPage/>}/>
 		</Routes>
 	)

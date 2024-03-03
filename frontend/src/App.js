@@ -4,8 +4,22 @@ import Router from "./router/Router";
 import Navbar from "./components/Navbar";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { requestFirebaseNotificationPermission } from './firebase-init'
+import { useEffect } from "react";
+
 function App() {
 
+	useEffect(()=>{
+		requestFirebaseNotificationPermission()
+		.then((firebaseToken) => {
+		  // eslint-disable-next-line no-console
+		  console.log(firebaseToken);
+		})
+		.catch((err) => {
+		  return err;
+		});
+	},[])
+	
 
 	return (
 		<BrowserRouter>

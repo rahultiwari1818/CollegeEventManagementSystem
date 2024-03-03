@@ -5,9 +5,11 @@ import { useNavigate } from 'react-router-dom';
 
 export default function EventResultDeclaration() {
 
+    const [eventData,setEventData] = useState([]);
     const [showOverLay, setShowOverLay] = useState(true)
     const userData = useSelector((state) => state.UserSlice);
     const navigate = useNavigate();
+
 
 
     useEffect(() => {
@@ -26,6 +28,9 @@ export default function EventResultDeclaration() {
                 &&
                 <Overlay />
             }
+            <section className='my-2'>
+
+            </section>
         </>
     )
 }

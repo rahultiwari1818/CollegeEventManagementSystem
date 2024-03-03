@@ -1,6 +1,6 @@
 const express = require("express");
 const checkIsSuperAdmin = require("../middlewares/checkIsSuperAdmin");
-const { addEventType, getAllEventTypes } = require("../controllers/eventType.controller");
+const { addEventType, getAllEventTypes, updateEventType } = require("../controllers/eventType.controller");
 const router = express.Router();
 
 const multer = require("multer");
@@ -9,6 +9,7 @@ const fetchUser = require("../middlewares/fetchUser.js");
 const upload = multer({ storage: storage }); 
 
 router.post("/addEventType",checkIsSuperAdmin,upload.single("eventTypeLogo"),addEventType)
-router.get("/getEventTypes",fetchUser,getAllEventTypes)
+router.get("/getEventTypes",fetchUser,getAllEventTypes);
+router.patch("/updateEventType",checkIsSuperAdmin,updateEventType);
 
 module.exports = router;
