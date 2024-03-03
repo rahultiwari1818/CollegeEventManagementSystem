@@ -8,7 +8,7 @@ import { fetchAllCourses } from '../store/CourseSlice';
 import axios from 'axios';
 import { toast } from "react-toastify"
 import Overlay from './Overlay';
-export default function UpdateStudent({ isOpen, close, heading, dataToBeUpdated = {}, updateStateData }) {
+export default function UpdateFaculty({ isOpen, close, heading, dataToBeUpdated = {}, updateStateData }) {
 
     const token = localStorage.getItem("token");
     const API_URL = process.env.REACT_APP_BASE_URL;
@@ -20,6 +20,7 @@ export default function UpdateStudent({ isOpen, close, heading, dataToBeUpdated 
         phno: '',
         gender: '',
         password: '',
+        role:"",
         // profilePic: null,
         email: ""
     };
@@ -123,7 +124,8 @@ export default function UpdateStudent({ isOpen, close, heading, dataToBeUpdated 
                 phno:formData.phno,
                 salutation:formData.salutation,
                 email:formData.email,
-                _id:formData._id
+                _id:formData._id,
+                role:formData.role
             };
 
 

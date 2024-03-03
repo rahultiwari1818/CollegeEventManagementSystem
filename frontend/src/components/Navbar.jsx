@@ -85,7 +85,7 @@ export default function Navbar() {
     },
   ];
 
-  const eventRoutes = [
+  const eventRoutesForSuperAdmin = [
     {
       to: "addEventType",
       label: "Add Event Types"
@@ -103,6 +103,19 @@ export default function Navbar() {
       label: "Generate Event",
     },
   ];
+
+  const eventRoutesForFaculties = [
+    {
+      to: "home",
+      label: "View Events",
+    },
+    {
+      to: "generateevent",
+      label: "Generate Event",
+    },
+  ];
+
+
 
 
   return (
@@ -128,25 +141,32 @@ export default function Navbar() {
                     <>
 
                       {
-                        userData.role !== "Student"
+                        userData.role === "Super Admin"
                         &&
                         <Link to="/adminDashboard" className='py-3 px-4 hover:border hover:border-white  hover:bg-blue-500 hover:text-white bg-white text-blue-500  shadow-lg rounded-lg mx-3' > Dashboard </Link>
                       }
 
                       {
+                        userData.role !== "Super Admin"
+                        &&
+
+                        <Link to="/home" className='py-3 px-4 hover:border hover:border-white  hover:bg-blue-500 hover:text-white bg-white text-blue-500  shadow-lg rounded-lg mx-3' > Home </Link>
+                      }
+                      {
                         userData.role === "Student"
                         &&
-                        <>
-                        <Link to="/home" className='py-3 px-4 hover:border hover:border-white  hover:bg-blue-500 hover:text-white bg-white text-blue-500  shadow-lg rounded-lg mx-3' > Home </Link>
                         <Link to="/myEvents" className='py-3 px-4 hover:border hover:border-white  hover:bg-blue-500 hover:text-white bg-white text-blue-500  shadow-lg rounded-lg mx-3' > My Events </Link>
-                        </>
                       }
 
                       {
-                        userData.role !== "Student"
+                        userData.role !== "Student" &&
+                        <PopoverComponent options={userData.role==="Super Admin" ? eventRoutesForSuperAdmin :eventRoutesForFaculties} label="Manage Events" />
+                      }
+
+                      {
+                        userData.role === "Super Admin"
                         &&
                         <>
-                          <PopoverComponent options={eventRoutes} label="Manage Events" />
                           <PopoverComponent options={userRoutes} label="Manage Users" />
                           <Link to="/courses" className='py-3 px-4 hover:border hover:border-white  hover:bg-blue-500 hover:text-white bg-white text-blue-500  shadow-lg rounded-lg mx-3' > Manage Courses </Link>
                         </>
@@ -197,34 +217,41 @@ export default function Navbar() {
                     isLoggedIn ?
                       <>
 
-                        <section className={`flex justify-center items-center w-full ${userData.role==="Student" ? "mt-[20vh]" : "mt-[15vh]" }  mb-[5vh]`}>
+                        <section className={`flex justify-center items-center w-full ${userData.role === "Student" ? "mt-[20vh]" : "mt-[15vh]"}  mb-[5vh]`}>
                           <section className='bg-white py-3 px-3 rounded-full cursor-pointer w-fit'>
                             <Link to="/profile" onClick={closeSideBar}>
-                              <ProfileIcon className={`${userData.role==="Student" ? "md:h-[10vh] md:w-[10vw] h-[11vh] w-[12vh]" : "md:h-[8vh] md:w-[8vw] h-[8vh] w-[8vh]" } `} />
+                              <ProfileIcon className={`${userData.role === "Student" ? "md:h-[10vh] md:w-[10vw] h-[11vh] w-[12vh]" : "md:h-[8vh] md:w-[8vw] h-[8vh] w-[8vh]"} `} />
                             </Link>
                           </section>
                         </section>
 
                         {
-                          userData.role !== "Student"
+                          userData.role === "Super Admin"
                           &&
                           <Link to="/adminDashboard" className='w-full block py-3 px-4 hover:border hover:border-white  hover:bg-blue-500 hover:text-white bg-white text-blue-500   shadow-lg rounded-lg mx-3' onClick={() => closeSideBar()} > Dashboard </Link>
                         }
 
-                      {
-                        userData.role === "Student"
-                        &&
-                        <>
-                        <Link to="/home" className=' w-full block py-3 px-4 hover:border hover:border-white  hover:bg-blue-500 hover:text-white bg-white text-blue-500   shadow-lg rounded-lg mx-3 my-2' onClick={() => closeSideBar()} > Home </Link>
-                        <Link to="/myEvents" className=' w-full block py-3 px-4 hover:border hover:border-white  hover:bg-blue-500 hover:text-white bg-white text-blue-500   shadow-lg rounded-lg mx-3 my-2' onClick={() => closeSideBar()} > My Events </Link>
-                        </>
-                      }
+                        {
+                          userData.role !== "Super Admin"
+                          &&
+
+                          <Link to="/home" className=' w-full block py-3 px-4 hover:border hover:border-white  hover:bg-blue-500 hover:text-white bg-white text-blue-500   shadow-lg rounded-lg mx-3 my-2' onClick={() => closeSideBar()} > Home </Link>
+                        }
+                        {
+                          userData.role === "Student"
+                          &&
+                          <Link to="/myEvents" className=' w-full block py-3 px-4 hover:border hover:border-white  hover:bg-blue-500 hover:text-white bg-white text-blue-500   shadow-lg rounded-lg mx-3 my-2' onClick={() => closeSideBar()} > My Events </Link>
+                        }
 
                         {
-                          userData.role !== "Student"
+                          userData.role !== "Student" &&
+                          <PopoverComponent options={userData.role==="Super Admin" ? eventRoutesForSuperAdmin :eventRoutesForFaculties} label=" Events" />
+                        }
+
+                        {
+                          userData.role === "Super Admin"
                           &&
                           <>
-                            <PopoverComponent options={eventRoutes} label=" Events" />
                             <PopoverComponent options={userRoutes} label=" Users" closeSideBar={closeSideBar} />
                             <Link to="/courses" className='py-3 px-4 hover:border hover:border-white  hover:bg-blue-500 hover:text-white bg-white text-blue-500  shadow-lg rounded-lg mx-3 my-3 block w-full' >  Courses </Link>
 

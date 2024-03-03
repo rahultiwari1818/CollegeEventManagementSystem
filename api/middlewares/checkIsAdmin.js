@@ -13,7 +13,7 @@ const checkIsAdmin = async(req,res,next) =>{
     
         
         const data = jwtToken.verify(authToken,SECRET_KEY);
-        if(data.user.role!=="Super Admin" && data.user.role !== "Admin"){
+        if(data.user.role!=="Super Admin" && data.user.role !== "Faculty"){
             return res.status(401).json({"message":"Unauthorized User.","result":false});
         }
         

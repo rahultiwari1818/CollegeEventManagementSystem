@@ -320,16 +320,17 @@ const getIndividualFaculty = async (req, res) => {
         if (!data) {
             return res.status(404).json({ message: "Faculty not found.", result: false });
         }
-
         const user = {
             _id: data._id,
             salutation: data.salutation,
             name: data.name,
-            course: data.course, // Now 'course' will be populated with course details
+            courseId:data?.course?._id,
+            course: data?.course?.courseName, // Now 'course' will be populated with course details
             phno: data.phno,
             email: data.email,
             profilePicName: data.profilePicName,
-            profilePicPath: data.profilePicPath
+            profilePicPath: data.profilePicPath,
+            role:data.role
         }
 
         return res.status(200).json({ "message": "Faculty Data Fetched Successfully.", "data": user, "result": true });

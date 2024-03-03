@@ -226,8 +226,8 @@ export default function ViewRegistration() {
                                                                         {/* Table cells */}
                                                                         {idx === 0 && <td className='border px-2 py-2 md:px-4 ' rowSpan={studentTeam.studentData.length}>{teamIdx + 1}</td>}
                                                                         <td className='border px-2 py-2 md:px-4 '>{team.sid}</td>
-                                                                        <td className='border px-2 py-2 md:px-4 '>{idx === 0 ? team.name : team.studentName}</td>
-                                                                        <td className='border px-2 py-2 md:px-4 '>{team.course}</td>
+                                                                        <td className='border px-2 py-2 md:px-4 '>{ team.studentName}</td>
+                                                                        <td className='border px-2 py-2 md:px-4 '>{team.course.courseName}</td>
                                                                         <td className='border px-2 py-2 md:px-4 '>{team.semester}</td>
                                                                         <td className='border px-2 py-2 md:px-4 '>{team.division}</td>
                                                                         <td className='border px-2 py-2 md:px-4 '>{team.phno}</td>
@@ -314,8 +314,8 @@ export default function ViewRegistration() {
                                                         {/* Table cells */}
                                                         {teamIdx === 0 && <td className='border px-2 py-2 md:px-4 ' rowSpan={teams.studentData.length}>{idx + 1}</td>}
                                                         <td className='border px-2 py-2 md:px-4 '>{studentTeam.sid}</td>
-                                                        <td className='border px-2 py-2 md:px-4 '>{teamIdx === 0 ? studentTeam.name : studentTeam.studentName}</td>
-                                                        <td className='border px-2 py-2 md:px-4 '>{studentTeam.course}</td>
+                                                        <td className='border px-2 py-2 md:px-4 '>{ studentTeam.studentName}</td>
+                                                        <td className='border px-2 py-2 md:px-4 '>{studentTeam.course.courseName}</td>
                                                         <td className='border px-2 py-2 md:px-4 '>{studentTeam.semester}</td>
                                                         <td className='border px-2 py-2 md:px-4 '>{studentTeam.division}</td>
                                                         <td className='border px-2 py-2 md:px-4 '>{studentTeam.phno}</td>

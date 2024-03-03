@@ -17,7 +17,7 @@ import { formatFileSize, handleNumericInput, transformEventTypesData } from '../
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAllCourses } from '../store/CourseSlice';
 
-export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataToUpdate, setDataUpdated }) {
+export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataToUpdate, setDataUpdated,userId }) {
 
     const [data, setData] = useState(dataToUpdate);
     const [subEventDataToUpdate, setSubEventDataToUpdate] = useState({});
@@ -112,7 +112,7 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
         formData.append("hasSubEvents", data.hasSubEvents);
         formData.append("subEvents", JSON.stringify(data.subEvents));
         formData.append("eligibleCourses", JSON.stringify(data.eligibleCourses));
-
+        formData.append("updatedBy",userId);
         try {
             const { data } = await axios.patch(`${API_URL}/api/events/updateEventDetails/${id}`, formData,
                 {

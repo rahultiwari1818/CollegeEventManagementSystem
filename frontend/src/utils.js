@@ -109,9 +109,14 @@ export function transformEventTypesData(eventTypes) {
 	const arr = [];
 	
 	for (let eventtype of eventTypes) {
+		const committeeMembers = [];
+		eventtype.committeeMembers.forEach((member)=>{
+			committeeMembers.push(member._id);
+		})
 		arr.push({ name: eventtype.eventTypeName,
 		eventTypeLogoPath:eventtype.eventTypeLogoPath,
-		_id:eventtype._id
+		_id:eventtype._id,
+		committeeMembers:committeeMembers
 		});
 	}
 	return arr;

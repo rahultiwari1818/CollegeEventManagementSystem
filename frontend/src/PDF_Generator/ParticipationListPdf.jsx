@@ -180,10 +180,10 @@ export default function ParticipationListPdf({ eventData, registrationData,colle
                                     <Text>{team.sid}</Text>
                                 </View>
                                 <View style={[styles.tbody,styles.nameColumn]}>
-                                    <Text>{idx === 0 ? team.name : team.studentName}</Text>
+                                    <Text>{ team.studentName}</Text>
                                 </View>
                                 <View style={[styles.tbody,styles.courseColumn]}>
-                                    <Text>{team.course}</Text>
+                                    <Text>{team.course.courseName}</Text>
                                 </View>
                                 <View style={[styles.tbody,styles.semesterColumn]}>
                                     <Text>{team.semester}</Text>

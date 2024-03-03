@@ -14,7 +14,7 @@ const router = express.Router();
 router.post("/registerIndividual",checkIsSuperAdmin,upload.single("profilePic"),registerIndividualFaculties );
 router.post("/registerInBulk",checkIsSuperAdmin,upload.single("facultycsv"),registerFacultiesInBulk );
 router.post("/updateFacultyData",checkIsSuperAdmin,updateFacultyData);
-router.post("/changeProfilePhoto",checkIsSuperAdmin,upload.single("profilePic"),changeFacultyProfilePic);
+router.post("/changeProfilePhoto",fetchUser,upload.single("profilePic"),changeFacultyProfilePic);
 router.post("/changePassword",fetchUser,changePassword)
 
 router.patch("/changeStatus",checkIsSuperAdmin,changeFacultyStatus);

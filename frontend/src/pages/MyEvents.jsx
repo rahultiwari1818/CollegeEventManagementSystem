@@ -123,16 +123,13 @@ export default function MyEvents() {
                                                         </td>
                                                         <td className="border px-2 py-2 md:px-4">
                                                         {
-                                                                stdIdx === 0
-                                                                ?
-                                                                student.name
-                                                                :
+                                                                
                                                                 student.studentName
                                                             }
                                                             </td>
                                                             <td className="border px-2 py-2 md:px-4">
                                                             {
-                                                                student.course
+                                                                student.course.courseName
                                                             }
                                                             </td>
                                                             <td className="border px-2 py-2 md:px-4">

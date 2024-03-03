@@ -447,7 +447,8 @@ const getIndividualStudentsFromId = async (req, res) => {
             return res.status(200).json({
                 "message": "Student Data Fetched Successfully.",
                 "data": {
-                    course: student.course.courseName,
+                    courseId:student.course._id,
+                    courseName: student.course.courseName,
                     division: student.division,
                     dob: student.dob,
                     gender: student.gender,

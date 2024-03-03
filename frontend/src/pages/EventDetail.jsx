@@ -77,11 +77,13 @@ export default function EventDetails() {
 
         const dataToUpdate = (status === "cancel") ?
             {
-                isCanceled: true
+                isCanceled: true,
+                userId:userData._id
             }
             :
             {
-                isCanceled: false
+                isCanceled: false,
+                userId:userData._id
             };
 
         try {
@@ -458,7 +460,7 @@ export default function EventDetails() {
 
                         {/* Conditional Rendering for Admins */}
                         {
-                            (userData.role === "Admin" || userData.role === "Super Admin") &&
+                            (userData.role  !== "Student" && data.enature?.committeeMembers?.includes(userData._id)) &&
                             <section className="my-2 py-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3  ">
 
                                 <section className='my-2'>
@@ -535,7 +537,7 @@ export default function EventDetails() {
                 </section>
             </section>
 
-            <UpdateEvent openUpdateModal={openUpdateModal} setOpenUpdateModal={setOpenUpdateModal} dataToUpdate={data} setDataUpdated={setDataUpdated} />
+            <UpdateEvent openUpdateModal={openUpdateModal} setOpenUpdateModal={setOpenUpdateModal} dataToUpdate={data} setDataUpdated={setDataUpdated} userId={userData._id}/>
             <CancelEvent openCancelCnfModal={openCancelCnfModal} setOpenCancelCnfModal={setOpenCancelCnfModal} changeEventStatus={changeEventStatus} />
             <ViewSubEventDetails openDetailsModel={openDetailsModel} setOpenDetailsModel={setOpenDetailsModel} eventData={subEventDataToShow} />
         </>

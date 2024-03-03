@@ -18,10 +18,13 @@ const RegistrationSchema = new Schema({
     subEventName: {
         type: String
     },
-    studentData: {
-        required: true,
-        type: Array
-    },
+    studentData: [{
+
+        type: Schema.Types.ObjectId,
+        ref: 'Students',
+        required: true
+
+    }],
     status: {
         type: String,
         enum: ['pending', 'approved', 'rejected'],

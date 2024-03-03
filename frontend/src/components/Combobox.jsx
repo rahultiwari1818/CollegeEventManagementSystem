@@ -25,7 +25,8 @@ export default function ComboboxComp({ label, placeholder, peopleData=[], studen
 
   // Function to handle selecting an option from the dropdown
   const handleSelectOption = (person) => {
-    setSelected(person);
+    setSelected({...person,course:person.course._id});
+
     setQuery(person?.sid); // Update the query to reflect the selected option
   };
 

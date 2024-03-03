@@ -156,6 +156,20 @@ export default function GenerateEvent() {
         }else{
             setErrors((old) => ({ ...old, enatureErr: "" }));
         }
+        const enature = eventNatures.find(e=>e._id===data.enature) || null;
+        if(enature){
+            console.log(user._id,enature)
+            if (!enature.committeeMembers.includes(user._id)) {
+                setErrors((old) => ({ ...old, enatureErr: `You Can Not Generate  ${enature.name} Events as You are Not The Member of This Committe.!` }));
+                isValidated = false;
+    
+            }else{
+                setErrors((old) => ({ ...old, enatureErr: "" }));
+            }
+        }
+        
+
+
         if (data.eligibleCourses.length===0) {
             setErrors((old) => ({ ...old, eligibleCoursesErr: "Select at least 1 Eligible Course" }));
             isValidated = false;
@@ -174,7 +188,9 @@ export default function GenerateEvent() {
     const generateEventHandler = async (e) => {
         e.preventDefault();
 
+
         if (!validateData()) return;
+
 
         setIsLoading((old) => true);
         const formData = new FormData();
@@ -192,6 +208,7 @@ export default function GenerateEvent() {
         formData.append("hasSubEvents", data.hasSubEvents);
         formData.append("subEvents", JSON.stringify(data.subEvents));
         formData.append("eligibleCourses", JSON.stringify(data.eligibleCourses));
+        formData.append("generator",user._id);
         try {
             const { data } = await axios.post(`${API_URL}/api/events/generateevent`, formData, {
                 headers: {

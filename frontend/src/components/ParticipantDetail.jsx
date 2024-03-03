@@ -83,7 +83,7 @@ export default function ParticipantDetail({ noOfParticipants, studentData, event
         debounce((query) => {
             const fetchStudentData = async () => {
                 try {
-                    const course = registrationData[0]?.course;
+                    const course = registrationData[0]?.courseId;
                     const semester = registrationData[0]?.semester;
                     const sid = query;
                     const division =
@@ -122,6 +122,10 @@ export default function ParticipantDetail({ noOfParticipants, studentData, event
 
         try {
 
+            const registeredStudents = [];
+            registrationData.forEach((student)=>{
+                registeredStudents.push(student._id);
+            })
             const dataToPost = {};
             dataToPost["hasSubEvents"] = eventData.hasSubEvents;
             if (eventData.hasSubEvents) {
@@ -133,7 +137,7 @@ export default function ParticipantDetail({ noOfParticipants, studentData, event
                 dataToPost["eventId"]=eventData._id;
             }
             dataToPost["ename"]=eventData.ename;
-            dataToPost["studentData"]= JSON.stringify(registrationData);
+            dataToPost["studentData"]= JSON.stringify(registeredStudents);
             const { data } = await axios.post(`${API_URL}/api/events/registerInEvent`, dataToPost, {
                 headers:{
                     "auth-token":token
@@ -174,7 +178,6 @@ export default function ParticipantDetail({ noOfParticipants, studentData, event
                     &&
                     <section className='grid grid-cols-1 md:grid-cols-2 my-2 '>
                         <p> Name : {registrationData[0]?.name}</p>
-                        <p> Course : {registrationData[0]?.course}</p>
                         <p> Semester : {registrationData[0]?.semester}</p>
                         <p> Div : {registrationData[0]?.division}</p>
                     </section>
@@ -196,7 +199,6 @@ export default function ParticipantDetail({ noOfParticipants, studentData, event
                             &&
                             <section className='grid grid-cols-1 md:grid-cols-2 my-2 '>
                                 <p> Name : {registrationData[idx + 1]?.studentName}</p>
-                                <p> Course : {registrationData[idx + 1]?.course}</p>
                                 <p> Semester : {registrationData[idx + 1]?.semester}</p>
                                 <p> Div : {registrationData[idx + 1]?.division}</p>
                             </section>

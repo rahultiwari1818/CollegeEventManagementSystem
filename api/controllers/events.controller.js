@@ -3,12 +3,14 @@ const fs = require("fs").promises;
 const path = require("path");
 const { uploadToCloudinary, deleteFromCloudinary } = require("../utils.js");
 const Registration = require("../models/Registration.js");
+const { isValidObjectId } = require("mongoose");
+const Students = require("../models/Students.js");
 
 
 
 
 const generateEvent = async (req, res) => {
-    const { ename, etype, ptype, noOfParticipants, edate, edetails, rules, rcdate, hasSubEvents, enature } = req.body;
+    const { ename, etype, ptype, noOfParticipants, edate, edetails, rules, rcdate, hasSubEvents, enature, generator } = req.body;
     let brochure, poster;
     try {
 
@@ -38,6 +40,12 @@ const generateEvent = async (req, res) => {
             }
         }
 
+        if (!isValidObjectId(generator)) {
+            return res.status(401).json({
+                message: "Invalid User Trying to generate Event",
+                result: false
+            })
+        }
 
         if (req.files["ebrochure"]) {
             brochure = req.files["ebrochure"][0]; // Accessing the first file uploaded for "ebrochure" field
@@ -81,7 +89,8 @@ const generateEvent = async (req, res) => {
             hasSubEvents: hasSubEvents,
             subEvents: subEvents,
             eligibleCourses: eligibleCourses,
-            isCanceled: false
+            isCanceled: false,
+            updationLog: [{ change: "Generated",by:generator, at: Date.now() }]
         });
 
         return res.status(200).json({ "message": "Event Generated Successfully", "result": true });
@@ -138,8 +147,19 @@ const changeEventStatus = async (req, res) => {
 
     try {
         const id = req.params.id;
-        const data = req.body;
-        const result = await Event.updateOne({ _id: id }, { $set: data });
+        const data = req.body.isCanceled;
+        const userId = req.body.userId;
+        const text = data ? 'Cancelled' : 'Activated';
+        const updateData = {
+            isCanceled: data,
+            $push: {
+                updationLog: {
+                    $each: [{ change: text, by: userId, at: Date.now() }],
+                }
+            }
+        };
+
+        const result = await Event.updateOne({ _id: id }, { $set: updateData });
         const message = (data.isCanceled) ? "Event Cancelled Successfully" : "Event Activated Successfully";
         return res.status(200).json({ "message": message, "result": true })
     } catch (error) {
@@ -154,7 +174,7 @@ const updateEventDetails = async (req, res) => {
     const data = await Event.findById(id);
 
     try {
-        const { ename, etype, ptype, noOfParticipants, edate, edetails, rules, rcdate, hasSubEvents, enature } = req.body;
+        const { ename, etype, ptype, noOfParticipants, edate, edetails, rules, rcdate, hasSubEvents, enature, updatedBy } = req.body;
 
         const trimmedFields = {
             ename: ename.trim(),
@@ -223,7 +243,18 @@ const updateEventDetails = async (req, res) => {
         // Update event details in the database
         const subEvents = JSON.parse(req.body.subEvents);
         const eligibleCourses = JSON.parse(req.body.eligibleCourses); // Parse subEvents JSON string, default to empty array if not provided
-        const dataToUpdate = { ename, etype, ptype, enature, noOfParticipants, edate, edetails, rules, rcdate, ebrochureName: originalBrochureName, ebrochurePath: newBrochurePath, eposterName: originalPosterName, eposterPath: newPosterPath, hasSubEvents, subEvents, eligibleCourses };
+        const dataToUpdate = {
+            ename, etype, ptype, enature, noOfParticipants, edate, edetails, rules, rcdate, ebrochureName: originalBrochureName, ebrochurePath: newBrochurePath, eposterName: originalPosterName, eposterPath: newPosterPath, hasSubEvents, subEvents, eligibleCourses,
+            $push: {
+                updationLog: {
+
+                    change: "Updated",
+                    by: updatedBy,
+                    at: Date.now()
+                }
+            }
+
+        };
         await Event.updateOne({ _id: id }, { $set: dataToUpdate });
 
         return res.status(200).json({ "message": "Event Updated Successfully", "result": true });
@@ -248,30 +279,33 @@ const registerInEvent = async (req, res) => {
 
         const studentData = JSON.parse(req.body.studentData)
 
-
-        // Check if any sid in studentData is already registered in the same event and subevent
         for (let student of studentData) {
-            const existingRegistration = await Registration.findOne({
-                eventId: eventId,
-                sId: sId,
-                'studentData.sid': student.sid
-            });
-            if (existingRegistration) {
-                return res.status(400).json({
-                    message: `Student with SID ${student.sid} is already registered in the same event ${sId ? 'and subevent.' : '.'} `,
-                    result: false
-                });
-            }
-        }
-
-        for (let student of studentData) {
-            if (!student?.sid) {
+            if (!isValidObjectId(student)) {
                 return res.status(400).json({
                     message: "Please Provide Data of All Participants",
                     result: false
                 })
             }
         }
+
+
+        // Check if any sid in studentData is already registered in the same event and subevent
+        for (let student of studentData) {
+            const existingRegistration = await Registration.findOne({
+                eventId: eventId,
+                sId: sId,
+                studentData: { $in: [student] }
+            });
+            if (existingRegistration) {
+                const studentData = await Students.findOne({ _id: student });
+
+                return res.status(400).json({
+                    message: `Student with SID ${studentData.sid} is already registered in the same event ${sId ? 'and subevent.' : '.'} `,
+                    result: false
+                });
+            }
+        }
+
 
 
         const registrationDetails = await Registration.create({
@@ -308,8 +342,13 @@ const getRegistrationDataOfEvent = async (req, res) => {
             filter.status = status;
         }
         // Finding registration details based on the constructed filter
-        const registrationDetails = await Registration.find(filter);
-
+        const registrationDetails = await Registration.find(filter).populate({
+            path: "studentData",
+            populate: {
+                path: "course",
+            },
+            select: "-password" // Exclude the password field from the populated committeeMembers
+        })
         return res.status(200).json({
             message: "Registration Data Fetched Successfully.",
             result: true,
@@ -358,8 +397,14 @@ const studentParticipatedEvents = async (req, res) => {
 
         // Find registrations where studentData contains an object with the specified studentId
         const registrations = await Registration.find({
-            'studentData._id': studentId
-        });
+            studentData: { $in: [studentId] }
+        }).populate({
+            path: "studentData",
+            populate: {
+                path: "course",
+            },
+            select: "-password" // Exclude the password field from the populated committeeMembers
+        });;
 
         return res.status(200).json({
             message: "Registration documents fetched successfully",

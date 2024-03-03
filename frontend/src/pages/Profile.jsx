@@ -75,7 +75,6 @@ export default function Profile() {
         setCollegeData(data)
     },[])
 
-
     useEffect(() => {
         const route = user.role === "Student" ? `students/getSpecificStudents/${user._id}` : `faculties/getSpecificFaculty/${user._id}`;
         const fetchUserData = async () => {
@@ -238,7 +237,7 @@ export default function Profile() {
                                                             duration={0.9}
                                                         />
                                                         :
-                                                        profileData?.course
+                                                        profileData?.courseName
                                                 }
                                             </p>
                                         </section>
@@ -490,7 +489,7 @@ export default function Profile() {
                     </section>
                 </section>
             </section>
-            <UpdateFaculty isOpen={openUpdateModal} close={closeUpdateProfilModal} heading={"Update Student Data"} dataToBeUpdated={profileData} updateStateData={updateProfileData} />
+            <UpdateFaculty isOpen={openUpdateModal} close={closeUpdateProfilModal} heading={"Update Faculty Data"} dataToBeUpdated={profileData} updateStateData={updateProfileData} />
             <ChangeProfilPic isOpen={isOpenChangeProfilePicModal} close={closeProfilePicModal} heading={"Change Profile Pic"} imgUrl={profileData?.profilePicPath} changeProfilePicURL={changeProfilePicURL} />
             <ChangePassword isOpen={isOpenChangePasswordModal} close={closeChangePasswordModal} heading={"Change Password"}/>
             <ChangeCollegeNameModal  isOpen={isOpenCollegeUpdateModal} close={closeCollegeUpdateModal} heading={"Update College Name"} dataToBeUpdated={collegeData} updateStateData={updateCollegeData}/>
