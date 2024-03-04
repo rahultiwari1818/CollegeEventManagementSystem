@@ -14,11 +14,13 @@ const API_URL = process.env.REACT_APP_BASE_URL;
 
 export const fetchAllEvents = createAsyncThunk(
     "fetchAllEvents",
-    async(data,{getState})=>{
+    async(course,{getState})=>{
         const token = localStorage.getItem("token");
-
         try{
             const response = await axios.get(`${API_URL}/api/events/getevents`,{
+                params:{
+                    course:course
+                },
                 headers:{
                     "auth-token": token,
                 }
@@ -26,7 +28,8 @@ export const fetchAllEvents = createAsyncThunk(
             // console.log(response,"res");
             return response.data.data || [];
         }
-        catch({response}){
+        catch(error){
+            console.log(error)
            return []
         }
     }

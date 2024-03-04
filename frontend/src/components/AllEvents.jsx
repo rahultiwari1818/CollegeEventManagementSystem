@@ -15,20 +15,22 @@ export default function AllEvents() {
     // const labels = useMemo(()=>{
     //   return data.length > 0 ? Object.keys(data[0]):[];
     // },[data]);
+    
+    const userCourse = useSelector((state)=>state.UserSlice.course);
 
 
 
     useEffect(() => {
         // fetchEvents();
-        dispatch(fetchAllEvents());
-    }, [dispatch])
+        dispatch(fetchAllEvents(userCourse));
+    }, [dispatch,userCourse])
 
 
     return (
-        <section className='flex justify-center items-center'>
+        <section className='flex justify-center items-center pb-5'>
 
 
-            <section className='md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10 sm:block mb-5 '>
+            <section className='md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 sm:block mb-5 '>
                 {
                     isLoading ?
                     

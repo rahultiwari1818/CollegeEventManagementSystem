@@ -5,7 +5,8 @@ const {Schema} = mongoose;
 const CollegeSchema = new Schema({
     collegename:{
         required:true,
-        type:String
+        type:String,
+        unique:true
     }
 });
 

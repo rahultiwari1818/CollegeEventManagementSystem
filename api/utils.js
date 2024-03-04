@@ -62,5 +62,11 @@ async function deleteFromCloudinary(publicId) {
     }
 }
 
+function generateOTP() {
+    const length = 6;
+    const otp = Math.floor(Math.random() * (Math.pow(10, length) - Math.pow(10, length - 1)) + Math.pow(10, length - 1));
+    return otp.toString();
+}
 
-module.exports = {storage,uploadToCloudinary,deleteFromCloudinary};
+
+module.exports = {storage,uploadToCloudinary,deleteFromCloudinary,generateOTP};

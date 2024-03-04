@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import Modal from './Modal'
 import Dropdown from './Dropdown';
 import { handleNumericInput } from '../utils';
@@ -11,7 +11,13 @@ export default function AddSubEvents({ openUpdateModal, setOpenUpdateModal, head
         subEventDetail: "",
         subEventRules: ""
     }
+
+    const initialErrorState = {
+        ptypeErr:""
+    }
+
     const [subEventData, setSubEventData] = useState(initialState);
+    const [subEventError, setSubEventError] = useState(initialErrorState);
 
     const noOfPartcipants = useRef(null);
 
@@ -30,6 +36,20 @@ export default function AddSubEvents({ openUpdateModal, setOpenUpdateModal, head
         }
         // console.log("data", subEventData, dataToBeUpdated)
     }, [dataToBeUpdated])
+
+    const changeParticipationType = useCallback((value)=>{
+        
+        if(value==="Individual"){
+            setSubEventData((old)=>({...old,ptype:value,noOfParticipants:1}))
+
+            noOfPartcipants.current.disabled = true;
+        }
+        else{
+            noOfPartcipants.current.disabled = false;
+            setSubEventData((old)=>({...old,ptype:value,noOfParticipants:2}))
+
+        }
+    },[setSubEventData])
 
     const addSubEventHandler = (e) => {
 
@@ -82,7 +102,11 @@ export default function AddSubEvents({ openUpdateModal, setOpenUpdateModal, head
 
     const submitHandler = (e) => {
         e.preventDefault();
-        console.log(dataToBeUpdated,"dtu");
+
+        if(subEventData.ptype===""){
+            setSubEventError((old)=>({...old,ptypeErr:"Select Participation Type"}));
+            return;
+        }
 
         if (dataToBeUpdated?.sId) {
             updateHandler();
@@ -91,6 +115,13 @@ export default function AddSubEvents({ openUpdateModal, setOpenUpdateModal, head
             addSubEventHandler();
         }
     }
+
+    useEffect(()=>{
+        if(openUpdateModal){
+            setSubEventData(initialState);
+            setSubEventError(initialErrorState);
+        }
+    },[openUpdateModal])
 
     return (
 
@@ -115,11 +146,17 @@ export default function AddSubEvents({ openUpdateModal, setOpenUpdateModal, head
                         <Dropdown
                             dataArr={[{ name: "Individual" }, { name: "Group" }]}
                             selected={subEventData.ptype}
-                            setSelected={setSubEventData}
+                            setSelected={changeParticipationType}
                             name={"ptype"}
                             label={"Select Participation Type"}
-                            ref={noOfPartcipants}
                         />
+                        {
+                            subEventError.ptypeErr !== ""
+                            &&
+                            <p className="text-red-500">
+                                {subEventError.ptypeErr}
+                            </p>
+                        }
                     </section>
                     <section className='md:p-2 md:m-2  p-1 m-1'>
                         <label htmlFor="nop">Max No Of Team Members:</label>
@@ -130,9 +167,13 @@ export default function AddSubEvents({ openUpdateModal, setOpenUpdateModal, head
                             value={subEventData.noOfParticipants}
                             onChange={updateData}
                             onBlur={(e) => {
-                                if (e.target.name === "noOfPartcipants") {
-                                    if (e.target.value < 1) {
-                                        setSubEventData({ ...subEventData, [e.target.name]: 1 });
+                                if (e.target.name === "noOfParticipants") {
+                                    if (Number(e.target.value) <= 1) {
+                                        let num  = 1;
+                                        if(subEventData.ptype==="Group"){
+                                            num = 2;
+                                        }
+                                        setSubEventData({ ...subEventData, [e.target.name]: num });
                                         return;
                                     }
                                 }

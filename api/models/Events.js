@@ -1,3 +1,4 @@
+const { ObjectId } = require("mongodb");
 const mongoose = require("mongoose");
 
 const {Schema} = mongoose;
@@ -16,7 +17,8 @@ const EventsSchema = new Schema({
     },
     enature:{
         required:true,
-        type:String
+        type: Schema.Types.ObjectId,
+        ref: 'EventType',
     },
     noOfParticipants:{
         required:true,
@@ -41,6 +43,10 @@ const EventsSchema = new Schema({
     ebrochureName:{
         type:String
     },
+    eligibleCourses:{
+        type:Array,
+        required:true
+    },
     ebrochurePath:{
         type:String
     },
@@ -55,6 +61,10 @@ const EventsSchema = new Schema({
         type:Boolean,
     },
     subEvents:{
+        required:true,
+        type:Array
+    },
+    updationLog:{
         required:true,
         type:Array
     },
