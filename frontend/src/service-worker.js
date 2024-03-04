@@ -14,8 +14,8 @@ import { registerRoute } from 'workbox-routing';
 import { StaleWhileRevalidate } from 'workbox-strategies';
 import { CacheableResponsePlugin } from 'workbox-cacheable-response';
 
-importScripts('https://www.gstatic.com/firebasejs/7.14.2/firebase-app.js');
-importScripts('https://www.gstatic.com/firebasejs/7.14.2/firebase-messaging.js');
+import { onBackgroundMessage } from "firebase/messaging/sw";
+import { messaging } from './firebase-init';
 
 const config = {
   apiKey: process.env.REACT_APP_API_KEY,
@@ -27,17 +27,18 @@ const config = {
   appId: process.env.REACT_APP_APP_ID
 };
 
-firebase.initializeApp(config);
-const messaging = firebase.messaging();
 
-messaging.setBackgroundMessageHandler(function(payload) {
+
+onBackgroundMessage(messaging, (payload) => {
   console.log('[firebase-messaging-sw.js] Received background message ', payload);
-  const notificationTitle = payload.data.title;
+  // Customize notification here
+  const notificationTitle = 'Background Message Title';
   const notificationOptions = {
-    body: payload.data.body,
+    body: 'Background Message body.',
     icon: '/firebase-logo.png'
   };
-  return self.registration.showNotification(notificationTitle,
+
+  self.registration.showNotification(notificationTitle,
     notificationOptions);
 });
 

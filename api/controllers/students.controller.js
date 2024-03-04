@@ -683,6 +683,7 @@ const loginStudent = async (req, res) => {
                 role: "Student",
                 name: user.studentName,
                 course: user.course,
+                token:user.token
             }
         };
         console.log(data)
@@ -1075,6 +1076,43 @@ const getStudentCountCourseWise = async (req, res) => {
 };
 
 
+const registerFireBaseToken = async(req,res)=>{
+
+    try {
+
+        const {token,_id} = req.body;
+
+        if(!isValidObjectId(_id)){
+            return res.status(400).json({
+                message:"Invalid User",
+                result:false
+            })
+        }
+
+        const updatedData = await Student.findOneAndUpdate(
+            {_id:_id},
+            {
+                $set
+                :
+                {
+                    token:token
+                }
+            }
+        )
+
+        return res.status(200).json({
+            message:"Token Registered Successfully",
+            result:true
+        })
+        
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Some Error Occurred", result: false });
+    }
+
+}
+
+
 
 module.exports = {
     registerStudentsInBulk,
@@ -1092,5 +1130,6 @@ module.exports = {
     changePassword,
     changeStudentStatus,
     promoteStudentsToNextSemester,
-    getStudentCountCourseWise
+    getStudentCountCourseWise,
+    registerFireBaseToken
 };

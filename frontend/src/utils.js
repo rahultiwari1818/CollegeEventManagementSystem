@@ -122,6 +122,18 @@ export function transformEventTypesData(eventTypes) {
 	return arr;
 }
 
+export function transformSubEventData(subEventData){
+	const arr=[];
+
+	subEventData?.forEach((event)=>{
+		arr.push({
+			_id:event.sId,
+			name:event.subEventName
+		})
+	})
+
+	return arr;
+}
 
 
 

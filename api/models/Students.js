@@ -66,6 +66,9 @@ const StudentSchema = new Schema({
         enum: ['Active', 'Inactive'],
         default:"Active",
         required:true
+    },
+    token:{
+        type:String
     }
 
 });

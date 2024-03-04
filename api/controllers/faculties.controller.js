@@ -241,6 +241,7 @@ const loginFaculty = async (req, res) => {
                 id: user._id,
                 role: user.role,
                 name: user.name,
+                token:user.token
             }
         };
 
@@ -830,6 +831,43 @@ const countFacultiesByCourse = async (req, res) => {
     }
 };
 
+const registerFireBaseToken = async(req,res)=>{
+
+    try {
+
+        const {token,_id} = req.body;
+
+        if(!isValidObjectId(_id)){
+            return res.status(400).json({
+                message:"Invalid User",
+                result:false
+            })
+        }
+
+        const updatedData = await Faculties.findOneAndUpdate(
+            {_id:_id},
+            {
+                $set
+                :
+                {
+                    token:token
+                }
+            }
+        )
+
+        return res.status(200).json({
+            message:"Token Registered Successfully",
+            result:true
+        })
+        
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Some Error Occurred", result: false });
+    }
+
+}
+
+
 
 
 module.exports = {
@@ -846,5 +884,6 @@ module.exports = {
     changeFacultyProfilePic,
     changePassword,
     changeFacultyStatus,
-    countFacultiesByCourse
+    countFacultiesByCourse,
+    registerFireBaseToken
 };

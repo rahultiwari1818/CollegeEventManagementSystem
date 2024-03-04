@@ -5,7 +5,7 @@ const multer = require("multer");
 const upload = multer({dest:"uploads/"});
 const fetchUser = require("../middlewares/fetchUser.js");
 const checkIsSuperAdmin = require("../middlewares/checkIsSuperAdmin.js");
-const { registerStudentsInBulk ,getStudents, getDivisions, getIndividualStudentsFromSid, studentForgotPassword, verifyOTP, resetPassword, loginStudent, getIndividualStudentsFromId, registerStudentIndividually, updateStudentData, changeUserProfilePic, changePassword, changeStudentStatus, getStudentCountCourseWise, promoteStudentsToNextSemester} = require("../controllers/students.controller.js");
+const { registerStudentsInBulk ,getStudents, getDivisions, getIndividualStudentsFromSid, studentForgotPassword, verifyOTP, resetPassword, loginStudent, getIndividualStudentsFromId, registerStudentIndividually, updateStudentData, changeUserProfilePic, changePassword, changeStudentStatus, getStudentCountCourseWise, promoteStudentsToNextSemester, registerFireBaseToken} = require("../controllers/students.controller.js");
 
 
 
@@ -32,5 +32,7 @@ router.get("/getDivisions",fetchUser,getDivisions)
 router.patch("/promoteStudentsToNextSemester",checkIsSuperAdmin,promoteStudentsToNextSemester);
 
 router.get("/getStudentDataCourseWise",checkIsSuperAdmin,getStudentCountCourseWise);
+
+router.post("/registerFireBaseToken",fetchUser,registerFireBaseToken);
 
 module.exports = router;

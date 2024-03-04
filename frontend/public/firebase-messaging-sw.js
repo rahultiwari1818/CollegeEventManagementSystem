@@ -87,34 +87,3 @@ self.addEventListener("activate", (event) => {
 //     return config;
 // });
 
-importScripts('https://www.gstatic.com/firebasejs/7.14.2/firebase-app.js');
-importScripts('https://www.gstatic.com/firebasejs/7.14.2/firebase-messaging.js');
-
-const config = {
-    apiKey: "AIzaSyCx0QsNveOsWYhDVkGacumJKrtPBt4-46M",
-    authDomain: "collegeeventmanagementsy-7b38e.firebaseapp.com",
-    projectId: "collegeeventmanagementsy-7b38e",
-    storageBucket: "collegeeventmanagementsy-7b38e.appspot.com",
-    messagingSenderId: "491208788781",
-    appId: "1:491208788781:web:56a5e07805905594a2a1a4",
-    measurementId: "G-4CSQL5V76S"
-};
-
-firebase.initializeApp(config);
-const messaging = firebase.messaging();
-
-messaging.setBackgroundMessageHandler(function(payload) {
-  console.log('[firebase-messaging-sw.js] Received background message ', payload);
-  const notificationTitle = payload.data.title;
-  const notificationOptions = {
-    body: payload.data.body,
-    icon: '/firebase-logo.png'
-  };
-  return self.registration.showNotification(notificationTitle,
-    notificationOptions);
-});
-
-self.addEventListener('notificationclick', event => {
-  console.log(event)
-  return event;
-});

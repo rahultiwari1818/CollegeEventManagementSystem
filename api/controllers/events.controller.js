@@ -5,7 +5,7 @@ const { uploadToCloudinary, deleteFromCloudinary } = require("../utils.js");
 const Registration = require("../models/Registration.js");
 const { isValidObjectId } = require("mongoose");
 const Students = require("../models/Students.js");
-
+const messaging = require("../config/firebase.js");
 
 
 
@@ -90,7 +90,7 @@ const generateEvent = async (req, res) => {
             subEvents: subEvents,
             eligibleCourses: eligibleCourses,
             isCanceled: false,
-            updationLog: [{ change: "Generated",by:generator, at: Date.now() }]
+            updationLog: [{ change: "Generated", by: generator, at: Date.now() }]
         });
 
         return res.status(200).json({ "message": "Event Generated Successfully", "result": true });
@@ -319,6 +319,33 @@ const registerInEvent = async (req, res) => {
             updatedAt: Date.now()
         })
 
+        const tokens = await Students.find(
+           { _id: { $in: studentData }},
+           { token: 1, _id: 0 } 
+        )
+
+        const registrationTokens = tokens.map((token)=>token.token);
+
+        const message = {
+            data: { score: '850', time: '2:45' },
+            tokens: registrationTokens,
+        };
+
+        console.log(registrationTokens)
+        messaging.sendEachForMulticast(message)
+            .then((response) => {
+                if (response.failureCount > 0) {
+                    const failedTokens = [];
+                    response.responses.forEach((resp, idx) => {
+                        if (!resp.success) {
+                            failedTokens.push(tokens[idx]);
+                        }
+                    });
+                    console.log('List of tokens that caused failures: ' + failedTokens);
+                }
+                console.log(response)
+            });
+
         return res.status(200).json({
             result: true,
             message: "Registration Request Sent Successfully"
@@ -420,6 +447,17 @@ const studentParticipatedEvents = async (req, res) => {
     }
 };
 
+const resultDeclaration = async (req, res) => {
+
+    try {
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ "message": "Some Error Occured", "result": false });
+    }
+
+}
+
 module.exports = {
     generateEvent,
     getAllEvents,
@@ -429,6 +467,7 @@ module.exports = {
     registerInEvent,
     getRegistrationDataOfEvent,
     approveOrRejectRegistrationRequest,
-    studentParticipatedEvents
+    studentParticipatedEvents,
+    resultDeclaration
 };
 

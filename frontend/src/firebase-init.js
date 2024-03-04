@@ -1,5 +1,8 @@
 import {initializeApp} from 'firebase/app';
-import { getMessaging } from "firebase/messaging";
+import { getToken,onMessage } from "firebase/messaging";
+import { getMessaging } from "firebase/messaging/sw";
+
+import { toast } from 'react-toastify';
 
 const config = {
   apiKey: process.env.REACT_APP_API_KEY,
@@ -10,25 +13,16 @@ const config = {
   appId: process.env.REACT_APP_APP_ID
 };
 
-const firebaseApp = initializeApp(config);
-const messaging = getMessaging(firebaseApp);
 
-export const requestFirebaseNotificationPermission = () =>
-  new Promise((resolve, reject) => {
-    messaging
-      .requestPermission()
-      .then(() => messaging.getToken())
-      .then((firebaseToken) => {
-        resolve(firebaseToken);
-      })
-      .catch((err) => {
-        reject(err);
-      });
-  });
+export const firebaseApp = initializeApp(config);
+export const messaging = getMessaging(firebaseApp);
 
-export const onMessageListener = () =>
-  new Promise((resolve) => {
-    messaging.onMessage((payload) => {
-      resolve(payload);
-    });
+
+
+export const onMessageListener = () =>{
+  onMessage(messaging, (payload) => {
+    console.log('Message received. ', payload);
+    toast.info(payload);
   });
+  
+}
