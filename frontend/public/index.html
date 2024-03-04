@@ -56,7 +56,7 @@
    
           function determineAppServerKey() {
               var vapidPublicKey =
-                  "BL9kpxh1Xf3SmnPlD7CuG7Z1pfTxdvbrjN932Pky2xkSU7SkW6czB-V4ASIX_e7QzGelWgQedA08SU3agZX6k3k";
+                  "BJp1QqVj5arfhAlatj94zm_g5ueKOt4AjE6kEZvYKszyZyzFZj7vDzDGZ0kDSwiLCoa2mtlAlYMVC5GmWVXlrug";
               return urlBase64ToUint8Array(vapidPublicKey);
           }
    
@@ -69,14 +69,14 @@
                               "Worker registration successful",
                               registration.scope
                           );
-                        //   return registration.pushManager
-                        //       .getSubscription()
-                        //       .then(function (subscription) {
-                        //           registration.pushManager.subscribe({
-                        //               userVisibleOnly: true,
-                        //               applicationServerKey: determineAppServerKey(),
-                        //           });
-                        //       });
+                          return registration.pushManager
+                              .getSubscription()
+                              .then(function (subscription) {
+                                  registration.pushManager.subscribe({
+                                      userVisibleOnly: true,
+                                      applicationServerKey: determineAppServerKey(),
+                                  });
+                              });
                       },
                       function (err) {
                           console.log("Worker registration failed", err);

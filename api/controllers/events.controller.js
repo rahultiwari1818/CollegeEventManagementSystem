@@ -5,7 +5,7 @@ const { uploadToCloudinary, deleteFromCloudinary } = require("../utils.js");
 const Registration = require("../models/Registration.js");
 const { isValidObjectId } = require("mongoose");
 const Students = require("../models/Students.js");
-const messaging = require("../config/firebase.js");
+// const messaging = require("../config/firebase.js");
 
 
 
@@ -319,32 +319,32 @@ const registerInEvent = async (req, res) => {
             updatedAt: Date.now()
         })
 
-        const tokens = await Students.find(
-           { _id: { $in: studentData }},
-           { token: 1, _id: 0 } 
-        )
+        // const tokens = await Students.find(
+        //    { _id: { $in: studentData }},
+        //    { token: 1, _id: 0 } 
+        // )
 
-        const registrationTokens = tokens.map((token)=>token.token);
+        // const registrationTokens = tokens.map((token)=>token.token);
 
-        const message = {
-            data: { score: '850', time: '2:45' },
-            tokens: registrationTokens,
-        };
+        // const message = {
+        //     data: { score: '850', time: '2:45' },
+        //     tokens: registrationTokens,
+        // };
 
-        console.log(registrationTokens)
-        messaging.sendEachForMulticast(message)
-            .then((response) => {
-                if (response.failureCount > 0) {
-                    const failedTokens = [];
-                    response.responses.forEach((resp, idx) => {
-                        if (!resp.success) {
-                            failedTokens.push(tokens[idx]);
-                        }
-                    });
-                    console.log('List of tokens that caused failures: ' + failedTokens);
-                }
-                console.log(response)
-            });
+        // console.log(registrationTokens)
+        // messaging.sendEachForMulticast(message)
+        //     .then((response) => {
+        //         if (response.failureCount > 0) {
+        //             const failedTokens = [];
+        //             response.responses.forEach((resp, idx) => {
+        //                 if (!resp.success) {
+        //                     failedTokens.push(tokens[idx]);
+        //                 }
+        //             });
+        //             console.log('List of tokens that caused failures: ' + failedTokens);
+        //         }
+        //         console.log(response)
+        //     });
 
         return res.status(200).json({
             result: true,

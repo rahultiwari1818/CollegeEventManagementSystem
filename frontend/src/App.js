@@ -20,44 +20,44 @@ function App() {
 	useEffect(()=>{
 		if(!userData._id || userData._id === undefined) return;
 
-		Notification.requestPermission().then((permission) => {
-			if (permission === 'granted') {
-			  getToken(messaging, { vapidKey: process.env.REACT_APP_VAPID_KEY}).then((currentToken) => {
-				if (currentToken) {
-				  // Send the token to your server and update the UI if necessary
+		// Notification.requestPermission().then((permission) => {
+			// if (permission === 'granted') {
+			//   getToken(messaging, { vapidKey: process.env.REACT_APP_VAPID_KEY}).then((currentToken) => {
+			// 	if (currentToken) {
+			// 	  // Send the token to your server and update the UI if necessary
 
-					if(userData.token===undefined||userData.token===""){
+			// 		if(userData.token===undefined||userData.token===""){
 
-						const route = userData.role === "Student" ? "students" :"faculties";
+			// 			const route = userData.role === "Student" ? "students" :"faculties";
 						
-						axios.post(`${API_URL}/api/${route}/registerFireBaseToken`,{
-							token:currentToken,_id:userData._id
-						},
-						{
-							headers:{
-								"auth-token":token
-							}
-						})
-						.then((res)=>{
-							console.log(res);
-						})
+			// 			axios.post(`${API_URL}/api/${route}/registerFireBaseToken`,{
+			// 				token:currentToken,_id:userData._id
+			// 			},
+			// 			{
+			// 				headers:{
+			// 					"auth-token":token
+			// 				}
+			// 			})
+			// 			.then((res)=>{
+			// 				console.log(res);
+			// 			})
 
-					}
+			// 		}
 		  
-				  // ...
-				} else {
-				  // Show permission request UI
-				  console.log('No registration token available. Request permission to generate one.');
-				  // ...
-				}
-			  }).catch((err) => {
-				console.log('An error occurred while retrieving token. ', err);
-				// ...
-			  });
-			}
-			});		
+			// 	  // ...
+			// 	} else {
+			// 	  // Show permission request UI
+			// 	  console.log('No registration token available. Request permission to generate one.');
+			// 	  // ...
+			// 	}
+			//   }).catch((err) => {
+			// 	console.log('An error occurred while retrieving token. ', err);
+			// 	// ...
+			//   });
+			// }
+			// });		
 
-			onMessageListener();
+			// onMessageListener();
 
 
 	},[userData])
