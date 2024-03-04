@@ -17,9 +17,9 @@ const isLocalhost = Boolean(
     // 127.0.0.0/8 are considered localhost for IPv4.
     window.location.hostname.match(/^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/)
 );
-// process.env.NODE_ENV === 'production' && 
+//  
 export function register(config) {
-  if ( 'serviceWorker' in navigator) {
+  if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
     // The URL constructor is available in all browsers that support SW.
     const publicUrl = new URL(process.env.PUBLIC_URL, window.location.href);
     if (publicUrl.origin !== window.location.origin) {
@@ -105,22 +105,21 @@ function checkValidServiceWorker(swUrl, config) {
   })
     .then((response) => {
       // Ensure service worker exists, and that we really are getting a JS file.
-      // const contentType = response.headers.get('content-type');
-      // console.log(console.log(response.headers))
-      // if (
-      //   response.status === 404 ||
-      //   (contentType != null && contentType.indexOf('javascript') === -1)
-      // ) {
-      //   // No service worker found. Probably a different app. Reload the page.
-      //   navigator.serviceWorker.ready.then((registration) => {
-      //     registration.unregister().then(() => {
-      //       // window.location.reload();
-      //     });
-      //   });
-      // } else {
+      const contentType = response.headers.get('content-type');
+      if (
+        response.status === 404 ||
+        (contentType != null && contentType.indexOf('javascript') === -1)
+      ) {
+        // No service worker found. Probably a different app. Reload the page.
+        navigator.serviceWorker.ready.then((registration) => {
+          registration.unregister().then(() => {
+            window.location.reload();
+          });
+        });
+      } else {
         // Service worker found. Proceed as normal.
         registerValidSW(swUrl, config);
-      // }
+      }
     })
     .catch(() => {
       console.log('No internet connection found. App is running in offline mode.');
