@@ -79,9 +79,6 @@ export default function Installation() {
                 console.log("offline");
             }
         }
-        finally {
-            setIsLoading(false);
-        }
     }, [])
 
 
