@@ -1,17 +1,25 @@
+const { ObjectId } = require("mongodb");
 const mongoose = require("mongoose");
 
 const {Schema} = mongoose;
 
 const ResultSchema = new Schema({
-    courseName:{
-        required:true,
-        type:String,
-        unique:true
+    eventId:{
+        type: Schema.Types.ObjectId,
+        ref: 'Event',
+        required: true
     },
-    noOfSemesters:{
-        type:Number,
-        required:true
-    }
+    sId:{
+        type:Number
+    },
+    result:[
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'Registration',
+            required: true
+    
+        }
+    ]
 });
 
 const Result = mongoose.model("Result",ResultSchema);

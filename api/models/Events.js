@@ -64,10 +64,14 @@ const EventsSchema = new Schema({
         required:true,
         type:Array
     },
-    updationLog:{
-        required:true,
-        type:Array
-    },
+    updationLog:[{
+        change: String,
+        by: {
+            type: Schema.Types.ObjectId,
+            ref: 'Faculties'
+        },
+        at: Date
+    }],
     isCanceled:{
         type:Boolean
     }

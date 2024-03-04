@@ -131,17 +131,22 @@ const getAllEvents = async (req, res) => {
 
 
 const getSpecificEvent = async (req, res) => {
-
     try {
         const id = req.params.id;
-        const data = await Event.find({ _id: id }).populate("enature")
-        return res.status(200).json({ "message": "Event Fetched Successfully", "data": data, "result": true })
-    } catch (error) {
-        console.log(error)
-        return res.status(500).json({ "message": "Some Error Occured", "result": false });
-    }
+        const data = await Event.findById(id)
+            .populate('enature')
+            .populate({
+                path: 'updationLog.by',
+                select: '-password' // Exclude the password field
+            });
 
+        return res.status(200).json({ "message": "Event Fetched Successfully", "data": data, "result": true });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ "message": "Some Error Occurred", "result": false });
+    }
 }
+
 
 const changeEventStatus = async (req, res) => {
 
@@ -152,14 +157,14 @@ const changeEventStatus = async (req, res) => {
         const text = data ? 'Cancelled' : 'Activated';
         const updateData = {
             isCanceled: data,
-            $push: {
-                updationLog: {
-                    $each: [{ change: text, by: userId, at: Date.now() }],
-                }
-            }
+            
         };
 
-        const result = await Event.updateOne({ _id: id }, { $set: updateData });
+        const result = await Event.updateOne({ _id: id }, { $set: updateData , $push: {
+            updationLog: { change: text, by: userId, at: Date.now() },
+            
+        }
+        });
         const message = (data.isCanceled) ? "Event Cancelled Successfully" : "Event Activated Successfully";
         return res.status(200).json({ "message": message, "result": true })
     } catch (error) {
@@ -244,18 +249,14 @@ const updateEventDetails = async (req, res) => {
         const subEvents = JSON.parse(req.body.subEvents);
         const eligibleCourses = JSON.parse(req.body.eligibleCourses); // Parse subEvents JSON string, default to empty array if not provided
         const dataToUpdate = {
-            ename, etype, ptype, enature, noOfParticipants, edate, edetails, rules, rcdate, ebrochureName: originalBrochureName, ebrochurePath: newBrochurePath, eposterName: originalPosterName, eposterPath: newPosterPath, hasSubEvents, subEvents, eligibleCourses,
-            $push: {
-                updationLog: {
-
-                    change: "Updated",
-                    by: updatedBy,
-                    at: Date.now()
-                }
-            }
-
+            ename, etype, ptype, enature, noOfParticipants, edate, edetails, rules, rcdate, ebrochureName: originalBrochureName, ebrochurePath: newBrochurePath, eposterName: originalPosterName, eposterPath: newPosterPath, hasSubEvents, subEvents, eligibleCourses
         };
-        await Event.updateOne({ _id: id }, { $set: dataToUpdate });
+
+        // Use findOneAndUpdate with $push to add to the updationLog array
+        const updatedEvent = await Event.findOneAndUpdate({ _id: id }, {
+            $set: dataToUpdate,
+            $push: { updationLog: { change: "Updated", by: updatedBy, at: Date.now() } }
+        }, { new: true });
 
         return res.status(200).json({ "message": "Event Updated Successfully", "result": true });
     } catch (error) {

@@ -11,6 +11,7 @@ import { useSelector } from 'react-redux';
 import Overlay from '../components/Overlay';
 import { ReactComponent as View } from "../assets/Icons/View.svg";
 import Modal from '../components/Modal';
+import EventUpdationLog from '../components/EventUpdationLog';
 export default function EventDetails() {
 
     const { id } = useParams();
@@ -20,14 +21,17 @@ export default function EventDetails() {
 
     const [data, setData] = useState({});
     const [isLoading, setIsLoading] = useState(true);
-    const [isPageLoading,setIsPageLoading] = useState(true);
+    const [isPageLoading, setIsPageLoading] = useState(true);
     const [dataUpdated, setDataUpdated] = useState(false);
     const [openUpdateModal, setOpenUpdateModal] = useState(false);
     const [openCancelCnfModal, setOpenCancelCnfModal] = useState(false);
     const userData = useSelector((state) => state.UserSlice);
     const [openDetailsModel, setOpenDetailsModel] = useState(false);
     const [subEventDataToShow, setSubEventDataToShow] = useState({});
-    console.log(userData)
+
+    const [isOpenUpdationLogModal,setIsOpenUpdationLogModal] = useState(false);
+
+
 
 
 
@@ -41,7 +45,7 @@ export default function EventDetails() {
             if (data.data.length === 0) {
                 navigate("/home");
             }
-            setData(()=>data.data[0]);
+            setData(() => data.data);
             setIsLoading(() => false);
         } catch (error) {
             setData({});
@@ -54,7 +58,7 @@ export default function EventDetails() {
 
 
     const viewBrochure = () => {
-        console.log("path",data.ebrochurePath)
+        console.log("path", data.ebrochurePath)
         window.open(`${data?.ebrochurePath}`, "_blank")
     }
 
@@ -64,10 +68,10 @@ export default function EventDetails() {
 
     const handleRegisterEvent = () => {
         navigate(`/registerInEvent/${data?._id}`);
-        
+
     }
 
-    const handleSubEventRegister = (subEventId) =>{
+    const handleSubEventRegister = (subEventId) => {
         navigate(`/registerInEvent/${data?._id}/${subEventId}`);
     }
 
@@ -78,12 +82,12 @@ export default function EventDetails() {
         const dataToUpdate = (status === "cancel") ?
             {
                 isCanceled: true,
-                userId:userData._id
+                userId: userData._id
             }
             :
             {
                 isCanceled: false,
-                userId:userData._id
+                userId: userData._id
             };
 
         try {
@@ -130,8 +134,10 @@ export default function EventDetails() {
         setIsPageLoading(false);
     }, [])
 
-    console.log(data)
 
+    const closeUpdationLogModal = () =>{
+        setIsOpenUpdationLogModal(false);
+    }
 
 
     return (
@@ -159,7 +165,7 @@ export default function EventDetails() {
                                             duration={0.9}
                                         />
                                         :
-                                        data.ename
+                                        data?.ename
                                 }
                             </p>
                         </section>
@@ -177,18 +183,18 @@ export default function EventDetails() {
                                         duration={0.9}
                                     />
                                     :
-                                    data.isCanceled ?
-                                    <p className='text-red-500'>Event Canceled</p>
-                                    :
-                                    curDate > new Date(data.edate)
-                                        ?
-                                        <p className='text-red-500'>Event Expired</p>
+                                    data?.isCanceled ?
+                                        <p className='text-red-500'>Event Canceled</p>
                                         :
-                                        curDate <= new Date(data.rcdate)
+                                        curDate.toLocaleDateString('en-GB') > new Date(data.edate).toLocaleDateString('en-GB')
                                             ?
-                                            <p className='text-green-500'>Registration Open</p>
+                                            <p className='text-red-500'>Event Expired</p>
                                             :
-                                            <p className='text-red-500'>Registration Closed</p>
+                                            curDate.toLocaleDateString('en-GB') <= new Date(data.rcdate).toLocaleDateString('en-GB')
+                                                ?
+                                                <p className='text-green-500'>Registration Open</p>
+                                                :
+                                                <p className='text-red-500'>Registration Closed</p>
                             }
                         </section>
                         <section className="my-2 ">
@@ -248,9 +254,9 @@ export default function EventDetails() {
                                                 <th className="py-2 px-4 border-b text-blue-500">No Of Participant Allowed</th>
                                                 <th className="py-2 px-4 border-b text-blue-500">View Details</th>
                                                 {
-                                                             !data.isCanceled && curDate <= new Date(data.rcdate)  && userData?.role === "Student" &&
-                                                <th className="py-2 px-4 border-b text-blue-500">Register</th>
-}
+                                                    !data.isCanceled && curDate <= new Date(data.rcdate) && userData?.role === "Student" &&
+                                                    <th className="py-2 px-4 border-b text-blue-500">Register</th>
+                                                }
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -305,18 +311,18 @@ export default function EventDetails() {
                                                             <td className="py-2 px-4 border-b">{event.noOfParticipants}</td>
                                                             <td className="py-2 px-4 border-b"><View className="cursor-pointer" onClick={() => viewSubEventDetails(event)} /></td>
                                                             {
-                                                             !data.isCanceled && curDate <= new Date(data.rcdate)  && userData?.role === "Student" &&
-                                                            <td className="py-2 px-4 border-b">
+                                                                !data?.isCanceled && curDate.toLocaleDateString('en-GB') <= new Date(data.rcdate).toLocaleDateString('en-GB') && userData?.role === "Student" &&
+                                                                <td className="py-2 px-4 border-b">
 
-                                                                <button
-                                                                    className='px-5 py-3 bg-blue-500 rounded-lg shadow-lg text-white hover:text-blue-500 hover:bg-white hover:outline hover:outline-blue-500'
-                                                                    onClick={()=>handleSubEventRegister(event?.sId)}
+                                                                    <button
+                                                                        className='px-5 py-3 bg-blue-500 rounded-lg shadow-lg text-white hover:text-blue-500 hover:bg-white hover:outline hover:outline-blue-500'
+                                                                        onClick={() => handleSubEventRegister(event?.sId)}
 
-                                                                >
-                                                                    Register
-                                                                </button>
-                                                           </td>
-                                                    }
+                                                                    >
+                                                                        Register
+                                                                    </button>
+                                                                </td>
+                                                            }
                                                         </tr>
                                                     })
                                             }
@@ -350,32 +356,32 @@ export default function EventDetails() {
                                                         />
                                                         :
                                                         <p className='text-center'>
-                                                      {  data.ptype}
+                                                            {data.ptype}
                                                         </p>
 
-                                                        
-                                                        }
-                                                        </td>
-                                                
 
-                                                    <td className="py-2 px-4 border-b">{
-                                                        isLoading ?
-                                                            <Skeleton
-                                                                count={1}
-                                                                height="100%"
-                                                                width="50%"
-                                                                baseColor="#4299e1"
-                                                                highlightColor="#f7fafc"
-                                                                duration={0.9}
-                                                            />
-                                                            :
-                                                            <p className="text-center">
-                                                                {data.noOfParticipants}
-                                                            </p>
-                                                            
-                                                            }
-                                                    </td>
-                                                
+                                                }
+                                                </td>
+
+
+                                                <td className="py-2 px-4 border-b">{
+                                                    isLoading ?
+                                                        <Skeleton
+                                                            count={1}
+                                                            height="100%"
+                                                            width="50%"
+                                                            baseColor="#4299e1"
+                                                            highlightColor="#f7fafc"
+                                                            duration={0.9}
+                                                        />
+                                                        :
+                                                        <p className="text-center">
+                                                            {data.noOfParticipants}
+                                                        </p>
+
+                                                }
+                                                </td>
+
 
                                             </tr>
                                         </tbody>
@@ -426,7 +432,7 @@ export default function EventDetails() {
                                 </button>
                             }
                             {
-                               data?.eposterPath && data?.eposterPath !== "" &&
+                                data?.eposterPath && data?.eposterPath !== "" &&
                                 <button
                                     className='mx-4 my-2 px-5 py-3 bg-green-500 rounded-lg shadow-lg text-white hover:text-green-500 hover:bg-white hover:outline hover:outline-green-500'
                                     onClick={viewPoster}
@@ -445,7 +451,7 @@ export default function EventDetails() {
 
                         {/* Conditional Rendering  for Participants -- where user is not admin */}
                         {
-                            (!data?.hasSubEvents && !data.isCanceled && curDate <= new Date(data.rcdate) && userData?.role === "Student") &&
+                            (!data?.hasSubEvents && !data?.isCanceled && curDate.toLocaleDateString('en-GB') <= new Date(data.rcdate).toLocaleDateString('en-GB') && userData?.role === "Student") &&
                             <section className="my-2 py-2">
                                 <button
                                     className='px-5 py-3 bg-blue-500 rounded-lg shadow-lg text-white hover:text-blue-500 hover:bg-white hover:outline hover:outline-blue-500'
@@ -460,7 +466,7 @@ export default function EventDetails() {
 
                         {/* Conditional Rendering for Admins */}
                         {
-                            (userData.role  !== "Student" && data.enature?.committeeMembers?.includes(userData._id)) &&
+                            (userData.role !== "Student" && (data.enature?.committeeMembers?.includes(userData._id) || userData.role === "Super Admin")) &&
                             <section className="my-2 py-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3  ">
 
                                 <section className='my-2'>
@@ -475,28 +481,28 @@ export default function EventDetails() {
 
                                     <button
                                         className=' px-5 py-3 bg-yellow-500 rounded-lg shadow-lg text-white hover:text-yellow-500 hover:bg-white hover:outline hover:outline-yellow-500'
-                                        onClick={()=>{
+                                        onClick={() => {
                                             navigate(`/viewRegistrations/${data?._id}`);
                                         }}>
                                         View Participation
                                     </button>
                                 </section>
-                            
-                            {
-                                // curDate >= new Date(data.edate)
-                                true
-                                &&
-                                <section className='my-2'>
-                                    <button
-                                        className='px-5 py-3 bg-green-500 rounded-lg shadow-lg text-white hover:text-green-500 hover:bg-white hover:outline hover:outline-green-500'
-                                        onClick={()=>{
-                                            navigate(`/declareResult/${data?._id}`)
-                                        }}
-                                    >
-                                        Declare Result
-                                    </button>
-                                </section>
-                            }
+
+                                {
+                                    // curDate >= new Date(data.edate)
+                                    true
+                                    &&
+                                    <section className='my-2'>
+                                        <button
+                                            className='px-5 py-3 bg-green-500 rounded-lg shadow-lg text-white hover:text-green-500 hover:bg-white hover:outline hover:outline-green-500'
+                                            onClick={() => {
+                                                navigate(`/declareResult/${data?._id}`)
+                                            }}
+                                        >
+                                            Declare Result
+                                        </button>
+                                    </section>
+                                }
 
 
                                 {/* to cancel event */}
@@ -527,7 +533,20 @@ export default function EventDetails() {
                                         </button>
                                     </section>
                                 }
+
+
+                                <section className='my-2'>
+                                    <button
+                                        className='px-5 py-3 bg-green-500 rounded-lg shadow-lg text-white hover:text-green-500 hover:bg-white hover:outline hover:outline-green-500'
+                                        onClick={()=>{
+                                            setIsOpenUpdationLogModal(true);
+                                        }}
+                                    >
+                                        View Updation Log
+                                    </button>
+                                </section>
                             </section>
+
 
                         }
 
@@ -537,9 +556,10 @@ export default function EventDetails() {
                 </section>
             </section>
 
-            <UpdateEvent openUpdateModal={openUpdateModal} setOpenUpdateModal={setOpenUpdateModal} dataToUpdate={data} setDataUpdated={setDataUpdated} userId={userData._id}/>
+            <UpdateEvent openUpdateModal={openUpdateModal} setOpenUpdateModal={setOpenUpdateModal} dataToUpdate={data} setDataUpdated={setDataUpdated} userId={userData._id} />
             <CancelEvent openCancelCnfModal={openCancelCnfModal} setOpenCancelCnfModal={setOpenCancelCnfModal} changeEventStatus={changeEventStatus} />
             <ViewSubEventDetails openDetailsModel={openDetailsModel} setOpenDetailsModel={setOpenDetailsModel} eventData={subEventDataToShow} />
+            <EventUpdationLog isOpen={isOpenUpdationLogModal} close={closeUpdationLogModal} heading={"Updation Log"} updationLog={data.updationLog}/>
         </>
     )
 }

@@ -16,6 +16,7 @@ export default function EventResultDeclaration() {
     const [eventData, setEventData] = useState([]);
     const [subEvents, setSubEvents] = useState([]);
     const [eventRegistrations, setEventRegistrations] = useState([]);
+    const [subEventRegistrations, setSubEventRegistrations] = useState([]);
     const [showOverLay, setShowOverLay] = useState(true)
     const userData = useSelector((state) => state.UserSlice);
     const navigate = useNavigate();
@@ -28,39 +29,16 @@ export default function EventResultDeclaration() {
 
 
     useEffect(() => {
-
-        const fetchRegistrationData = async () => {
-            try {
-                const { data } = await axios.get(`${API_URL}/api/events/getRegistrationDataOfEvent`, {
-                    params: {
-                        eventId: eventId,
-                    },
-                    headers: {
-                        "auth-token": token
-                    }
-                });
-                if (data.result) {
-
-                    if (data?.data[0]?.sId) {
-                        const map = {};
-                        for (let subEvent of data.data) {
-                            map[subEvent.sId] ? map[subEvent.sId].push(subEvent) : map[subEvent.sId] = [subEvent];
-                        }
-
-                        const events = Object.values(map);
-                        setEventRegistrations(events);
-                    } else {
-                        setEventData((old) => ({ ...old, hasSubEvents: false }));
-                        setEventRegistrations(data?.data);
-                    }
-                }
-            } catch (error) {
-                // Handle error
+        const arr = [];
+        eventRegistrations?.forEach((team) => {
+            if (team.sId == searchParams.sId) {
+                arr.push(team);
+                console.log(team, "team")
             }
-        };
+        })
+        setSubEventRegistrations(arr);
+    }, [eventId, searchParams.sId])
 
-        fetchRegistrationData();
-    }, [eventId, ])
 
     useEffect(() => {
 
@@ -75,9 +53,9 @@ export default function EventResultDeclaration() {
                 })
 
                 if (data?.result) {
-                    setEventData(data?.data[0]);
-                    if (data?.data[0]?.hasSubEvents) {
-                        setSubEvents(transformSubEventData(data?.data[0].subEvents))
+                    setEventData(data?.data);
+                    if (data?.data?.hasSubEvents) {
+                        setSubEvents(transformSubEventData(data?.data.subEvents))
                     }
                 }
                 else {
@@ -90,6 +68,28 @@ export default function EventResultDeclaration() {
             }
         }
 
+        const fetchRegistrationData = async () => {
+            try {
+                const { data } = await axios.get(`${API_URL}/api/events/getRegistrationDataOfEvent`, {
+                    params: {
+                        eventId: eventId,
+                        status: "approved"
+                    },
+                    headers: {
+                        "auth-token": token
+                    }
+                });
+                if (data.result) {
+
+                    setEventRegistrations(data?.data);
+
+                }
+            } catch (error) {
+                // Handle error
+            }
+        };
+
+        fetchRegistrationData();
 
         fetchEventData();
 
@@ -138,6 +138,118 @@ export default function EventResultDeclaration() {
                             </section>
                         </section>
                 }
+                <section className="my-2 py-3">
+                    <section className="overflow-x-auto  overflow-y-auto border border-blue-500 border-solid rounded-t-lg">
+                        <table className="table-auto min-w-full bg-white shadow-md rounded-lg overflow-hidden ">
+                            <thead className="bg-blue-500 text-white">
+                                <tr>
+                                    <td className='px-2 py-2 md:px-4'>Sr No</td>
+                                    <td className='px-2 py-2 md:px-4'>SID</td>
+                                    <td className='px-2 py-2 md:px-4'>Name</td>
+                                    <td className='px-2 py-2 md:px-4'>Course</td>
+                                    <td className='px-2 py-2 md:px-4'>Semester</td>
+                                    <td className='px-2 py-2 md:px-4'>Division</td>
+                                    <td className='px-2 py-2 md:px-4'>Mobile No.</td>
+                                </tr>
+                            </thead>
+                            <tbody className="text-gray-600">
+                                {
+
+                                    (eventData.hasSubEvents !== undefined && !eventData.hasSubEvents)
+                                        ?
+                                        eventRegistrations?.map((team, idx) => {
+                                            return (
+                                                team.studentData?.map((student, stdIdx) => {
+                                                    return (
+                                                        <tr key={team._id}>
+                                                            {stdIdx === 0 && <td className='border px-2 py-2 md:px-4 ' rowSpan={team.studentData.length}>{idx + 1}</td>}
+
+                                                            <td className='border px-2 py-2 md:px-4 '>
+                                                                {
+                                                                    student.sid
+                                                                }
+                                                            </td>
+                                                            <td className='border px-2 py-2 md:px-4 '>
+                                                                {
+                                                                    student.studentName
+                                                                }
+                                                            </td>
+                                                            <td className='border px-2 py-2 md:px-4 '>
+                                                                {
+                                                                    student.course.courseName
+                                                                }
+                                                            </td>
+                                                            <td className='border px-2 py-2 md:px-4 '>
+                                                                {
+                                                                    student.semester
+                                                                }
+                                                            </td>
+                                                            <td className='border px-2 py-2 md:px-4 '>
+                                                                {
+                                                                    student.division
+                                                                }
+                                                            </td>
+
+                                                            <td className='border px-2 py-2 md:px-4 '>
+                                                                {
+                                                                    student.phno
+                                                                }
+                                                            </td>
+                                                        </tr>
+                                                    )
+                                                })
+                                            )
+                                        })
+                                        :
+                                        subEventRegistrations?.map((team, idx) => {
+                                            return (
+                                                team.studentData?.map((student, stdIdx) => {
+                                                    return (
+                                                        <tr key={stdIdx}>
+                                                            {stdIdx === 0 && <td className='border px-2 py-2 md:px-4 ' rowSpan={team.studentData.length}>{idx + 1}</td>}
+
+                                                            <td className='border px-2 py-2 md:px-4 '>
+                                                                {
+                                                                    student.sid
+                                                                }
+                                                            </td>
+                                                            <td className='border px-2 py-2 md:px-4 '>
+                                                                {
+                                                                    student.studentName
+                                                                }
+                                                            </td>
+
+                                                            <td className='border px-2 py-2 md:px-4 '>
+                                                                {
+                                                                    student.course.courseName
+                                                                }
+                                                            </td>
+                                                            <td className='border px-2 py-2 md:px-4 '>
+                                                                {
+                                                                    student.semester
+                                                                }
+                                                            </td>
+                                                            <td className='border px-2 py-2 md:px-4 '>
+                                                                {
+                                                                    student.division
+                                                                }
+                                                            </td>
+                                                            <td className='border px-2 py-2 md:px-4 '>
+                                                                {
+                                                                    student.phno
+                                                                }
+                                                            </td>
+                                                        </tr>
+                                                    )
+                                                })
+                                            )
+                                        })
+                                }
+                            </tbody>
+                        </table>
+                    </section>
+
+                </section>
             </section>
         </>
     )

@@ -159,7 +159,7 @@ export default function GenerateEvent() {
         const enature = eventNatures.find(e=>e._id===data.enature) || null;
         if(enature){
             console.log(user._id,enature)
-            if (!enature.committeeMembers.includes(user._id)) {
+            if (!enature.committeeMembers.includes(user._id) && user.role !== "Super Admin") {
                 setErrors((old) => ({ ...old, enatureErr: `You Can Not Generate  ${enature.name} Events as You are Not The Member of This Committe.!` }));
                 isValidated = false;
     
