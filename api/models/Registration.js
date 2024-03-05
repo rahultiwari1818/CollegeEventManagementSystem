@@ -37,6 +37,10 @@ const RegistrationSchema = new Schema({
     updatedAt: {
         type: Date,
         default: Date.now()
+    },
+    rank:{
+        type:Number,
+        required:true
     }
 
 });

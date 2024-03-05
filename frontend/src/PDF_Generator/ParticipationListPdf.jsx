@@ -106,14 +106,14 @@ export default function ParticipationListPdf({ eventData, registrationData,colle
 
     const CollegeHeader = ({collegeData}) => (
         <View>
-                <Image style={styles.logo} src={CollegeBanner} />
+                <Image style={styles.logo} src={collegeData.collegePdfBannerPath === "." ? CollegeBanner : collegeData.collegePdfBannerPath } />
                 <View>
                     <Text style={{marginTop:10,textAlign:"right",paddingRight:20,fontSize:12,textDecoration:"underline"}}>
                         <Text >
                             Date :  
                         </Text>
                         <Text>
-                            
+
                             {
                                 moment(Date.now()).format("DD-MM-YYYY")
                             }

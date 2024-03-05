@@ -83,8 +83,11 @@ const registerStudentsInBulk = async (req, res) => {
             }
 
 
-            if (sids.includes(entry["sid"].trim())) {
+            if (sids.includes(Number(entry["sid"].trim()))) {
                 flag = false;
+            }
+            else{
+                sids.push(Number(entry["sid"].trim()))
             }
 
             if (!nameRegex.test(entry["student name"].trim())) {
@@ -460,7 +463,8 @@ const getIndividualStudentsFromId = async (req, res) => {
                     email: student.email,
                     _id: student._id,
                     profilePicName: student.profilePicName,
-                    profilePicPath: student.profilePicPath
+                    profilePicPath: student.profilePicPath,
+                    status:student.status
                 },
                 "result": true
             });
@@ -484,6 +488,13 @@ const studentForgotPassword = async (req, res) => {
 
         // Assuming Student is a Mongoose model
         const studentData = await Student.findOne({ sid: sid });
+
+        if(studentData.status!=="Active"){
+            return res.status(400).json({
+                message: "Your Account Has Been Locked by Super Admin",
+                result: false
+            });
+        }
 
         // Check if studentData is empty
         if (!studentData) {
@@ -719,7 +730,7 @@ const updateStudentData = async (req, res) => {
             semester: semester,
             division: division,
             rollno: rollno,
-            _id: { $ne: _id }
+            status:"Active"
         });
 
         if (doesRollNoInSameDivExists) {
@@ -953,7 +964,7 @@ const promoteStudentsToNextSemester = async (req, res) => {
                                 {
                                     $cond: [
                                         { $eq: ["$semester", 0] },
-                                        0,
+                                        course.noOfSemesters,
                                         { $add: ["$semester", 1] }
                                     ]
                                 }

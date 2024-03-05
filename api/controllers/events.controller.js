@@ -317,7 +317,8 @@ const registerInEvent = async (req, res) => {
             studentData: studentData,
             createdAt: Date.now(),
             status: 'pending',
-            updatedAt: Date.now()
+            updatedAt: Date.now(),
+            rank:0
         })
 
         // const tokens = await Students.find(

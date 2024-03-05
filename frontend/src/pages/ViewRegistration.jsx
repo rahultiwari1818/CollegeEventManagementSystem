@@ -12,6 +12,7 @@ import moment from "moment"
 import RejectedImage from "../assets/images/RejectedIcon.png"
 import PendingImage from "../assets/images/PendingIcon.png"
 import ApprovalImage from "../assets/images/ApprovalIcon.png"
+import ViewPdf from '../PDF_Generator/ViewPdf';
 
 
 export default function ViewRegistration() {
@@ -153,6 +154,8 @@ export default function ViewRegistration() {
         setSearchParams(filterParam); // Update searchParams state
     };
 
+    const [showPdf,setShowPdf] = useState(false);
+
     return (
         <>
             {
@@ -169,6 +172,13 @@ export default function ViewRegistration() {
                         }
                     </p>
                     <section className='md:flex justify-end items-center my-2'>
+                        <button className="bg-blue-500 text-white py-2 mx-2"
+                        onClick={()=>{
+                            setShowPdf(true)
+                        }}
+                        >
+                            View Pdf
+                        </button>
                       {  eventData?.ename &&
                         <PDFDownloadLink document={<ParticipationListPdf eventData={eventData} registrationData={registrationData} collegeData={collegeData} />} fileName={`${eventData?.ename}ParticipationList.pdf`}>
 
@@ -369,6 +379,10 @@ export default function ViewRegistration() {
                     )}
                 </section>
             </section>
+            {
+                showPdf &&
+                <ViewPdf eventData={eventData} registrationData={registrationData} collegeData={collegeData}/>
+            }
         </>
     );
 }
