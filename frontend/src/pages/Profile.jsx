@@ -1,6 +1,7 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import DefaultImage from "../assets/images/DefaultUser.png";
 import { ReactComponent as CameraIcon } from "../assets/Icons/CameraIcon.svg"
+import DefaultBanner from "../assets/images/DefaultPDFBanner.jpeg"
 import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { formatMongoDate } from '../utils';
@@ -10,6 +11,7 @@ import ChangePassword from '../components/ChangePassword';
 import UpdateFaculty from "../components/UpdateFaculty";
 import Modal from '../components/Modal';
 import { toast } from 'react-toastify';
+import Overlay from '../components/Overlay';
 
 export default function Profile() {
 
@@ -503,11 +505,18 @@ const ChangeCollegeNameModal = ({isOpen,close,heading,dataToBeUpdated,updateStat
     const API_URL = process.env.REACT_APP_BASE_URL;
     const token = localStorage.getItem("token");
 
-    const [formData,setFormData] = useState({});
+    const [formData,setFormData] = useState({newCollegePdfBanner:""});
+
+    const [showOverlay,setShowOverlay] = useState(false);
 
     const [errors,setErrors] = useState({
         collegenameErr:""
     })
+
+    const fileInputRef = useRef(null);
+
+
+
 
     const handleUpdateCollegeData = async ( ) =>{
 
@@ -517,13 +526,20 @@ const ChangeCollegeNameModal = ({isOpen,close,heading,dataToBeUpdated,updateStat
         }
 
         try {
+            setShowOverlay(true);
+
+            const dataToPost = new FormData();
+
+            dataToPost.append("newCollegeName",formData.collegename.trim())
+            dataToPost.append("id",formData._id)
+            dataToPost.append("oldCollegePDFBannerName",formData?.collegePdfBannerName)
+            dataToPost.append("oldCollegePDFBannerPath",formData?.collegePdfBannerPath)
+            dataToPost.append("newCollegePdfBanner",formData?.newCollegePdfBanner)
             
-            const {data} = await axios.patch(`${API_URL}/api/faculties/updateCollegeData`,{
-                newCollegeName:formData.collegename.trim(),
-                id:formData._id
-            },{
+            const {data} = await axios.patch(`${API_URL}/api/faculties/updateCollegeData`,dataToPost,{
                 headers:{
                     "auth-token":token,
+                    "Content-Type":"multipart/form-data"
                 }
             })
 
@@ -538,17 +554,31 @@ const ChangeCollegeNameModal = ({isOpen,close,heading,dataToBeUpdated,updateStat
             console.log(error)
             toast.error(error?.response?.data?.message)
         }
+        finally{
+            setShowOverlay(false);
+        }
     }
 
     useEffect(()=>{
         if(dataToBeUpdated?.collegename){
-            setFormData(dataToBeUpdated);
+            setFormData({...formData,...dataToBeUpdated});
+        }
+
+        if(!isOpen){
+            setFormData({newCollegePdfBanner:""})
         }
     },[isOpen,close,heading,updateStateData,dataToBeUpdated])
+
     
 
 
+
     return (
+<>
+        {
+            showOverlay &&
+            <Overlay/>
+        }
         <Modal isOpen={isOpen} close={close} heading={heading}>
             <section className='my-2 py-3 px-3'>
             <section className='md:p-2 md:m-2 p-1 m-1'>
@@ -574,6 +604,41 @@ const ChangeCollegeNameModal = ({isOpen,close,heading,dataToBeUpdated,updateStat
                                 </p>
                             }
                         </section>
+            <section className='md:p-2 md:m-2 p-1 m-1'>
+                            <label htmlFor="img">Existing College PDF Banner : </label>
+                            <section className="w-full">
+                                <img src={formData.collegePdfBannerPath==="." ? DefaultBanner :formData.collegePdfBannerPath } alt="banner" srcSet=""  className='block border border-blue-500 w-full h-[20vh]'/>
+                            </section>
+                            <section className="my-2 flex flex-col items-center">
+                        {formData.newCollegePdfBanner && (
+                            <p className="mb-2">
+                             New  Filename: {formData.newCollegePdfBanner.name}, Size: {formData.newCollegePdfBanner.size} bytes
+                            </p>
+                        )}
+                        <input
+                            type="file"
+                            name="newCollegePdfBanner"
+                            accept="image/*"
+                            ref={fileInputRef}
+                            className="hidden"
+                            onChange={(e)=>{
+                                const file = e.target.files[0];
+                                setFormData((old)=>({...old,newCollegePdfBanner:file}))
+                            }}
+                        />
+                        {
+                                <button
+                                    className="px-5 py-2 shadow-lg rounded-lg bg-blue-500 text-white hover:bg-white hover:text-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                                    onClick={()=>{
+                                        fileInputRef.current.click();
+                                    }}
+                                >
+                                    Change College Banner
+                                </button>
+                        }
+                    </section>
+
+            </section>
                         <section className='md:p-2 md:m-2 p-1 m-1'>
                                 <button className="px-5 py-2 shadow-lg rounded-lg bg-yellow-500 text-white hover:outline hover:outline-yellow-500 hover:bg-white hover:text-yellow-500"
                                 onClick={handleUpdateCollegeData}
@@ -583,6 +648,7 @@ const ChangeCollegeNameModal = ({isOpen,close,heading,dataToBeUpdated,updateStat
                         </section>
             </section>
         </Modal>
+        </>
     )
 }
 

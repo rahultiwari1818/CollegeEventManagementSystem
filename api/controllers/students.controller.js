@@ -938,7 +938,7 @@ const promoteStudentsToNextSemester = async (req, res) => {
         const { courseName } = req.body;
 
         // Find the course
-        const course = await Course.findOne({ courseName });
+        const course = await Course.findOne({ _id:courseName });
 
         // Update student data based on the course's number of semesters
         const result = await Student.updateMany(

@@ -1,10 +1,11 @@
 import React, { Fragment } from 'react'
 import { Image, Text, View, Page, Document, StyleSheet } from '@react-pdf/renderer';
-import CollegeLogo from "../assets/images/CollegeLogo.png"
+import CollegeBanner from "../assets/images/CollegeBanner.jpg"
+import moment from "moment";
 
 export default function ParticipationListPdf({ eventData, registrationData,collegeData }) {
     const styles = StyleSheet.create({
-        page: {
+        pageContainer: {
             fontSize: 12,
             paddingTop: 30,
             paddingLeft: 40,
@@ -12,10 +13,6 @@ export default function ParticipationListPdf({ eventData, registrationData,colle
             paddingBottom: 30,
             lineHeight: 1.5,
             flexDirection: 'column',
-        },
-        titleContainer: {
-            flexDirection: 'row',
-            marginTop: 10,
         },
         subTitleContainer:{
             flexDirection: 'row',
@@ -28,7 +25,8 @@ export default function ParticipationListPdf({ eventData, registrationData,colle
             color: "#3E3E3E",
         },
         logo: {
-            width: 70,
+            width: 600,
+            flexDirection:"row"
         },
         CollegeName:{
             fontSize: 17,
@@ -107,15 +105,21 @@ export default function ParticipationListPdf({ eventData, registrationData,colle
     });
 
     const CollegeHeader = ({collegeData}) => (
-        <View style={styles.titleContainer}>
-            <View style={styles.spaceBetween}>
-                <Image style={styles.logo} src={CollegeLogo} />
-                <Text style={styles.CollegeName}>
-                    {
-                        collegeData?.collegename
-                    }
-                </Text>
-            </View>
+        <View>
+                <Image style={styles.logo} src={CollegeBanner} />
+                <View>
+                    <Text style={{marginTop:10,textAlign:"right",paddingRight:20,fontSize:12,textDecoration:"underline"}}>
+                        <Text >
+                            Date :  
+                        </Text>
+                        <Text>
+                            
+                            {
+                                moment(Date.now()).format("DD-MM-YYYY")
+                            }
+                        </Text>
+                    </Text>
+                </View>
         </View>
     );
 
@@ -171,7 +175,7 @@ export default function ParticipationListPdf({ eventData, registrationData,colle
 
                                 <View style={[styles.tbody, styles.tbody2,styles.srnoColumn]}>
                                  {
-                                 idx==0 &&   
+                                 idx===0 &&   
                                  <Text>{ teamIdx + 1}</Text>
                                  }   
                                 </View>
@@ -204,25 +208,28 @@ export default function ParticipationListPdf({ eventData, registrationData,colle
 
     return (
         <Document>
-            <Page size="A4" style={styles.page}>
+            <Page size="A4" >
                 <CollegeHeader collegeData={collegeData}/>
-                <ParticiPationListTitle />
-                {eventData.hasSubEvents ?
-                 (
-                    registrationData.map((subEvent, index) => (
-                        subEvent.length > 0 && (
-                            <View key={index}>
-                                <TableHead subEvent={subEvent} />
-                                <TableBody subEvent={subEvent} />
-                            </View>
-                        )
-                    ))
-                ) : (
-                    <>
-                        <TableHead subEvent={registrationData} />
-                        <TableBody subEvent={registrationData} />
-                    </>
-                )}
+                <View style={styles.pageContainer}>
+
+                    <ParticiPationListTitle />
+                    {eventData.hasSubEvents ?
+                    (
+                        registrationData.map((subEvent, index) => (
+                            subEvent.length > 0 && (
+                                <View key={index}>
+                                    <TableHead subEvent={subEvent} />
+                                    <TableBody subEvent={subEvent} />
+                                </View>
+                            )
+                        ))
+                    ) : (
+                        <>
+                            <TableHead subEvent={registrationData} />
+                            <TableBody subEvent={registrationData} />
+                        </>
+                    )}
+                </View>
             </Page>
         </Document>
     )

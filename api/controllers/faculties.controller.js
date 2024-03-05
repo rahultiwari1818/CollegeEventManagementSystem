@@ -348,6 +348,15 @@ const setUpSystem = async (req, res) => {
 
         const {sadminsalutation, sadminemail, sadminname, sadminphno, sadminpassword, collegename } = req.body;
 
+        const newCollegePdfBanner = req?.file;
+
+        if(!newCollegePdfBanner){
+            return res.status(400).json({
+                message: "Please Provide College Banner",
+                result: false
+            })
+        }
+
         if (!phnoRegex.test(sadminphno)) {
             return res.status(400).json({
                 message: "Please Provide a valid phone no.!",
@@ -384,12 +393,26 @@ const setUpSystem = async (req, res) => {
             })
         }
 
+      const  newCollegePDFBannerName = newCollegePdfBanner.originalname;
+
+        const result = await uploadToCloudinary(newCollegePdfBanner.path, "image");
+        if (result.message === "Fail") {
+            return res.status(500).json({
+                message: "Some Error Occued...",
+                result: false
+            })
+        }
+      const  newCollegePDFBannerPath = result.url;
+
+
         const salt = await bcrypt.genSalt(10);
         const secPass = await bcrypt.hash(sadminpassword, salt);
 
 
         college = await College.create({
-            collegename: collegename.trim()
+            collegename: collegename.trim(),
+            collegePdfBannerName:newCollegePDFBannerName,
+            collegePdfBannerPath:newCollegePDFBannerPath
         })
 
         user = await Faculties.create({
