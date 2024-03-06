@@ -46,9 +46,7 @@ export default function ParticipationListPdf({ eventData, registrationData,colle
         theader: {
             marginTop: 5,
             fontSize: 10,
-            fontStyle: 'bold',
             paddingTop: 4,
-            paddingLeft: 4,
             flex: 1,
             height: 20,
             backgroundColor: '#DEDEDE',
