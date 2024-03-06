@@ -10,7 +10,7 @@ const Students = require("../models/Students.js");
 
 
 const generateEvent = async (req, res) => {
-    const { ename, etype, ptype, noOfParticipants, edate, edetails, rules, rcdate, hasSubEvents, enature, generator } = req.body;
+    const { ename, etype, ptype, noOfParticipants, edate, edetails, rules, rcdate, hasSubEvents, enature, generator ,courseWiseResult} = req.body;
     let brochure, poster;
     try {
 
@@ -69,7 +69,7 @@ const generateEvent = async (req, res) => {
             newPosterPath = result.url;
 
         }
-
+        const eligibleSemesters = JSON.parse(req.body.eligibleSemester || "[]");
         const subEvents = JSON.parse(req.body.subEvents || "[]"); // Parse subEvents JSON string, default to empty array if not provided
         const eligibleCourses = JSON.parse(req.body.eligibleCourses || "[]"); // Parse subEvents JSON string, default to empty array if not provided
         const genEvent = await Event.create({
@@ -89,6 +89,8 @@ const generateEvent = async (req, res) => {
             hasSubEvents: hasSubEvents,
             subEvents: subEvents,
             eligibleCourses: eligibleCourses,
+            courseWiseResultDeclaration:courseWiseResult,
+            eligibleSemesters:eligibleSemesters,
             isCanceled: false,
             updationLog: [{ change: "Generated", by: generator, at: Date.now() }]
         });
@@ -179,7 +181,7 @@ const updateEventDetails = async (req, res) => {
     const data = await Event.findById(id);
 
     try {
-        const { ename, etype, ptype, noOfParticipants, edate, edetails, rules, rcdate, hasSubEvents, enature, updatedBy } = req.body;
+        const { ename, etype, ptype, noOfParticipants, edate, edetails, rules, rcdate, hasSubEvents, enature, updatedBy,courseWiseResult } = req.body;
 
         const trimmedFields = {
             ename: ename.trim(),
@@ -247,9 +249,10 @@ const updateEventDetails = async (req, res) => {
 
         // Update event details in the database
         const subEvents = JSON.parse(req.body.subEvents);
+        const eligibleSemesters = JSON.parse(req.body.eligibleSemester || "[]");
         const eligibleCourses = JSON.parse(req.body.eligibleCourses); // Parse subEvents JSON string, default to empty array if not provided
         const dataToUpdate = {
-            ename, etype, ptype, enature, noOfParticipants, edate, edetails, rules, rcdate, ebrochureName: originalBrochureName, ebrochurePath: newBrochurePath, eposterName: originalPosterName, eposterPath: newPosterPath, hasSubEvents, subEvents, eligibleCourses
+            ename, etype, ptype, enature, noOfParticipants, edate, edetails, rules, rcdate, ebrochureName: originalBrochureName, ebrochurePath: newBrochurePath, eposterName: originalPosterName, eposterPath: newPosterPath, hasSubEvents, subEvents, eligibleCourses,eligibleSemesters,courseWiseResultDeclaration:courseWiseResult
         };
 
         // Use findOneAndUpdate with $push to add to the updationLog array

@@ -100,7 +100,7 @@ export function transformCourseData(coursesData,requiresAll) {
 		arr.push({ name: "All" });
 	}
 	for (let course of coursesData) {
-		arr.push({ name: course.courseName,_id:course._id });
+		arr.push({ name: course.courseName,_id:course._id,noOfSemesters:course.noOfSemesters });
 	}
 	return arr;
 }

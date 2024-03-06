@@ -3,23 +3,33 @@ import Modal from './Modal'
 import Dropdown from './Dropdown';
 import { handleNumericInput } from '../utils';
 
-export default function AddSubEvents({ openUpdateModal, setOpenUpdateModal, heading, setData, setSubEventDataToUpdate, dataToBeUpdated }) {
+export default function AddSubEvents({ openUpdateModal, setOpenUpdateModal, heading, setData, setSubEventDataToUpdate, dataToBeUpdated,semesterArr }) {
     const initialState = {
         subEventName: "",
         ptype: "",
         noOfParticipants: 1,
         subEventDetail: "",
-        subEventRules: ""
+        subEventRules: "",
+        eligibleSemester:[]
     }
 
     const initialErrorState = {
-        ptypeErr:""
+        ptypeErr:"",
+        eligibleSemesterErr:""
     }
 
     const [subEventData, setSubEventData] = useState(initialState);
     const [subEventError, setSubEventError] = useState(initialErrorState);
 
     const noOfPartcipants = useRef(null);
+
+
+    const handleSemesterChange = (value)=>{
+        const newSelectedSemesters = subEventData.eligibleSemester.includes(value)
+        ?   subEventData.eligibleSemester.filter((sem)=>sem !== value)
+        :[...subEventData.eligibleSemester,value];
+        setSubEventData((old)=>({...old,eligibleSemester:newSelectedSemesters}));
+    }
 
     const updateData = (e) => {
         const name = e.target.name;
@@ -32,10 +42,16 @@ export default function AddSubEvents({ openUpdateModal, setOpenUpdateModal, head
 
     useEffect(() => {
         if (dataToBeUpdated?.sId) {
-            setSubEventData(() => dataToBeUpdated)
+            setSubEventData((old)=>({...dataToBeUpdated,eligibleSemester:JSON.parse(dataToBeUpdated.eligibleSemester)}) )
+            console.log(dataToBeUpdated,"tu")
+        }
+        else{
+            setSubEventData(initialState);
+            setSubEventError(initialErrorState)
         }
         // console.log("data", subEventData, dataToBeUpdated)
-    }, [dataToBeUpdated])
+    }, [dataToBeUpdated,openUpdateModal,setOpenUpdateModal,heading,setData,semesterArr])
+
 
     const changeParticipationType = useCallback((value)=>{
         
@@ -66,6 +82,7 @@ export default function AddSubEvents({ openUpdateModal, setOpenUpdateModal, head
                     noOfParticipants: subEventData.noOfParticipants,
                     subEventDetail: subEventData.subEventDetail,
                     subEventRules: subEventData.subEventRules,
+                    eligibleSemester:JSON.stringify(subEventData.eligibleSemester)
                 }
                 ]
             }
@@ -87,6 +104,7 @@ export default function AddSubEvents({ openUpdateModal, setOpenUpdateModal, head
                 noOfParticipants: subEventData.noOfParticipants,
                 subEventDetail: subEventData.subEventDetail,
                 subEventRules: subEventData.subEventRules,
+                eligibleSemester:JSON.stringify(subEventData.eligibleSemester)
             })
             return {
                 ...old,
@@ -107,6 +125,10 @@ export default function AddSubEvents({ openUpdateModal, setOpenUpdateModal, head
             setSubEventError((old)=>({...old,ptypeErr:"Select Participation Type"}));
             return;
         }
+        if(subEventData.eligibleSemester.length===0){
+            setSubEventError((old)=>({...old,eligibleSemesterErr:"Select Eligible Semesters"}))
+            return;
+        }
 
         if (dataToBeUpdated?.sId) {
             updateHandler();
@@ -116,12 +138,8 @@ export default function AddSubEvents({ openUpdateModal, setOpenUpdateModal, head
         }
     }
 
-    useEffect(()=>{
-        if(openUpdateModal){
-            setSubEventData(initialState);
-            setSubEventError(initialErrorState);
-        }
-    },[openUpdateModal])
+
+
 
     return (
 
@@ -184,6 +202,35 @@ export default function AddSubEvents({ openUpdateModal, setOpenUpdateModal, head
                             required
                         />
                     </section>
+                    <section className='md:p-2 md:m-2 p-1 m-1'>
+                            <p className="py-2">
+                                Select Eligible Semesters :
+                            </p>
+                            <section className='grid grid-cols-3 md:grid-cols-6 lg:grid-cols-6 gap-4 px-2 py-2 shadow-lg rounded-lg'>
+                                {semesterArr?.map((semester,id) => (
+                                    <section key={id} className="flex items-center">
+                                        <input
+                                            type="checkbox"
+                                            id={id}
+                                            value={semester}
+                                            checked={subEventData.eligibleSemester?.includes(semester)}
+                                            onChange={() => handleSemesterChange(semester)}
+                                            className='mr-2 cursor-pointer'
+                                        />
+                                        <label htmlFor={id} className="cursor-pointer">{semester}</label>
+                                    </section>
+                                ))}
+                            </section>
+                            {
+                                subEventError.eligibleSemesterErr !== ""
+                                &&
+                                <p className='text-red-500 my-2'>
+                                    {
+                                        subEventError.eligibleSemesterErr
+                                    }
+                                </p>
+                            }
+                        </section>
                     <section className='md:p-2 md:m-2  p-1 m-1'>
                         <label htmlFor="details">Event Details:</label><br />
                         <textarea

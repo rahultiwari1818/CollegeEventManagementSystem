@@ -64,6 +64,13 @@ const EventsSchema = new Schema({
         required:true,
         type:Array
     },
+    courseWiseResultDeclaration:{
+        required:true,
+        type:Boolean
+    },
+    eligibleSemesters:{
+        type:Array,
+    },
     updationLog:[{
         change: String,
         by: {
