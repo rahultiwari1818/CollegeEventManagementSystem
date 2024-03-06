@@ -380,7 +380,7 @@ export default function ViewRegistration() {
                 </section>
             </section>
             {
-                showPdf &&
+                true &&
                 <ViewPdf eventData={eventData} registrationData={registrationData} collegeData={collegeData}/>
             }
         </>
