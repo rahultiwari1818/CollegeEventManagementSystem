@@ -19,7 +19,8 @@ export default function ViewStudents() {
         search: "",
         searchCourse: "",
         searchSemester: "",
-        searchdivision: ""
+        searchdivision: "",
+        status:""
     });
     const [disablesection, setDisabledsection] = useState(true);
     const [division, setDivision] = useState([]);
@@ -65,6 +66,11 @@ export default function ViewStudents() {
         setSearchParams((old) => ({ ...old, searchdivision: value }));
     },[setSearchParams]);
 
+    const changeSearchStatus = useCallback((value)=>{
+        console.log(value,"status")
+        setSearchParams((old) => ({ ...old, status: value }));
+    },[setSearchParams])
+
     const token = localStorage.getItem("token");
     const API_URL = process.env.REACT_APP_BASE_URL;
 
@@ -88,17 +94,18 @@ export default function ViewStudents() {
     const fetchStudentData = async () => {
         try {
             setIsDataLoading(true);
-            const { search, searchCourse, searchSemester, searchdivision } = searchParams;
+            const { search, searchCourse, searchSemester, searchdivision,status } = searchParams;
             const course = searchCourse === "All" ? "" : searchCourse;
             const semester = searchSemester === "All" ? "" : searchSemester;
             const section = searchdivision === "All" ? "" : searchdivision;
-
+            
             const { data } = await axios.get(`${API_URL}/api/students/getStudents`, {
                 params: {
                     search,
                     course,
                     semester,
                     division: section,
+                    status:status,
                     page: currentPage,
                     limit: entriesPerPage // Use selected entries per page
                 },
@@ -210,7 +217,7 @@ export default function ViewStudents() {
     },[user,navigate])
 
 
-
+    const statusArr = [{name:"Active"},{name:"Inactive"}];
 
     return (
         <>
@@ -225,6 +232,7 @@ export default function ViewStudents() {
                     <Dropdown dataArr={courses} selected={searchParams.searchCourse} setSelected={changeSearchCourse} name="searchCourse" label="Select Course" passedId={true} />
                     <Dropdown dataArr={semestersArr} selected={searchParams.searchSemester} setSelected={changeSemesterCourse} name="searchSemester" label="Select Semester" />
                     <Dropdown dataArr={division} selected={searchParams.searchdivision} setSelected={changeSearchDivision} name="searchdivisions" label="Select Division" disabled={disablesection} />
+                    <Dropdown dataArr={statusArr} selected={searchParams.status} setSelected={changeSearchStatus} name="searchdivisions" label="Select Status" />
                 </section>
 
 
@@ -374,6 +382,13 @@ export default function ViewStudents() {
 
                                         </tr>
                                     })
+                                    :
+                                    studentData.length === 0 ?
+                                    <tr>
+                                        <td colSpan={12} className="border text-center px-2 py-2 md:px-4 min-w-[5%]">
+                                            No Students Find
+                                        </td>
+                                    </tr>
                                     :
                                     studentData?.map((student, idx) => (
                                         <tr key={student._id}>

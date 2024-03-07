@@ -19,7 +19,7 @@ export default function EventCard({ data, isLoading }) {
           {isLoading ? (
             <Skeleton
               count={1}
-              height="100%"
+              height="20%"
               width="100%"
               baseColor="#4299e1"
               highlightColor="#f7fafc"
@@ -37,7 +37,7 @@ export default function EventCard({ data, isLoading }) {
             {isLoading ? (
               <Skeleton
                 count={1}
-                height="100%"
+                height="20%"
                 width="50%"
                 baseColor="#4299e1"
                 highlightColor="#f7fafc"
@@ -49,7 +49,7 @@ export default function EventCard({ data, isLoading }) {
           </p>
           
             <button
-              className=' text-nowrap px-5 py-3 bg-green-500 hover:text-green-500 hover:bg-white hover:outline hover:outline-green-500 rounded text-white '
+              className={` ${isLoading?"cursor-not-allowed":""} text-nowrap px-5 py-3 bg-green-500 hover:text-green-500 hover:bg-white hover:outline hover:outline-green-500 rounded text-white `}
               onClick={() => getEventDetails(data?._id)}
               disabled={isLoading}
             >

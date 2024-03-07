@@ -327,7 +327,7 @@ const getStudents = async (req, res) => {
         const limit = parseInt(req.query.limit) || 10; // Number of items per page, default is 10
         const sidFilter = parseInt(req.query.sid) || ''; // Convert to number
         const rollnoFilter = parseInt(req.query.rollno) || ''; // Convert to number
-
+        const statusFilter = req.query.status || "";
         // Define the search criteria
         const searchCriteria = {
             $and: [
@@ -340,13 +340,14 @@ const getStudents = async (req, res) => {
                         { sid: isNaN(searchQuery) ? "" : Number(searchQuery) }
                     ]
                 } : {},
-                { status: "Active" }, // Filter for active status
                 { semester: { $gt: 0 } }, // Filter for semester > 0        
                 courseFilter ? { course: courseFilter } : {},
                 semesterFilter ? { semester: semesterFilter } : {}, // Direct comparison for numeric fields
                 divisionFilter ? { division: divisionFilter } : {}, // Direct comparison for numeric fields
                 sidFilter ? { sid: sidFilter } : {}, // Direct comparison for numeric fields
-                rollnoFilter ? { rollno: rollnoFilter } : {} // Direct comparison for numeric fields
+                rollnoFilter ? { rollno: rollnoFilter } : {} ,// Direct comparison for numeric fields
+                statusFilter ? { status: statusFilter } :{}// Filter for active status
+
             ]
         };
 
@@ -393,6 +394,13 @@ const getDivisions = async (req, res) => {
 
     try {
         const course = req.query.course || "";
+        if(!course){
+            return res.status(200).json({
+                message:"Select Course to fetch Division",
+                data:[],
+                result:true
+            })
+        }
         const semester = req.query.semester || "";
         // Fetch all students
         const students = await Student.find({ course: course, semester: semester });
@@ -406,6 +414,7 @@ const getDivisions = async (req, res) => {
             "result": true
         });
     } catch (error) {
+        console.log(error)
         return res.status(500).json({ "message": "Some Error Occurred.", "result": false });
     }
 }

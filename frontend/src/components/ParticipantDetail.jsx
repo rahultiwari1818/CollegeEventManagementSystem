@@ -98,6 +98,7 @@ export default function ParticipantDetail({ noOfParticipants, studentData, event
                                 semester,
                                 course,
                                 division,
+                                status:"Active",
                                 limit: 10, // Use selected entries per page
                             },
                             headers: {

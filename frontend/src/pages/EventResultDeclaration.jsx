@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import Overlay from '../components/Overlay'
 import { useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -12,13 +12,14 @@ export default function EventResultDeclaration() {
     const token = localStorage.getItem("token");
     const [searchParams, setSearchParams] = useState({
         sId: 0,
-        course:""
+        course: ""
     })
     const [eventData, setEventData] = useState([]);
     const [subEvents, setSubEvents] = useState([]);
     const [eventRegistrations, setEventRegistrations] = useState([]);
-    const [eligibleCourses,setEligibleCourses] = useState([]);
+    const [eligibleCourses, setEligibleCourses] = useState([]);
     const [subEventRegistrations, setSubEventRegistrations] = useState([]);
+    const [filteredData,setFilteredData] = useState([]);
     const [showOverLay, setShowOverLay] = useState(true)
     const userData = useSelector((state) => state.UserSlice);
     const navigate = useNavigate();
@@ -29,8 +30,8 @@ export default function EventResultDeclaration() {
         setSearchParams((old) => ({ ...old, sId: value }))
     }, [])
 
-    const updateCourse = useCallback((value)=>{
-        setSearchParams((old)=>({...old,course:value}))
+    const updateCourse = useCallback((value) => {
+        setSearchParams((old) => ({ ...old, course: value }))
     })
 
     useEffect(() => {
@@ -43,9 +44,9 @@ export default function EventResultDeclaration() {
         setSubEventRegistrations(arr);
     }, [eventId, searchParams.sId])
 
-    useEffect(()=>{
-        
-    },[searchParams.course])
+    useEffect(() => {
+
+    }, [searchParams.course])
 
 
     useEffect(() => {
@@ -66,7 +67,7 @@ export default function EventResultDeclaration() {
                         setSubEvents(transformSubEventData(data?.data.subEvents))
                     }
                     console.log(data.data.eligibleCourses)
-                    setEligibleCourses(()=>transformCourseData(data.data.eligibleCourses))
+                    setEligibleCourses(() => transformCourseData(data.data.eligibleCourses))
                 }
                 else {
                     setEventData({});
@@ -124,20 +125,12 @@ export default function EventResultDeclaration() {
     const handleDrop = (event, teamId, dropIdx) => {
         const draggedTeamId = event.dataTransfer.getData("text/plain");
         const dragIdx = event.dataTransfer.getData("text/idx");
-        const updatedSubEventRegistrations = [...subEventRegistrations];
-        const draggedTeam = updatedSubEventRegistrations.splice(dragIdx, 1)[0];
-        updatedSubEventRegistrations.splice(dropIdx, 0, draggedTeam);
-        setSubEventRegistrations(updatedSubEventRegistrations);
+        const updateFilteredData = [...filteredData];
+        const draggedTeam = updateFilteredData.splice(dragIdx, 1)[0];
+        updateFilteredData.splice(dropIdx, 0, draggedTeam);
+        setFilteredData(updateFilteredData);
     };
 
-    const handleEventDrop = (event, teamId, dropIdx) => {
-        const draggedTeamId = event.dataTransfer.getData("text/plain");
-        const dragIdx = event.dataTransfer.getData("text/idx");
-        const updatedEventRegistrations = [...eventRegistrations];
-        const draggedTeam = updatedEventRegistrations.splice(dragIdx, 1)[0];
-        updatedEventRegistrations.splice(dropIdx, 0, draggedTeam);
-        setEventRegistrations(updatedEventRegistrations);
-    }
 
     const handleDragOver = (event) => {
         event.preventDefault();
@@ -165,6 +158,28 @@ export default function EventResultDeclaration() {
 
     }
 
+    useEffect(()=>{
+        if (eventData.hasSubEvents && eventData.courseWiseResultDeclaration) {
+                    // Filter data based on both subevent selection (searchParams.sId) and course selection (searchParams.course)
+                    const data = subEventRegistrations.filter(team => team.sId == searchParams.sId) // Filter subevents based on selected subevent
+                      const courseWiseTeams = data.map(team => team.studentData[0].course._id == searchParams.course ? team : {});
+                        const filteredTeams = courseWiseTeams.filter(team => team._id) || [];
+                        setFilteredData(filteredTeams);
+            
+                } else if (eventData.hasSubEvents) {
+                    // Filter data based on subevent selection only (searchParams.sId)
+                     setFilteredData( subEventRegistrations.filter(team => team.sId == searchParams.sId));
+                } else if (eventData.courseWiseResultDeclaration) {
+                    // Filter data based on course selection only (searchParams.course)
+                    const data = eventRegistrations.map((team) => {
+                        return team.studentData[0].course._id == searchParams.course ? team : {};
+                    })
+                    setFilteredData( data.filter((team) => team._id));
+                } else {
+                    // No specific filters applied, return all data
+                    setFilteredData( eventRegistrations);
+                }
+    },[eventData, eventRegistrations, subEventRegistrations, searchParams])
 
     return (
         <>
@@ -181,11 +196,11 @@ export default function EventResultDeclaration() {
                     !eventData?.hasSubEvents
                         ?
 
-                        <p className=' text-base md:text-2xl text-center text-white bg-blue-500 p-2'>
+                        <p className=' text-base md:text-lg text-center text-white bg-blue-500 p-2'>
                             Participants of {eventData.ename}
                         </p>
                         :
-                        <section className='text-lg md:text-xl  text-white bg-blue-500 p-2 grid grid-cols-1 md:grid-cols-2 gap-5'>
+                        <section className='text-base md:text-lg  text-white bg-blue-500 p-2 grid grid-cols-1 md:grid-cols-2 gap-5'>
                             <p className='flex items-center'>
                                 Select an SubEvent to Declare Result :
                             </p>
@@ -204,7 +219,7 @@ export default function EventResultDeclaration() {
                 }
                 {
                     eventData.courseWiseResultDeclaration &&
-                    <section className='my-2 text-lg md:text-xl  text-white bg-blue-500 p-2 grid grid-cols-1 md:grid-cols-2 gap-5'>
+                    <section className='my-2 text-base md:text-lg  text-white bg-blue-500 p-2 grid grid-cols-1 md:grid-cols-2 gap-5'>
                         <p className='flex items-center'>
                             Select an Course to Declare Result :
                         </p>
@@ -237,109 +252,64 @@ export default function EventResultDeclaration() {
                                 </tr>
                             </thead>
                             <tbody className="text-gray-600">
-                                {
 
-                                    (eventData.hasSubEvents !== undefined && !eventData.hasSubEvents)
-                                        ?
-                                        eventRegistrations?.map((team, idx) => {
-                                            return (
-                                                team.studentData?.map((student, stdIdx) => {
-                                                    return (
-                                                        <tr key={stdIdx} className='cursor-grab' draggable onDragStart={(e) => handleDragStart(e, team._id, idx)} onDragOver={(e) => handleDragOver(e)} onDrop={(e) => handleEventDrop(e, team._id, idx)}>
-                                                            {stdIdx === 0 && <td className='border px-2 py-2 md:px-4 ' rowSpan={team.studentData.length}>{idx + 1}</td>}
-                                                            {stdIdx === 0 && <td className='border px-2 py-2 md:px-4 ' rowSpan={team.studentData.length}>{idx + 1}</td>}
+                                {filteredData.map((team, idx) => {
+                                    return (
+                                        team.studentData.map((student, stdIdx) => (
+                                            <tr key={stdIdx} className='cursor-grab drag-start:border ' draggable onDragStart={(e) => handleDragStart(e, team._id, idx)} onDragOver={(e) => handleDragOver(e)} onDrop={(e) =>  handleDrop(e, team._id, idx) }>
+                                                {stdIdx === 0 && <td className='border px-2 py-2 md:px-4 ' rowSpan={team.studentData.length}>{idx + 1}</td>}
+                                                {stdIdx === 0 && <td className='border px-2 py-2 md:px-4 ' rowSpan={team.studentData.length}>{idx + 1}</td>}
+                                                <td className='border px-2 py-2 md:px-4 '>
+                                                    {
+                                                        student.sid
+                                                    }
+                                                </td>
+                                                <td className='border px-2 py-2 md:px-4 '>
+                                                    {
+                                                        student.studentName
+                                                    }
+                                                </td>
 
-                                                            <td className='border px-2 py-2 md:px-4 '>
-                                                                {
-                                                                    student.sid
-                                                                }
-                                                            </td>
-                                                            <td className='border px-2 py-2 md:px-4 '>
-                                                                {
-                                                                    student.studentName
-                                                                }
-                                                            </td>
-                                                            <td className='border px-2 py-2 md:px-4 '>
-                                                                {
-                                                                    student.course.courseName
-                                                                }
-                                                            </td>
-                                                            <td className='border px-2 py-2 md:px-4 '>
-                                                                {
-                                                                    student.semester
-                                                                }
-                                                            </td>
-                                                            <td className='border px-2 py-2 md:px-4 '>
-                                                                {
-                                                                    student.division
-                                                                }
-                                                            </td>
+                                                <td className='border px-2 py-2 md:px-4 '>
+                                                    {
+                                                        student.course.courseName
+                                                    }
+                                                </td>
+                                                <td className='border px-2 py-2 md:px-4 '>
+                                                    {
+                                                        student.semester
+                                                    }
+                                                </td>
+                                                <td className='border px-2 py-2 md:px-4 '>
+                                                    {
+                                                        student.division
+                                                    }
+                                                </td>
+                                                <td className='border px-2 py-2 md:px-4 '>
+                                                    {
+                                                        student.phno
+                                                    }
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )
+                                })}
 
-                                                            <td className='border px-2 py-2 md:px-4 '>
-                                                                {
-                                                                    student.phno
-                                                                }
-                                                            </td>
-                                                        </tr>
-                                                    )
-                                                })
-                                            )
-                                        })
-                                        :
-                                        subEventRegistrations?.map((team, idx) => {
-                                            return (
-                                                team.studentData?.map((student, stdIdx) => {
-                                                    return (
-                                                        <tr key={stdIdx} className='cursor-grab ' draggable onDragStart={(e) => handleDragStart(e, team._id, idx)} onDragOver={(e) => handleDragOver(e)} onDrop={(e) => handleDrop(e, team._id, idx)}>
-                                                            {stdIdx === 0 && <td className='border px-2 py-2 md:px-4 ' rowSpan={team.studentData.length}>{idx + 1}</td>}
-                                                            {stdIdx === 0 && <td className='border px-2 py-2 md:px-4 ' rowSpan={team.studentData.length}>{idx + 1}</td>}
-                                                            <td className='border px-2 py-2 md:px-4 '>
-                                                                {
-                                                                    student.sid
-                                                                }
-                                                            </td>
-                                                            <td className='border px-2 py-2 md:px-4 '>
-                                                                {
-                                                                    student.studentName
-                                                                }
-                                                            </td>
 
-                                                            <td className='border px-2 py-2 md:px-4 '>
-                                                                {
-                                                                    student.course.courseName
-                                                                }
-                                                            </td>
-                                                            <td className='border px-2 py-2 md:px-4 '>
-                                                                {
-                                                                    student.semester
-                                                                }
-                                                            </td>
-                                                            <td className='border px-2 py-2 md:px-4 '>
-                                                                {
-                                                                    student.division
-                                                                }
-                                                            </td>
-                                                            <td className='border px-2 py-2 md:px-4 '>
-                                                                {
-                                                                    student.phno
-                                                                }
-                                                            </td>
-                                                        </tr>
-                                                    )
-                                                })
-                                            )
-                                        })
-                                }
                             </tbody>
                         </table>
                     </section>
                     <section className="my-2">
-                        <button
-                            className='text-yellow-500 cursor-pointer bg-white rounded-lg shadow-lg px-5 py-3 w-full m-2 outline outline-yellow-500 hover:text-white hover:bg-yellow-500 '
-                            onClick={declareResults}
-                        >
-                            Complete Result Declaration
-                        </button>
+                        {
+                            filteredData.length > 0
+                            &&
+                            <button
+                                className='text-yellow-500 cursor-pointer bg-white rounded-lg shadow-lg px-5 py-3 w-full m-2 outline outline-yellow-500 hover:text-white hover:bg-yellow-500 '
+                                onClick={declareResults}
+                            >
+                                Complete Result Declaration
+                            </button>
+                        }
                     </section>
                 </section>
             </section>
