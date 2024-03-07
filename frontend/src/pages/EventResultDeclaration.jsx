@@ -4,18 +4,20 @@ import { useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Dropdown from '../components/Dropdown';
-import { transformSubEventData } from '../utils';
+import { transformCourseData, transformSubEventData } from '../utils';
 
 export default function EventResultDeclaration() {
 
     const API_URL = process.env.REACT_APP_BASE_URL;
     const token = localStorage.getItem("token");
     const [searchParams, setSearchParams] = useState({
-        sId: 0
+        sId: 0,
+        course:""
     })
     const [eventData, setEventData] = useState([]);
     const [subEvents, setSubEvents] = useState([]);
     const [eventRegistrations, setEventRegistrations] = useState([]);
+    const [eligibleCourses,setEligibleCourses] = useState([]);
     const [subEventRegistrations, setSubEventRegistrations] = useState([]);
     const [showOverLay, setShowOverLay] = useState(true)
     const userData = useSelector((state) => state.UserSlice);
@@ -27,17 +29,23 @@ export default function EventResultDeclaration() {
         setSearchParams((old) => ({ ...old, sId: value }))
     }, [])
 
+    const updateCourse = useCallback((value)=>{
+        setSearchParams((old)=>({...old,course:value}))
+    })
 
     useEffect(() => {
         const arr = [];
         eventRegistrations?.forEach((team) => {
             if (team.sId == searchParams.sId) {
                 arr.push(team);
-                console.log(team, "team")
             }
         })
         setSubEventRegistrations(arr);
     }, [eventId, searchParams.sId])
+
+    useEffect(()=>{
+        
+    },[searchParams.course])
 
 
     useEffect(() => {
@@ -57,6 +65,8 @@ export default function EventResultDeclaration() {
                     if (data?.data?.hasSubEvents) {
                         setSubEvents(transformSubEventData(data?.data.subEvents))
                     }
+                    console.log(data.data.eligibleCourses)
+                    setEligibleCourses(()=>transformCourseData(data.data.eligibleCourses))
                 }
                 else {
                     setEventData({});
@@ -134,20 +144,20 @@ export default function EventResultDeclaration() {
     };
 
 
-    const declareResults = () =>{
+    const declareResults = () => {
 
         try {
 
-            if(eventData.hasSubEvents && searchParams.sId <= 0){
+            if (eventData.hasSubEvents && searchParams.sId <= 0) {
                 return;
             }
-            
-            const dataToPost = eventData.hasSubEvents ?
-                subEventRegistrations.slice(0,3).map((reg)=>reg._id)
-            :
-            eventRegistrations.slice(0,3).map((reg)=>reg._id);
 
-            console.log(dataToPost)
+            const dataToPost = eventData.hasSubEvents ?
+                subEventRegistrations.slice(0, 3).map((reg) => reg._id)
+                :
+                eventRegistrations.slice(0, 3).map((reg) => reg._id);
+
+
 
         } catch (error) {
             console.log(error)
@@ -191,6 +201,25 @@ export default function EventResultDeclaration() {
                                 />
                             </section>
                         </section>
+                }
+                {
+                    eventData.courseWiseResultDeclaration &&
+                    <section className='my-2 text-lg md:text-xl  text-white bg-blue-500 p-2 grid grid-cols-1 md:grid-cols-2 gap-5'>
+                        <p className='flex items-center'>
+                            Select an Course to Declare Result :
+                        </p>
+                        <section className=''>
+                            <Dropdown
+                                dataArr={eligibleCourses}
+                                selected={searchParams.course}
+                                setSelected={updateCourse}
+                                name={"course"}
+                                label={"Select Course To Declare Result "}
+                                className={true}
+                                passedId={true}
+                            />
+                        </section>
+                    </section>
                 }
                 <section className="my-2 py-3">
                     <section className="overflow-x-auto  overflow-y-auto border border-blue-500 border-solid rounded-t-lg">
@@ -306,8 +335,8 @@ export default function EventResultDeclaration() {
                     </section>
                     <section className="my-2">
                         <button
-                        className='text-yellow-500 cursor-pointer bg-white rounded-lg shadow-lg px-5 py-3 w-full m-2 outline outline-yellow-500 hover:text-white hover:bg-yellow-500 '
-                                onClick={declareResults}
+                            className='text-yellow-500 cursor-pointer bg-white rounded-lg shadow-lg px-5 py-3 w-full m-2 outline outline-yellow-500 hover:text-white hover:bg-yellow-500 '
+                            onClick={declareResults}
                         >
                             Complete Result Declaration
                         </button>

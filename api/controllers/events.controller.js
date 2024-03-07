@@ -137,6 +137,7 @@ const getSpecificEvent = async (req, res) => {
         const id = req.params.id;
         const data = await Event.findById(id)
             .populate('enature')
+            .populate("eligibleCourses")
             .populate({
                 path: 'updationLog.by',
                 select: '-password' // Exclude the password field

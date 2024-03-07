@@ -43,10 +43,11 @@ const EventsSchema = new Schema({
     ebrochureName:{
         type:String
     },
-    eligibleCourses:{
-        type:Array,
+    eligibleCourses:[{
+        type: Schema.Types.ObjectId,
+        ref: 'Course',
         required:true
-    },
+    }],
     ebrochurePath:{
         type:String
     },

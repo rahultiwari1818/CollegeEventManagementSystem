@@ -45,7 +45,10 @@ export default function EventDetails() {
             if (data.data.length === 0) {
                 navigate("/home");
             }
-            setData(() => data.data);
+            if(data.result){
+                const eligibleCourses = data.data.eligibleCourses.map((course)=>course._id);
+                setData(() => ({...data.data,eligibleCourses:eligibleCourses}));
+            }
             setIsLoading(() => false);
         } catch (error) {
             setData({});

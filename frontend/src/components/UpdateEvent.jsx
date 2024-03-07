@@ -222,9 +222,10 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
 
 
     const updateCourseWiseResult = useCallback((value)=>{
+
         setData(prevData => ({
             ...prevData,
-            courseWiseResult: value
+            courseWiseResultDeclaration: value
         }));
     },[]);
 
