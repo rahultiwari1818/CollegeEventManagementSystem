@@ -1,80 +1,95 @@
 import React, { Fragment } from 'react'
 import { Image, Text, View, Page, Document, StyleSheet } from '@react-pdf/renderer';
-import CollegeLogo from "../assets/images/CollegeLogo.png"
+import CollegeBanner from "../assets/images/CollegeBanner.jpg"
+import moment from "moment";
 
 export default function ParticipationListPdf({ eventData, registrationData,collegeData }) {
     const styles = StyleSheet.create({
-        page: {
+        pageContainer: {
             fontSize: 12,
-            paddingTop: 30,
-            paddingLeft: 40,
+            paddingTop: 20,
+            paddingLeft: 50,
             paddingRight: 40,
             paddingBottom: 30,
             lineHeight: 1.5,
             flexDirection: 'column',
-        },
-        titleContainer: {
-            flexDirection: 'row',
-            marginTop: 10,
+            // borderWidth :  "2px",
+            // borderColor : "red",
+            // borderStyle : "solid",
         },
         subTitleContainer:{
             flexDirection: 'row',
-            marginTop: 15,
+            marginTop: 10,
+            // border : "2px solid blue",
         },
-        spaceBetween: {
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            color: "#3E3E3E",
-        },
-        logo: {
-            width: 70,
-        },
-        CollegeName:{
-            fontSize: 17,
-            textAlign: 'center',
-            marginLeft:10,
-        },
+        // spaceBetween: {
+        //     flexDirection: 'row',
+        //     alignItems: 'center',
+        //     justifyContent: 'space-between',
+        //     color: "#3E3E3E",
+        // },
+        // logo: {
+        //     width: 600,
+        //     flexDirection:"row"
+        // },
+        // CollegeName:{
+        //     fontSize: 17,
+        //     textAlign: 'center',
+        //     marginLeft:10,
+        //     borderWidth : "2px",
+        //     borderColor : "red",
+        //     borderStyle : "solid",
+        // },
         reportTitle: {
             fontSize: 14,
+            width : "100%",
             textAlign: 'center',
-            marginLeft:80,
+            color : "#4f3f92",
         },
         subEventHeading:{
             fontSize: 12,
             textAlign: 'center',
-            marginLeft:30,
+            width : "100%",
+            color : "#0a0b27",
+            marginBottom: 5,
         },
         theader: {
             marginTop: 5,
             fontSize: 10,
-            fontStyle: 'bold',
             paddingTop: 4,
-            paddingLeft: 4,
             flex: 1,
-            height: 20,
-            backgroundColor: '#DEDEDE',
-            borderColor: 'whitesmoke',
+            height: 25,
+            backgroundColor : "#f4f5f5",
+            color : "#63509f",
+            textAlign: 'center',
+            paddingLeft: 1,
+            paddingRight : 1,
+            borderColor: '#63509f',
             borderRightWidth: 1,
+            borderTopWidth : 1,
             borderBottomWidth: 1,
         },
         theader2: {
-            flex: 1,
-            borderRightWidth: 0,
-            borderBottomWidth: 1,
+            borderLeftWidth : 1, 
+            borderColor : "#63509f" ,
+            borderStyle : 'solid',
         },
         tbody: {
             fontSize: 9,
-            paddingTop: 4,
-            paddingLeft: 7,
+            paddingTop: 5,
             flex: 1,
-            borderColor: 'whitesmoke',
+            textAlign: 'center',
+            paddingLeft: 1,
+            paddingRight : 1,
+            borderColor: '#63509f',
             borderRightWidth: 1,
             borderBottomWidth: 1,
         },
         tbody2: {
             flex: 1,
-            borderRightWidth: 1,
+            borderLeftWidth : 1, 
+            borderColor : "#63509f" ,
+            borderStyle : 'solid',
         },
         srnoColumn: {
             width: "30%",
@@ -94,7 +109,7 @@ export default function ParticipationListPdf({ eventData, registrationData,colle
         },
         courseColumn:{
             width:"70%",
-            maxWidth:80,
+            maxWidth:80,    
         },
         semesterColumn:{
             width:"30%",
@@ -107,15 +122,21 @@ export default function ParticipationListPdf({ eventData, registrationData,colle
     });
 
     const CollegeHeader = ({collegeData}) => (
-        <View style={styles.titleContainer}>
-            <View style={styles.spaceBetween}>
-                <Image style={styles.logo} src={CollegeLogo} />
-                <Text style={styles.CollegeName}>
-                    {
-                        collegeData?.collegename
-                    }
-                </Text>
-            </View>
+        <View>
+                <Image style={styles.logo} src={collegeData.collegePdfBannerPath === "." ? CollegeBanner : collegeData.collegePdfBannerPath } />
+                <View style={{paddingRight:20 , paddingTop:10,}}>
+                    <Text style={{textAlign:"right",fontSize:12, textDecoration:"underline"}}>
+                        <Text style={{paddingRight:10 ,}}>
+                            Date
+                        </Text>
+                        <Text> : </Text>
+                        <Text>  
+                            {
+                                moment(Date.now()).format("DD-MM-YYYY")
+                                }
+                        </Text>  
+                    </Text>
+                </View>
         </View>
     );
 
@@ -127,15 +148,15 @@ export default function ParticipationListPdf({ eventData, registrationData,colle
 
     const TableHead = ({ subEvent }) => {
         return (
-            <View style={{ flexDirection: 'column', marginTop: 10 }}>
+            <View style={{ flexDirection: 'column', marginTop: 10 , }}>
                 {
                     subEvent[0]?.subEventName
                     &&
 
-                <Text style={[styles.subEventHeading, { textAlign: 'center', marginBottom: 5 }]}>Registration  of {subEvent[0]?.subEventName}</Text>
+                <Text style={styles.subEventHeading}>Registration  of {subEvent[0]?.subEventName}</Text>
                 }
-                <View style={{ flexDirection: 'row' }}>
-                    <View style={[styles.theader, styles.srnoColumn, styles.theader2]}>
+                <View style={{ flexDirection: 'row', width : "100%"}}>
+                    <View style={[styles.theader, styles.srnoColumn, styles.theader2 ,]}>
                         <Text>Sr No</Text>
                     </View>
                     <View style={[styles.theader,styles.sidColumn]}>
@@ -163,15 +184,15 @@ export default function ParticipationListPdf({ eventData, registrationData,colle
 
     const TableBody = ({ subEvent }) => {
         return (
-            <View>
+            <View style={{marginBottom : 10 , }}>
                 {subEvent?.map((studentTeam, teamIdx) => (
                     <Fragment key={teamIdx}>
                         {studentTeam.studentData?.map((team, idx) => (
-                            <View key={idx} style={{ flexDirection: 'row' }}>
+                            <View key={idx} style={{ flexDirection: 'row' , }}>
 
                                 <View style={[styles.tbody, styles.tbody2,styles.srnoColumn]}>
                                  {
-                                 idx==0 &&   
+                                 idx===0 &&   
                                  <Text>{ teamIdx + 1}</Text>
                                  }   
                                 </View>
@@ -204,25 +225,28 @@ export default function ParticipationListPdf({ eventData, registrationData,colle
 
     return (
         <Document>
-            <Page size="A4" style={styles.page}>
+            <Page size="A4" >
                 <CollegeHeader collegeData={collegeData}/>
-                <ParticiPationListTitle />
-                {eventData.hasSubEvents ?
-                 (
-                    registrationData.map((subEvent, index) => (
-                        subEvent.length > 0 && (
-                            <View key={index}>
-                                <TableHead subEvent={subEvent} />
-                                <TableBody subEvent={subEvent} />
-                            </View>
-                        )
-                    ))
-                ) : (
-                    <>
-                        <TableHead subEvent={registrationData} />
-                        <TableBody subEvent={registrationData} />
-                    </>
-                )}
+                <View style={styles.pageContainer}>
+
+                    <ParticiPationListTitle />
+                    {eventData.hasSubEvents ?
+                    (
+                        registrationData.map((subEvent, index) => (
+                            subEvent.length > 0 && (
+                                <View key={index} >
+                                    <TableHead subEvent={subEvent} />
+                                    <TableBody subEvent={subEvent} />
+                                </View>
+                            )
+                        ))
+                    ) : (
+                        <>
+                            <TableHead subEvent={registrationData} />
+                            <TableBody subEvent={registrationData} />
+                        </>
+                    )}
+                </View>
             </Page>
         </Document>
     )

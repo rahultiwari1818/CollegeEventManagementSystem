@@ -10,7 +10,8 @@ const EventsSchema = new Schema({
     },
     etype:{
         required:true,
-        type:String
+        type:String,
+        enum: ['Inter-College', 'Intra-College'],
     },
     ptype:{
         type:String
@@ -43,10 +44,11 @@ const EventsSchema = new Schema({
     ebrochureName:{
         type:String
     },
-    eligibleCourses:{
-        type:Array,
+    eligibleCourses:[{
+        type: Schema.Types.ObjectId,
+        ref: 'Course',
         required:true
-    },
+    }],
     ebrochurePath:{
         type:String
     },
@@ -64,10 +66,21 @@ const EventsSchema = new Schema({
         required:true,
         type:Array
     },
-    updationLog:{
+    courseWiseResultDeclaration:{
         required:true,
-        type:Array
+        type:Boolean
     },
+    eligibleSemesters:{
+        type:Array,
+    },
+    updationLog:[{
+        change: String,
+        by: {
+            type: Schema.Types.ObjectId,
+            ref: 'Faculties'
+        },
+        at: Date
+    }],
     isCanceled:{
         type:Boolean
     }

@@ -3,8 +3,10 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Overlay from '../components/Overlay';
-import { handleNumericInput, isValidEmail, isValidName, isValidPassword, validatePhno } from '../utils';
+import { formatFileSize, handleNumericInput, isValidEmail, isValidName, isValidPassword, validatePhno } from '../utils';
 import Dropdown from '../components/Dropdown';
+import { ReactComponent as FileUploadIcon } from "../assets/Icons/FileUploadIcon.svg"
+
 export default function Installation() {
 
     const initialState = {
@@ -13,7 +15,8 @@ export default function Installation() {
         sadminname: "",
         sadminemail: "",
         sadminphno: "",
-        sadminpassword: ""
+        sadminpassword: "",
+        newCollegePdfBanner: null
     };
 
     const [data, setData] = useState(initialState);
@@ -23,7 +26,7 @@ export default function Installation() {
         sadminemailErr: "",
         sadminphnoErr: "",
         sadminpasswordErr: "",
-        sadminsalutationErr:""
+        sadminsalutationErr: ""
     })
     const [isLoading, setIsLoading] = useState(true);
 
@@ -82,44 +85,49 @@ export default function Installation() {
     }, [])
 
 
-    const validateData = () =>{
+    const validateData = () => {
         let result = true;
-        if (data.collegename.trim()==="") {
+        if (data.collegename.trim() === "") {
             result = false;
             setErrors((old) => ({ ...old, collegenameErr: "Invalid College Name " }));
         }
         else {
             setErrors((old) => ({
-                ...old, collegenameErr: `` }));
+                ...old, collegenameErr: ``
+            }));
         }
 
 
-        if (data.sadminsalutation==="") {
+        if (data.sadminsalutation === "") {
             result = false;
             setErrors((old) => ({ ...old, sadminsalutationErr: "Select Super Admin's Salutation" }));
         }
         else {
             setErrors((old) => ({
-                ...old, sadminsalutationErr: `` }));
+                ...old, sadminsalutationErr: ``
+            }));
         }
 
-        if ( !isValidName(data.sadminname)) {
+        if (!isValidName(data.sadminname)) {
             result = false;
             setErrors((old) => ({ ...old, sadminnameErr: "Super Admin Name Must Have Alphabets and Spaces only." }));
         }
         else {
             setErrors((old) => ({
-                ...old, sadminsalutationErr: `` }));
+                ...old, sadminsalutationErr: ``
+            }));
         }
 
-        if(!isValidEmail(data.sadminemail)){
+        if (!isValidEmail(data.sadminemail)) {
             result = false;
             setErrors((old) => ({
-                ...old, sadminemailErr: `Invalid Email.!` }));
+                ...old, sadminemailErr: `Invalid Email.!`
+            }));
         }
-        else{
+        else {
             setErrors((old) => ({
-                ...old, sadminemailErr: `` }));
+                ...old, sadminemailErr: ``
+            }));
         }
         return result;
 
@@ -129,14 +137,29 @@ export default function Installation() {
 
     const onSubmitHandler = async (e) => {
         e.preventDefault();
-        
-       if(! validateData())return;
+
+        if (!validateData()) return;
 
         setIsLoading(() => true);
 
         try {
+
+            const formData = new FormData();
+
+            formData.append('collegename', data.collegename);
+            formData.append('sadminsalutation', data.sadminsalutation);
+            formData.append('sadminname', data.sadminname);
+            formData.append('sadminemail', data.sadminemail);
+            formData.append('sadminphno', data.sadminphno);
+            formData.append('sadminpassword', data.sadminpassword);
+            formData.append('newCollegePdfBanner', data.newCollegePdfBanner);
+
             const response = await axios.post(`${API_URL}/api/faculties/setup`,
-                data
+                formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data"
+                }
+            }
             );
 
             // console.log(response)
@@ -215,54 +238,54 @@ export default function Installation() {
                                 </p>
                             }
                         </section>
-                        {/* <section className='md:flex md:justify-between md:items-center block '>
+                        <section className='md:flex md:justify-between md:items-center block '>
 
-                        <section className='md:p-2 md:m-2  p-1 m-1'>
-                        <p className='py-2'>Upload College Logo :</p>
+                            <section className='md:p-2 md:m-2  p-1 m-1'>
+                                <p className='py-2'>Upload College PDF Banner to Show Your College Banner in PDFs :</p>
 
-                            <section className="flex items-center justify-center w-full p-2">
-                                <label
-                                    htmlFor="dropzone-file"
-                                    className="flex flex-col px-2 items-center text-white justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
-                                > 
-                                    <section className="flex flex-col items-center justify-center pt-5 pb-6">
-                                        <FileUploadIcon/>
-                                        <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                                            <span className="font-semibold">Click to upload</span> or drag and drop College Logo
-                                        </p>
-                                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                                <section className="flex items-center justify-center w-full p-2">
+                                    <label
+                                        htmlFor="dropzone-file"
+                                        className="flex flex-col px-2 items-center text-white justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
+                                    >
+                                        <section className="flex flex-col items-center justify-center pt-5 pb-6">
+                                            <FileUploadIcon className="h-10 w-10"/>
+                                            <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                                                <span className="font-semibold">Click to upload</span> or drag and drop College Logo
+                                            </p>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400">
 
-                                        </p>
-                                    </section>
-                                    <section className="mt-2">
-                                        {data.collegelogo ? (
-                                            <>
-                                                <p className="text-xs text-gray-500 dark:text-gray-400">
-                                                    Selected File: {data.collegelogo.name}
-                                                </p>
-                                                <p className="text-xs text-gray-500 dark:text-gray-400">
-                                                    Selected File Size : {formatFileSize(data.collegelogo.size)}
-                                                </p>
-                                            </>
-                                        ) : null}
-                                    </section>
-                                    <input
-                                        type="file"
-                                        id="dropzone-file"
-                                        name="ebrochure"
-                                        accept="image/*"
-                                        className="hidden"
-                                        onChange={(e) => {
-                                            const file = e.target.files[0];
-                                            setData({ ...data, collegelogo: file });
-                                        }}
+                                            </p>
+                                        </section>
+                                        <section className="mt-2">
+                                            {data.collegelogo ? (
+                                                <>
+                                                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                        Selected File: {data.newCollegePdfBanner.name}
+                                                    </p>
+                                                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                        Selected File Size : {formatFileSize(data.newCollegePdfBanner.size)}
+                                                    </p>
+                                                </>
+                                            ) : null}
+                                        </section>
+                                        <input
+                                            type="file"
+                                            id="dropzone-file"
+                                            name="newCollegePdfBanner"
+                                            accept="image/*"
+                                            className="hidden"
+                                            onChange={(e) => {
+                                                const file = e.target.files[0];
+                                                setData({ ...data, newCollegePdfBanner: file });
+                                            }}
+                                            required
+                                        />
+                                    </label>
+                                </section>
 
-                                    />
-                                </label>
                             </section>
-
                         </section>
-                    </section> */}
 
                         <section className='md:p-2 md:m-2 p-1 m-1'>
                             <p className='mb-2'>Select Super Admin Salutation :</p>

@@ -83,8 +83,11 @@ const registerStudentsInBulk = async (req, res) => {
             }
 
 
-            if (sids.includes(entry["sid"].trim())) {
+            if (sids.includes(Number(entry["sid"].trim()))) {
                 flag = false;
+            }
+            else{
+                sids.push(Number(entry["sid"].trim()))
             }
 
             if (!nameRegex.test(entry["student name"].trim())) {
@@ -324,7 +327,7 @@ const getStudents = async (req, res) => {
         const limit = parseInt(req.query.limit) || 10; // Number of items per page, default is 10
         const sidFilter = parseInt(req.query.sid) || ''; // Convert to number
         const rollnoFilter = parseInt(req.query.rollno) || ''; // Convert to number
-
+        const statusFilter = req.query.status || "";
         // Define the search criteria
         const searchCriteria = {
             $and: [
@@ -337,13 +340,14 @@ const getStudents = async (req, res) => {
                         { sid: isNaN(searchQuery) ? "" : Number(searchQuery) }
                     ]
                 } : {},
-                { status: "Active" }, // Filter for active status
                 { semester: { $gt: 0 } }, // Filter for semester > 0        
                 courseFilter ? { course: courseFilter } : {},
                 semesterFilter ? { semester: semesterFilter } : {}, // Direct comparison for numeric fields
                 divisionFilter ? { division: divisionFilter } : {}, // Direct comparison for numeric fields
                 sidFilter ? { sid: sidFilter } : {}, // Direct comparison for numeric fields
-                rollnoFilter ? { rollno: rollnoFilter } : {} // Direct comparison for numeric fields
+                rollnoFilter ? { rollno: rollnoFilter } : {} ,// Direct comparison for numeric fields
+                statusFilter ? { status: statusFilter } :{}// Filter for active status
+
             ]
         };
 
@@ -390,6 +394,13 @@ const getDivisions = async (req, res) => {
 
     try {
         const course = req.query.course || "";
+        if(!course){
+            return res.status(200).json({
+                message:"Select Course to fetch Division",
+                data:[],
+                result:true
+            })
+        }
         const semester = req.query.semester || "";
         // Fetch all students
         const students = await Student.find({ course: course, semester: semester });
@@ -403,6 +414,7 @@ const getDivisions = async (req, res) => {
             "result": true
         });
     } catch (error) {
+        console.log(error)
         return res.status(500).json({ "message": "Some Error Occurred.", "result": false });
     }
 }
@@ -460,7 +472,8 @@ const getIndividualStudentsFromId = async (req, res) => {
                     email: student.email,
                     _id: student._id,
                     profilePicName: student.profilePicName,
-                    profilePicPath: student.profilePicPath
+                    profilePicPath: student.profilePicPath,
+                    status:student.status
                 },
                 "result": true
             });
@@ -484,6 +497,13 @@ const studentForgotPassword = async (req, res) => {
 
         // Assuming Student is a Mongoose model
         const studentData = await Student.findOne({ sid: sid });
+
+        if(studentData.status!=="Active"){
+            return res.status(400).json({
+                message: "Your Account Has Been Locked by Super Admin",
+                result: false
+            });
+        }
 
         // Check if studentData is empty
         if (!studentData) {
@@ -719,7 +739,7 @@ const updateStudentData = async (req, res) => {
             semester: semester,
             division: division,
             rollno: rollno,
-            _id: { $ne: _id }
+            status:"Active"
         });
 
         if (doesRollNoInSameDivExists) {
@@ -938,7 +958,7 @@ const promoteStudentsToNextSemester = async (req, res) => {
         const { courseName } = req.body;
 
         // Find the course
-        const course = await Course.findOne({ courseName });
+        const course = await Course.findOne({ _id:courseName });
 
         // Update student data based on the course's number of semesters
         const result = await Student.updateMany(
@@ -953,7 +973,7 @@ const promoteStudentsToNextSemester = async (req, res) => {
                                 {
                                     $cond: [
                                         { $eq: ["$semester", 0] },
-                                        0,
+                                        course.noOfSemesters,
                                         { $add: ["$semester", 1] }
                                     ]
                                 }

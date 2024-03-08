@@ -153,6 +153,7 @@ export default function ViewRegistration() {
         setSearchParams(filterParam); // Update searchParams state
     };
 
+
     return (
         <>
             {
@@ -169,6 +170,7 @@ export default function ViewRegistration() {
                         }
                     </p>
                     <section className='md:flex justify-end items-center my-2'>
+                        
                       {  eventData?.ename &&
                         <PDFDownloadLink document={<ParticipationListPdf eventData={eventData} registrationData={registrationData} collegeData={collegeData} />} fileName={`${eventData?.ename}ParticipationList.pdf`}>
 
@@ -369,6 +371,7 @@ export default function ViewRegistration() {
                     )}
                 </section>
             </section>
+            
         </>
     );
 }

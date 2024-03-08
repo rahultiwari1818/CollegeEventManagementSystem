@@ -26,14 +26,14 @@ router.post("/login",loginFaculty)
 router.get("/isSetUpDone",checkSetUp)
 router.get("/getfaculties",checkIsAdmin,getFaculties);
 router.get("/getSpecificFaculty/:id",checkIsFaculty,getIndividualFaculty)
-router.post("/setup",setUpSystem);
+router.post("/setup",upload.single("newCollegePdfBanner"),setUpSystem);
 
 router.get("/getCollegeData",checkIsSuperAdmin,getWholeCollegeData);
 
 router.get("/getCollegeDetails",fetchUser,getCollegeData);
 router.post("/registerFireBaseToken",fetchUser,registerFireBaseToken);
 
-router.patch("/updateCollegeData",checkIsSuperAdmin,updateCollegeData);
+router.patch("/updateCollegeData",upload.single("newCollegePdfBanner"),checkIsSuperAdmin,updateCollegeData);
 
 router.get("/countFacultiesByCourse",checkIsSuperAdmin,countFacultiesByCourse);
 

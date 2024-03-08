@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Modal from './Modal';
 import Dropdown from './Dropdown';
 import DatePicker from 'react-datepicker';
@@ -35,7 +35,8 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
         etypeErr: "",
         ptypeErr: "",
         enatureErr: "",
-        eligibleCoursesErr:""
+        eligibleCoursesErr:"",
+        eligibleSemesterErr:""
     };
     const [errors, setErrors] = useState(initialErrorState)
 
@@ -73,7 +74,17 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
         }else{
             setErrors((old) => ({ ...old, enatureErr: "" }));
         }
-        if (data.eligibleCourses === "") {
+
+        if(!data.hasSubEvents && data.eligibleSemesters.length===0){
+            isValidated=false;
+            setErrors((old)=>({...old,eligibleSemesterErr:"Select Eligible Semesters.!"}));
+        }
+        else{
+            setErrors((old)=>({...old,eligibleSemesterErr:""}));
+        }
+
+
+        if (data.eligibleCourses.length === 0) {
             setErrors((old) => ({ ...old, eligibleCoursesErr: "Select at least 1 Eligible Course" }));
             isValidated = false;
 
@@ -112,6 +123,8 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
         formData.append("hasSubEvents", data.hasSubEvents);
         formData.append("subEvents", JSON.stringify(data.subEvents));
         formData.append("eligibleCourses", JSON.stringify(data.eligibleCourses));
+        formData.append("eligibleSemester", JSON.stringify(data.eligibleSemesters));
+        formData.append("courseWiseResult", data.courseWiseResultDeclaration);
         formData.append("updatedBy",userId);
         try {
             const { data } = await axios.patch(`${API_URL}/api/events/updateEventDetails/${id}`, formData,
@@ -151,6 +164,12 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
         setData((old) => ({ ...old, eligibleCourses: newSelectedCourses }));
     };
 
+    const handleSemesterChange = (value)=>{
+        const newSelectedSemesters = data.eligibleSemesters.includes(value)
+        ?   data.eligibleSemesters.filter((sem)=>sem !== value)
+        :[...data.eligibleSemesters,value];
+        setData((old)=>({...old,eligibleSemesters:newSelectedSemesters}));
+    }
 
 
     const changeEventNature = useCallback((value) => {
@@ -202,7 +221,13 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
     }
 
 
-    
+    const updateCourseWiseResult = useCallback((value)=>{
+
+        setData(prevData => ({
+            ...prevData,
+            courseWiseResultDeclaration: value
+        }));
+    },[]);
 
 
 
@@ -286,6 +311,21 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
     },[errors])
 
     const eventTypes = [{ name: "Intra-College" }, { name: "Inter-College" }];
+
+
+    const semesterArr = useMemo(()=>{
+        let maxSem = 0;
+        for(let course of coursesData){
+                maxSem = Math.max(maxSem,course.noOfSemesters);
+            
+        }
+        const semesters = [];
+        for(let i=1;i<=maxSem;i++){
+            semesters.push(i);
+        }
+        return semesters;
+    },[coursesData]);
+
 
     return (
 
@@ -419,6 +459,36 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
                 )}
 
                 {!data?.hasSubEvents && (
+                    <>
+                                                                        <section className='md:p-2 md:m-2 p-1 m-1'>
+                            <p className="py-2">
+                                Select Eligible Semesters :
+                            </p>
+                            <section className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-2 py-2 shadow-lg rounded-lg'>
+                                {semesterArr?.map((semester,id) => (
+                                    <section key={id} className="flex items-center">
+                                        <input
+                                            type="checkbox"
+                                            id={id}
+                                            value={semester}
+                                            checked={data.eligibleSemesters?.includes(semester)}
+                                            onChange={() => handleSemesterChange(semester)}
+                                            className='mr-2 cursor-pointer'
+                                        />
+                                        <label htmlFor={id} className="cursor-pointer">{semester}</label>
+                                    </section>
+                                ))}
+                            </section>
+                            {
+                                errors.eligibleSemesterErr !== ""
+                                &&
+                                <p className='text-red-500 my-2'>
+                                    {
+                                        errors.eligibleSemesterErr
+                                    }
+                                </p>
+                            }
+                        </section>
                     <section className='md:flex md:justify-start gap-10 md:items-center'>
                         <section className='md:p-2 md:m-2 p-1 m-1'>
                             <label htmlFor="ptype">Participation  Type:</label>
@@ -460,6 +530,7 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
                             />
                         </section>
                     </section>
+                    </>
                 )}
 
                 <section className='md:flex md:justify-start gap-10 md:items-center'>
@@ -524,6 +595,11 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
                         }
                     </section>
                 </section>
+
+                <section className='md:p-2 md:m-2 p-1 m-1'>
+                            <ToggleSwitch headingText={"Course Wise Result Declaration?"} updateSelected={updateCourseWiseResult} selected={data.courseWiseResultDeclaration} />
+                        </section>
+
 
                 <section className='md:p-2 md:m-2 p-1 m-1'>
                     <label htmlFor="details">Event Details:</label><br />
@@ -665,7 +741,7 @@ export default function UpdateEvent({ openUpdateModal, setOpenUpdateModal, dataT
                     <input type="submit" value="Update Event" className='text-red-500 cursor-pointer bg-white rounded-lg shadow-lg px-5 py-3 w-full m-2 outline outline-red-500 hover:text-white hover:bg-red-500 ' />
                 </section>
             </form>
-            <AddSubEvents openUpdateModal={openAddSubEventModal} setOpenUpdateModal={setOpenAddSubEventModal} heading={"Update Sub Event"} setData={setData} dataToBeUpdated={subEventDataToUpdate} setSubEventDataToUpdate={setSubEventDataToUpdate} />
+            <AddSubEvents openUpdateModal={openAddSubEventModal} setOpenUpdateModal={setOpenAddSubEventModal} heading={"Update Sub Event"} setData={setData} dataToBeUpdated={subEventDataToUpdate} setSubEventDataToUpdate={setSubEventDataToUpdate} semesterArr={semesterArr}/>
         </Modal>
     )
 }

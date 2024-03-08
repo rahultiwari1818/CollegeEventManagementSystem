@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -22,8 +23,9 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>Event Management System </title>
-  </head>
-  <body>
+</head>
+
+<body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
     <!--
@@ -37,58 +39,84 @@
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
     <script>
-      if ("serviceWorker" in navigator) {
-          function urlBase64ToUint8Array(base64String) {
-              const padding = "=".repeat((4 -
-                  (base64String.length % 4)) % 4);
-              const base64 = (base64String + padding)
-                  .replace(/\-/g, "+")
-                  .replace(/_/g, "/");
-   
-              const rawData = window.atob(base64);
-              const outputArray = new Uint8Array(rawData.length);
-   
-              for (let i = 0; i < rawData.length; ++i) {
-                  outputArray[i] = rawData.charCodeAt(i);
-              }
-              return outputArray;
-          }
-   
-          function determineAppServerKey() {
-              var vapidPublicKey =
-                  "BJp1QqVj5arfhAlatj94zm_g5ueKOt4AjE6kEZvYKszyZyzFZj7vDzDGZ0kDSwiLCoa2mtlAlYMVC5GmWVXlrug";
-              return urlBase64ToUint8Array(vapidPublicKey);
-          }
-   
-          window.addEventListener("load", function () {
-              navigator.serviceWorker
-                  .register("/firebase-messaging-sw.js")
-                  .then(
-                      function (registration) {
-                          console.log(
-                              "Worker registration successful",
-                              registration.scope
-                          );
-                          return registration.pushManager
-                              .getSubscription()
-                              .then(function (subscription) {
-                                  registration.pushManager.subscribe({
-                                      userVisibleOnly: true,
-                                      applicationServerKey: determineAppServerKey(),
-                                  });
-                              });
-                      },
-                      function (err) {
-                          console.log("Worker registration failed", err);
-                      }
-                  )
-                  .catch(function (err) {
-                      console.log(err);
-                  });
-          });
-      } else {
-          console.log("Service Worker is not supported by browser.");
-      }
-  </script>
-  </body>
+        if ("serviceWorker" in navigator) {
+            function urlBase64ToUint8Array(base64String) {
+                const padding = "=".repeat((4 -
+                    (base64String.length % 4)) % 4);
+                const base64 = (base64String + padding)
+                    .replace(/\-/g, "+")
+                    .replace(/_/g, "/");
+
+                const rawData = window.atob(base64);
+                const outputArray = new Uint8Array(rawData.length);
+
+                for (let i = 0; i < rawData.length; ++i) {
+                    outputArray[i] = rawData.charCodeAt(i);
+                }
+                return outputArray;
+            }
+
+            function determineAppServerKey() {
+                var vapidPublicKey =
+                    "BJp1QqVj5arfhAlatj94zm_g5ueKOt4AjE6kEZvYKszyZyzFZj7vDzDGZ0kDSwiLCoa2mtlAlYMVC5GmWVXlrug";
+                return urlBase64ToUint8Array(vapidPublicKey);
+            }
+
+            window.addEventListener("load", function () {
+                navigator.serviceWorker
+                    .register("/firebase-messaging-sw.js")
+                    .then(
+                        function (registration) {
+                            console.log(
+                                "Worker registration successful",
+                                registration.scope
+                            );
+                            return registration.pushManager
+                                .getSubscription()
+                                .then(function (existedSubscription) {
+                                    if (existedSubscription === null) {
+                                        registration.pushManager
+                                            .subscribe({
+                                                applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
+                                                userVisibleOnly: true,
+                                            })
+                                            .then(function (newSubscription) {
+                                                sendSubscription(newSubscription, title, message);
+                                            })
+                                            .catch(function (e) {
+                                                if (Notification.permission !== "granted") {
+                                                } else {
+                                                    console.error(e);
+                                                }
+                                            });
+                                    } else {
+                                        sendSubscription(existedSubscription, title, message);
+                                    }
+                                });
+                        },
+                        function (err) {
+                            console.log("Worker registration failed", err);
+                        }
+                    )
+                    .catch(function (err) {
+                        console.log(err);
+                    });
+            });
+        } else {
+            console.log("Service Worker is not supported by browser.");
+        }
+
+
+        function sendSubscription(subscription, title, message) {
+            // return fetch("http://localhost:3001/subscribe", {
+            //     method: "POST",
+            //     body: JSON.stringify({ subscription, title, message }),
+            //     headers: {
+            //         "content-type": "application/json",
+            //     },
+            // });
+        }
+    </script>
+</body>
+
 </html>

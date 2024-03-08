@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Dropdown from '../components/Dropdown';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -35,7 +35,9 @@ export default function GenerateEvent() {
         eposter: null,
         hasSubEvents: false,
         subEvents: [],
-        eligibleCourses: []
+        eligibleCourses: [],
+        courseWiseResult:false,
+        eligibleSemester:[],
     }
 
     const [data, setData] = useState(initialState);
@@ -46,7 +48,8 @@ export default function GenerateEvent() {
         etypeErr: "",
         ptypeErr: "",
         enatureErr: "",
-        eligibleCoursesErr:""
+        eligibleCoursesErr:"",
+        eligibleSemesterErr:""
     };
 
     const [errors, setErrors] = useState(initialErrorState)
@@ -78,6 +81,13 @@ export default function GenerateEvent() {
             hasSubEvents: value
         }));
     }, []);
+
+    const updateCourseWiseResult = useCallback((value)=>{
+        setData(prevData => ({
+            ...prevData,
+            courseWiseResult: value
+        }));
+    },[]);
 
     const removeSubEvent = (id) => {
         const filteredSubEvents = data?.subEvents?.filter((event) => event.sId !== id);
@@ -130,6 +140,13 @@ export default function GenerateEvent() {
         setData((old) => ({ ...old, eligibleCourses: newSelectedCourses }));
     };
 
+    const handleSemesterChange = (value)=>{
+        const newSelectedSemesters = data.eligibleSemester.includes(value)
+        ?   data.eligibleSemester.filter((sem)=>sem !== value)
+        :[...data.eligibleSemester,value];
+        setData((old)=>({...old,eligibleSemester:newSelectedSemesters}));
+    }
+
     const [openAddSubEventModal, setOpenAddSubEventModal] = useState(false);
 
 
@@ -159,7 +176,7 @@ export default function GenerateEvent() {
         const enature = eventNatures.find(e=>e._id===data.enature) || null;
         if(enature){
             console.log(user._id,enature)
-            if (!enature.committeeMembers.includes(user._id)) {
+            if (!enature.committeeMembers.includes(user._id) && user.role !== "Super Admin") {
                 setErrors((old) => ({ ...old, enatureErr: `You Can Not Generate  ${enature.name} Events as You are Not The Member of This Committe.!` }));
                 isValidated = false;
     
@@ -168,6 +185,13 @@ export default function GenerateEvent() {
             }
         }
         
+        if(!data.hasSubEvents && data.eligibleSemester.length===0){
+            isValidated=false;
+            setErrors((old)=>({...old,eligibleSemesterErr:"Select Eligible Semesters.!"}));
+        }
+        else{
+            setErrors((old)=>({...old,eligibleSemesterErr:""}));
+        }
 
 
         if (data.eligibleCourses.length===0) {
@@ -208,6 +232,8 @@ export default function GenerateEvent() {
         formData.append("hasSubEvents", data.hasSubEvents);
         formData.append("subEvents", JSON.stringify(data.subEvents));
         formData.append("eligibleCourses", JSON.stringify(data.eligibleCourses));
+        formData.append("eligibleSemester", JSON.stringify(data.eligibleSemester));
+        formData.append("courseWiseResult", data.courseWiseResult);
         formData.append("generator",user._id);
         try {
             const { data } = await axios.post(`${API_URL}/api/events/generateevent`, formData, {
@@ -292,6 +318,21 @@ export default function GenerateEvent() {
 
     // const eventNatures = [{ name: "Cultural" }, { name: "IT" }, { name: "Management" }, { name: "Sports" }];
     const eventTypes = [{ name: "Intra-College" }, { name: "Inter-College" }];
+
+    const semesterArr = useMemo(()=>{
+        let maxSem = 0;
+        for(let course of coursesData){
+                maxSem = Math.max(maxSem,course.noOfSemesters);
+            
+        }
+        const semesters = [];
+        for(let i=1;i<=maxSem;i++){
+            semesters.push(i);
+        }
+        return semesters;
+    },[coursesData]);
+
+
 
     return (
 
@@ -433,51 +474,82 @@ export default function GenerateEvent() {
                         )}
 
                         {!data?.hasSubEvents && (
-                            <section className='md:flex md:justify-start gap-10 md:items-center'>
-                                <section className='md:p-2 md:m-2 p-1 m-1'>
-                                    <label htmlFor="ptype">Participation  Type:</label>
-                                    <Dropdown
-                                        dataArr={[{ name: "Individual" }, { name: "Group" }]}
-                                        selected={data.ptype}
-                                        setSelected={changeParticipationType}
-                                        name={"ptype"}
-                                        label={"Select Participation Type"}
-                                    />
-                                    {
-                                        errors && errors.ptypeErr !== ""
-                                        &&
-                                        <p className="text-red-500 my-2">
-                                            {errors.ptypeErr}
-                                        </p>
-                                    }
-                                </section>
-                                <section className='md:p-2 md:m-2 p-1 m-1'>
-                                    <label htmlFor="nop">Max No Of Team Members:</label>
-                                    <input type="text"
-                                        name="noOfParticipants"
-                                        min={1}
-                                        ref={noOfParticipants}
-                                        value={data.noOfParticipants}
-                                        onChange={updateData}
-                                        onBlur={(e) => {
-                                            if (e.target.name === "noOfParticipants") {
-                                                if (Number(e.target.value) <= 1) {
-                                                    let num  = 1;
-                                                    if(data.ptype==="Group"){
-                                                        num = 2;
-                                                    }
-                                                    setData({ ...data, [e.target.name]: num });
-                                                    return;
-                                                }
-                                            }
-                                        }}
-                                        placeholder='Enter No Of Participants'
-                                        className='block shadow-lg md:p-3 rounded-lg p-2'
-                                        onKeyDown={handleNumericInput}
-                                        required
-                                    />
-                                </section>
+                            <>
+                                                    <section className='md:p-2 md:m-2 p-1 m-1'>
+                            <p className="py-2">
+                                Select Eligible Semesters :
+                            </p>
+                            <section className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-2 py-2 shadow-lg rounded-lg'>
+                                {semesterArr.map((semester,id) => (
+                                    <section key={id} className="flex items-center">
+                                        <input
+                                            type="checkbox"
+                                            id={id}
+                                            value={semester}
+                                            checked={data.eligibleSemester.includes(semester)}
+                                            onChange={() => handleSemesterChange(semester)}
+                                            className='mr-2 cursor-pointer'
+                                        />
+                                        <label htmlFor={id} className="cursor-pointer">{semester}</label>
+                                    </section>
+                                ))}
                             </section>
+                            {
+                                errors.eligibleSemesterErr !== ""
+                                &&
+                                <p className='text-red-500 my-2'>
+                                    {
+                                        errors.eligibleSemesterErr
+                                    }
+                                </p>
+                            }
+                        </section>
+                                <section className='md:flex md:justify-start gap-10 md:items-center'>
+                                    <section className='md:p-2 md:m-2 p-1 m-1'>
+                                        <label htmlFor="ptype">Participation  Type:</label>
+                                        <Dropdown
+                                            dataArr={[{ name: "Individual" }, { name: "Group" }]}
+                                            selected={data.ptype}
+                                            setSelected={changeParticipationType}
+                                            name={"ptype"}
+                                            label={"Select Participation Type"}
+                                        />
+                                        {
+                                            errors && errors.ptypeErr !== ""
+                                            &&
+                                            <p className="text-red-500 my-2">
+                                                {errors.ptypeErr}
+                                            </p>
+                                        }
+                                    </section>
+                                    <section className='md:p-2 md:m-2 p-1 m-1'>
+                                        <label htmlFor="nop">Max No Of Team Members:</label>
+                                        <input type="text"
+                                            name="noOfParticipants"
+                                            min={1}
+                                            ref={noOfParticipants}
+                                            value={data.noOfParticipants}
+                                            onChange={updateData}
+                                            onBlur={(e) => {
+                                                if (e.target.name === "noOfParticipants") {
+                                                    if (Number(e.target.value) <= 1) {
+                                                        let num  = 1;
+                                                        if(data.ptype==="Group"){
+                                                            num = 2;
+                                                        }
+                                                        setData({ ...data, [e.target.name]: num });
+                                                        return;
+                                                    }
+                                                }
+                                            }}
+                                            placeholder='Enter No Of Participants'
+                                            className='block shadow-lg md:p-3 rounded-lg p-2'
+                                            onKeyDown={handleNumericInput}
+                                            required
+                                        />
+                                    </section>
+                                </section>
+                            </>
                         )}
 
                         <section className='md:flex md:justify-start gap-10 md:items-center'>
@@ -541,6 +613,10 @@ export default function GenerateEvent() {
                                     </p>
                                 }
                             </section>
+                        </section>
+
+                        <section className='md:p-2 md:m-2 p-1 m-1'>
+                            <ToggleSwitch headingText={"Course Wise Result Declaration?"} updateSelected={updateCourseWiseResult} selected={data.courseWiseResult} />
                         </section>
 
                         <section className='md:p-2 md:m-2 p-1 m-1'>
@@ -690,7 +766,7 @@ export default function GenerateEvent() {
                     </form>
                 </section>
             </section>
-            <AddSubEvents openUpdateModal={openAddSubEventModal} setOpenUpdateModal={setOpenAddSubEventModal} heading={"Add Sub Event"} setData={setData} dataToBeUpdated={subEventDataToUpdate} setSubEventDataToUpdate={setSubEventDataToUpdate} />
+            <AddSubEvents openUpdateModal={openAddSubEventModal} setOpenUpdateModal={setOpenAddSubEventModal} heading={"Add Sub Event"} setData={setData} dataToBeUpdated={subEventDataToUpdate} setSubEventDataToUpdate={setSubEventDataToUpdate} semesterArr={semesterArr} />
         </>
     )
 }

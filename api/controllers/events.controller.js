@@ -10,7 +10,7 @@ const Students = require("../models/Students.js");
 
 
 const generateEvent = async (req, res) => {
-    const { ename, etype, ptype, noOfParticipants, edate, edetails, rules, rcdate, hasSubEvents, enature, generator } = req.body;
+    const { ename, etype, ptype, noOfParticipants, edate, edetails, rules, rcdate, hasSubEvents, enature, generator ,courseWiseResult} = req.body;
     let brochure, poster;
     try {
 
@@ -69,7 +69,7 @@ const generateEvent = async (req, res) => {
             newPosterPath = result.url;
 
         }
-
+        const eligibleSemesters = JSON.parse(req.body.eligibleSemester || "[]");
         const subEvents = JSON.parse(req.body.subEvents || "[]"); // Parse subEvents JSON string, default to empty array if not provided
         const eligibleCourses = JSON.parse(req.body.eligibleCourses || "[]"); // Parse subEvents JSON string, default to empty array if not provided
         const genEvent = await Event.create({
@@ -89,6 +89,8 @@ const generateEvent = async (req, res) => {
             hasSubEvents: hasSubEvents,
             subEvents: subEvents,
             eligibleCourses: eligibleCourses,
+            courseWiseResultDeclaration:courseWiseResult,
+            eligibleSemesters:eligibleSemesters,
             isCanceled: false,
             updationLog: [{ change: "Generated", by: generator, at: Date.now() }]
         });
@@ -131,17 +133,23 @@ const getAllEvents = async (req, res) => {
 
 
 const getSpecificEvent = async (req, res) => {
-
     try {
         const id = req.params.id;
-        const data = await Event.find({ _id: id }).populate("enature")
-        return res.status(200).json({ "message": "Event Fetched Successfully", "data": data, "result": true })
-    } catch (error) {
-        console.log(error)
-        return res.status(500).json({ "message": "Some Error Occured", "result": false });
-    }
+        const data = await Event.findById(id)
+            .populate('enature')
+            .populate("eligibleCourses")
+            .populate({
+                path: 'updationLog.by',
+                select: '-password' // Exclude the password field
+            });
 
+        return res.status(200).json({ "message": "Event Fetched Successfully", "data": data, "result": true });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ "message": "Some Error Occurred", "result": false });
+    }
 }
+
 
 const changeEventStatus = async (req, res) => {
 
@@ -152,14 +160,14 @@ const changeEventStatus = async (req, res) => {
         const text = data ? 'Cancelled' : 'Activated';
         const updateData = {
             isCanceled: data,
-            $push: {
-                updationLog: {
-                    $each: [{ change: text, by: userId, at: Date.now() }],
-                }
-            }
+            
         };
 
-        const result = await Event.updateOne({ _id: id }, { $set: updateData });
+        const result = await Event.updateOne({ _id: id }, { $set: updateData , $push: {
+            updationLog: { change: text, by: userId, at: Date.now() },
+            
+        }
+        });
         const message = (data.isCanceled) ? "Event Cancelled Successfully" : "Event Activated Successfully";
         return res.status(200).json({ "message": message, "result": true })
     } catch (error) {
@@ -174,7 +182,7 @@ const updateEventDetails = async (req, res) => {
     const data = await Event.findById(id);
 
     try {
-        const { ename, etype, ptype, noOfParticipants, edate, edetails, rules, rcdate, hasSubEvents, enature, updatedBy } = req.body;
+        const { ename, etype, ptype, noOfParticipants, edate, edetails, rules, rcdate, hasSubEvents, enature, updatedBy,courseWiseResult } = req.body;
 
         const trimmedFields = {
             ename: ename.trim(),
@@ -242,20 +250,17 @@ const updateEventDetails = async (req, res) => {
 
         // Update event details in the database
         const subEvents = JSON.parse(req.body.subEvents);
+        const eligibleSemesters = JSON.parse(req.body.eligibleSemester || "[]");
         const eligibleCourses = JSON.parse(req.body.eligibleCourses); // Parse subEvents JSON string, default to empty array if not provided
         const dataToUpdate = {
-            ename, etype, ptype, enature, noOfParticipants, edate, edetails, rules, rcdate, ebrochureName: originalBrochureName, ebrochurePath: newBrochurePath, eposterName: originalPosterName, eposterPath: newPosterPath, hasSubEvents, subEvents, eligibleCourses,
-            $push: {
-                updationLog: {
-
-                    change: "Updated",
-                    by: updatedBy,
-                    at: Date.now()
-                }
-            }
-
+            ename, etype, ptype, enature, noOfParticipants, edate, edetails, rules, rcdate, ebrochureName: originalBrochureName, ebrochurePath: newBrochurePath, eposterName: originalPosterName, eposterPath: newPosterPath, hasSubEvents, subEvents, eligibleCourses,eligibleSemesters,courseWiseResultDeclaration:courseWiseResult
         };
-        await Event.updateOne({ _id: id }, { $set: dataToUpdate });
+
+        // Use findOneAndUpdate with $push to add to the updationLog array
+        const updatedEvent = await Event.findOneAndUpdate({ _id: id }, {
+            $set: dataToUpdate,
+            $push: { updationLog: { change: "Updated", by: updatedBy, at: Date.now() } }
+        }, { new: true });
 
         return res.status(200).json({ "message": "Event Updated Successfully", "result": true });
     } catch (error) {
@@ -316,7 +321,8 @@ const registerInEvent = async (req, res) => {
             studentData: studentData,
             createdAt: Date.now(),
             status: 'pending',
-            updatedAt: Date.now()
+            updatedAt: Date.now(),
+            rank:0
         })
 
         // const tokens = await Students.find(
@@ -450,10 +456,18 @@ const studentParticipatedEvents = async (req, res) => {
 const resultDeclaration = async (req, res) => {
 
     try {
-
+        const teamIds = req.body.teamIds;
+    
+        // Iterate over the teamIds array and update the ranks accordingly
+        for (let i = 0; i < teamIds.length; i++) {
+            await Registration.updateOne({ _id: teamIds[i] }, { $set: { rank: i + 1 } });
+        }
+    
+        // Send a success response
+        return res.status(200).json({ message: "Result Declared Successfully.!", result: true });
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ "message": "Some Error Occured", "result": false });
+        return res.status(500).json({ message: "Some Error Occurred", result: false });
     }
 
 }

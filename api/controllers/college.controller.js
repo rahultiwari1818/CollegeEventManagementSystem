@@ -6,6 +6,7 @@ const Students = require("../models/Students");
 const Faculties = require("../models/Faculties");
 const Events = require("../models/Events");
 const EventType = require("../models/EventType");
+const { deleteFromCloudinary, uploadToCloudinary } = require("../utils");
 
 const SECRET_KEY = process.env.SECRET_KEY;
 
@@ -54,7 +55,7 @@ const updateCollegeData = async(req,res)=>{
 
     try {
 
-        const {newCollegeName,id} = req.body;
+        const {newCollegeName,id,oldCollegePDFBannerPath,oldCollegePDFBannerName} = req.body;
 
         if(!newCollegeName || newCollegeName.trim()===""){
             return res.status(400).json({
@@ -63,11 +64,48 @@ const updateCollegeData = async(req,res)=>{
             })
         }
 
+        const collegePDFBanner = req?.file;
+        let newCollegePDFBannerName;
+        let newCollegePDFBannerPath;
+
+        if(collegePDFBanner){
+             newCollegePDFBannerName = collegePDFBanner.originalname;
+
+            const result = await uploadToCloudinary(collegePDFBanner.path, "image");
+            if (result.message === "Fail") {
+                return res.status(500).json({
+                    message: "Some Error Occued...",
+                    result: false
+                })
+            }
+            newCollegePDFBannerPath = result.url;
+            if (oldCollegePDFBannerPath !== ".") {
+                const publicId = oldCollegePDFBannerPath.split('/').slice(-1)[0].split('.')[0];
+                await deleteFromCloudinary(publicId);
+            }
+        }
+
+
+        if(!collegePDFBanner?.originalname){
+            newCollegePDFBannerName=oldCollegePDFBannerName,
+            newCollegePDFBannerPath=oldCollegePDFBannerPath;
+        }
+
+
+
+        
+
+
+
+        
+
         const updatedCollegeName = await College.findOneAndUpdate(
             {_id:id},
             {
                 $set:{
-                    collegename:newCollegeName
+                    collegename:newCollegeName,
+                    collegePdfBannerName:newCollegePDFBannerName,
+                    collegePdfBannerPath:newCollegePDFBannerPath
                 }
             },
             { new: true } // To return the updated document

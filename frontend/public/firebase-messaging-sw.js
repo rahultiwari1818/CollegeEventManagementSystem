@@ -3,10 +3,10 @@
 
 let STATIC_CACHE_NAME = "collegeEventPWA";
 let DYNAMIC_CACHE_NAME = "dynamicCollegeEventPwa";
- 
+
 // Add Routes and pages using React Browser Router
-let urlsToCache = ["/", "/generateevent", "/login",`/eventdetails/`,'/home',"/viewstudents","/addstudents","/profile","/addfaculties","/viewfaculties","/courses","/eventTypes"];
- 
+let urlsToCache = ["/", "/generateevent", "/login", `/eventdetails/`, '/home', "/viewstudents", "/addstudents", "/profile", "/addfaculties", "/viewfaculties", "/courses", "/eventTypes"];
+
 // Install a service worker
 self.addEventListener("install", (event) => {
     // Perform install steps
@@ -19,7 +19,7 @@ self.addEventListener("install", (event) => {
             })
     );
 });
- 
+
 // Cache and return requests
 
 self.addEventListener("fetch", (event) => {
@@ -60,7 +60,7 @@ self.addEventListener("fetch", (event) => {
         }
     }
 });
- 
+
 // Update a service worker
 self.addEventListener("activate", (event) => {
     let cacheWhitelist = ["collegeEventPWA"];
@@ -79,6 +79,15 @@ self.addEventListener("activate", (event) => {
             );
         })
     );
+});
+
+self.addEventListener('push', e => {
+    const data = e.data.json();
+    console.log('Got push', data);
+    self.registration.showNotification(data.title, {
+        body: data.message,
+        icon: 'favicon.ico'
+    });
 });
 
 // axios.interceptors.request.use((config) => {

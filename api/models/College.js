@@ -7,6 +7,14 @@ const CollegeSchema = new Schema({
         required:true,
         type:String,
         unique:true
+    },
+    collegePdfBannerName:{
+        type:String,
+        required:true
+    },
+    collegePdfBannerPath:{
+        type:String,
+        required:true
     }
 });
 

@@ -42,17 +42,19 @@ export default function RegisterInEvent() {
                         "auth-token": token,
                     }
                 });
-                if (data?.data[0]?.hasSubEvents) {
-                    const subEvents = data.data[0].subEvents;
-                    const [subEventData] = subEvents.filter((event) => event.sId === Number(subEventId));
-                    setEventData({ eventId: data.data[0]._id,
-                        ename:data.data[0].ename,
-                        hasSubEvents:data.data[0].hasSubEvents,
-                        etype:data.data[0].etype,
-                        ...subEventData });
-                }
-                else {
-                    setEventData(data?.data[0]);
+                if(data.result){
+                    if (data?.data?.hasSubEvents) {
+                        const subEvents = data.data.subEvents;
+                        const [subEventData] = subEvents.filter((event) => event.sId === Number(subEventId));
+                        setEventData({ eventId: data.data._id,
+                            ename:data.data.ename,
+                            hasSubEvents:data.data.hasSubEvents,
+                            etype:data.data.etype,
+                            ...subEventData });
+                    }
+                    else {
+                        setEventData(data?.data);
+                    }
                 }
             } catch (error) {
                 console.error("Error fetching event data:", error);
