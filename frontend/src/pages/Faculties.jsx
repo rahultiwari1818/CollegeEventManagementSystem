@@ -61,7 +61,7 @@ export default function Faculties() {
 				<Overlay />
 			}
 			<section className='w-full h-full py-3 '>
-			<section className="absolute left-8 md:left-12 top-18 cursor-pointer p-3 rounded-full bg-blue-500">
+			<section className="absolute left-8 md:left-12 top-18 cursor-pointer p-3 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 ">
 					<BackIcon
 						onClick={() => {
 							navigate("/adminDashboard");
@@ -100,7 +100,7 @@ export default function Faculties() {
 					</Link>
 
 				</section>
-				<section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 pb-5 pt-5 h-[50vh] overflow-scroll">
+				<section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 pb-5 pt-5 h-[70vh] md:h-[60vh] overflow-scroll">
 					{
 						isLoading ?
 							Array.from({ length: 6 }, (_, idx) => ({ name: idx + 1 })).map((data, id) => {

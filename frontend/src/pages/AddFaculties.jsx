@@ -99,9 +99,9 @@ export default function AddFaculties() {
 
             <section className='md:p-2 md:m-2  p-1 m-1'>
                 <section className="md:flex justify-start gap-5 items-center">
-                    <p className='lg:py-2 lg:px-3 lg:text-base py-1 px-2  bg-blue-500 text-white w-fit rounded-lg shadow-md'>Add Faculty Data in Bulk </p>
+                    <p className='lg:py-2 lg:px-3 lg:text-base py-1 px-2  bg-gradient-to-r from-cyan-500 to-blue-500  text-white w-fit rounded-lg shadow-md'>Add Faculty Data in Bulk </p>
 
-                    <button className='lg:py-2 lg:px-3 lg:text-base py-1 px-2 my-3 md:my-0 rounded-lg shadow-lg text-white bg-blue-500  hover:outline hover:outline-blue-700'
+                    <button className='lg:py-2 lg:px-3 lg:text-base py-1 px-2 my-3 md:my-0 rounded-lg shadow-lg text-white bg-gradient-to-r from-cyan-500 to-blue-500   hover:outline hover:outline-blue-700'
                         onClick={showCSVHandler}
 
                     >
@@ -156,7 +156,7 @@ export default function AddFaculties() {
                 </form>
                 <section className="w-full border border-blue-500 my-2"></section>
                 <section className='mx-4'>
-                    <p className='lg:py-2 lg:px-3 lg:text-base py-1 px-2  bg-blue-500 text-white w-fit rounded-lg shadow-md'>Add Faculty Data individually </p>
+                    <p className='lg:py-2 lg:px-3 lg:text-base py-1 px-2  bg-gradient-to-r from-cyan-500 to-blue-500  text-white w-fit rounded-lg shadow-md'>Add Faculty Data individually </p>
                     <AddIndividualFaculty />
                 </section>
             </section>

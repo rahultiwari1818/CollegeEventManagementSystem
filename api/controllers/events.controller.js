@@ -92,7 +92,7 @@ const generateEvent = async (req, res) => {
             courseWiseResultDeclaration:courseWiseResult,
             eligibleSemesters:eligibleSemesters,
             isCanceled: false,
-            updationLog: [{ change: "Generated", by: generator, at: Date.now() }]
+            updationLog: [{ change: "Generated", by:generator, at: Date.now() }]
         });
 
         return res.status(200).json({ "message": "Event Generated Successfully", "result": true });

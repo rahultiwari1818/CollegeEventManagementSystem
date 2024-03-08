@@ -68,7 +68,7 @@ export default function AdminDashboard() {
 			}
 			<section className='w-full h-full py-3 '>
 				<section className="flex justify-center items-center">
-					<section className='bg-blue-500 text-white px-3 py-3 text-base md:text-lg shadow-lg rounded-lg md:w-[80vw] lg:w-[50vw]'>
+					<section className='bg-gradient-to-r from-cyan-500 to-blue-500  text-white px-3 py-3 text-base md:text-lg shadow-lg rounded-lg md:w-[80vw] lg:w-[50vw]'>
 
 						<p className='text-center'>College Event Management System of </p>
 						<p className="text-center">
@@ -88,7 +88,7 @@ export default function AdminDashboard() {
 						</p>
 					</section>
 				</section>
-				<section className="bg-blue-500 w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 my-4 rounded-lg pb-5">
+				<section className="bg-gradient-to-r from-cyan-500 to-blue-500  w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 my-4 rounded-lg pb-5">
 
 					{
 						Array.from({ length: 5 }, (_, idx) => ({ name: idx + 1 })).map((data, id) => {

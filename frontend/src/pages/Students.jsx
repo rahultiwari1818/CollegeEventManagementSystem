@@ -97,7 +97,7 @@ export default function Students() {
 				<Overlay />
 			}
 			<section className='w-full h-full py-3 '>
-				<section className="absolute left-8 md:left-12 top-18 cursor-pointer p-2 md:p-3 rounded-full bg-blue-500">
+				<section className="absolute left-8 md:left-12 top-18 cursor-pointer p-2 md:p-3 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 ">
 					<BackIcon
 						onClick={() => {
 							navigate("/adminDashboard");
@@ -137,7 +137,7 @@ export default function Students() {
 					</Link>
 
 				</section>
-				<section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 pb-5 h-[50vh] overflow-scroll pt-5">
+				<section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 pb-5 h-[70vh] md:h-[60vh] overflow-scroll pt-5">
 					{
 						isLoading ?
 							Array.from({ length: 6 }, (_, idx) => ({ name: idx + 1 })).map((data, id) => {
@@ -228,7 +228,7 @@ export default function Students() {
 											</section>
 										</section>
 										<section className="flex justify-center items-center mt-3">
-											<button className='py-2 rounded-lg shadow-lg px-5 bg-blue-500 text-white '
+											<button className='py-2 rounded-lg shadow-lg px-5 bg-gradient-to-r from-cyan-500 to-blue-500  text-white '
 												onClick={() => promoteStudentsToNextSemester(course.course)}
 											>
 												Promote Students to Next Semester

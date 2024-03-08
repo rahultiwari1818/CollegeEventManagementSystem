@@ -39,7 +39,7 @@ export default function LockingConfirmation({ isOpen, close, user, data, updateS
                 <p className="text-center text-red-500">Are You Sure To Change {user} Status</p>
 
                 <section className='my-4 grid grid-cols-2 gap-5'>
-                    <button className="px-5 py-3 rounded-lg shadow-lg bg-blue-500 text-white hover:text-blue-500 hover:bg-white hover:outline  hover:outline-blue-500"
+                    <button className="px-5 py-3 rounded-lg shadow-lg bg-gradient-to-r from-cyan-500 to-blue-500  text-white hover:text-blue-500 hover:bg-white hover:outline  hover:outline-blue-500"
                         onClick={() => {
                             close();
                             updateStateData();

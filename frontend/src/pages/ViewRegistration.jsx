@@ -13,7 +13,6 @@ import RejectedImage from "../assets/images/RejectedIcon.png"
 import PendingImage from "../assets/images/PendingIcon.png"
 import ApprovalImage from "../assets/images/ApprovalIcon.png"
 
-
 export default function ViewRegistration() {
     const token = localStorage.getItem("token");
     const API_URL = process.env.REACT_APP_BASE_URL;
@@ -25,6 +24,9 @@ export default function ViewRegistration() {
         ename: "",
         hasSubEvents: ""
     });
+
+    const [filteredData,setFilteredData] = useState([]);
+
     const { eventId } = useParams();
 
     useEffect(() => {
@@ -162,7 +164,7 @@ export default function ViewRegistration() {
             }
             <section className='mb-5'>
                 <section className="py-3 px-4 rounded-lg shadow-lg">
-                    <p className=' text-base md:text-2xl text-center text-white bg-blue-500 p-2'>
+                    <p className=' text-base md:text-2xl text-center text-white bg-gradient-to-r from-cyan-500 to-blue-500  p-2'>
                         {
                             eventData?.ename ?
                                 <> Registration Requests of {eventData.ename}</> :
@@ -198,13 +200,13 @@ export default function ViewRegistration() {
                             if (subEvent.length > 0) {
                                 return (
                                     <section key={subEvent.sId} className='my-3 border border-blue-500 py-3 px-3 shadow-lg' >
-                                        <p className=' text-base md:text-lg text-center text-white bg-blue-500 p-2'>
+                                        <p className=' text-base md:text-lg text-center text-white bg-gradient-to-r from-cyan-500 to-blue-500  p-2'>
                                             Registration Requests of {subEvent[0].subEventName}
                                         </p>
                                         <section className='w-full overflow-x-auto  overflow-y-auto my-3 '>
                                             <table className="table-auto min-w-full bg-white shadow-md rounded-lg overflow-hidden ">
                                                 {/* Table header */}
-                                                <thead className='bg-blue-500 text-white'>
+                                                <thead className='bg-gradient-to-r from-cyan-500 to-blue-500  text-white'>
                                                     <tr>
                                                         <td className='px-2 py-2 md:px-4'>Sr No</td>
                                                         <td className='px-2 py-2 md:px-4'>SID</td>
@@ -281,6 +283,7 @@ export default function ViewRegistration() {
                                             </table>
                                         </section>
                                     </section>
+                                    
                                 );
                             }
                             else {
@@ -291,7 +294,7 @@ export default function ViewRegistration() {
                         <section className='w-full overflow-x-auto  overflow-y-auto my-3 '>
                             <table className="table-auto min-w-full bg-white shadow-md rounded-lg overflow-hidden ">
                                 {/* Table header */}
-                                <thead className='bg-blue-500 text-white'>
+                                <thead className='bg-gradient-to-r from-cyan-500 to-blue-500  text-white'>
                                     <tr>
                                         <td className='px-2 py-2 md:px-4'>Sr No</td>
                                         <td className='px-2 py-2 md:px-4'>SID</td>

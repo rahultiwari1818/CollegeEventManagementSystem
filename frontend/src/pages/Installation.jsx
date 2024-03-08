@@ -216,7 +216,7 @@ export default function Installation() {
             }
             <section className='flex justify-center items-center '>
                 <section className='p-5 md:p-10 shadow-2xl bg-white md:outline-none outline outline-blue-500 md:mt-0 md:mb-0 mt-2 '>
-                    <p className='text-2xl text-center text-white bg-blue-500 p-2'>Set Up System</p>
+                    <p className='text-2xl text-center text-white bg-gradient-to-r from-cyan-500 to-blue-500  p-2'>Set Up System</p>
                     <form method="post" className='p-4' onSubmit={onSubmitHandler}>
                         <section className='md:p-2 md:m-2 p-1 m-1'>
                             <label htmlFor="ename">College Name:</label>

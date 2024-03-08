@@ -68,7 +68,7 @@ export default function MyEvents() {
                     <section className='w-full overflow-x-auto  overflow-y-auto my-3'>
                         <table className="table-auto min-w-full bg-white shadow-md rounded-lg overflow-hidden ">
                             {/* Table header */}
-                            <thead className='bg-blue-500 text-white'>
+                            <thead className='bg-gradient-to-r from-cyan-500 to-blue-500  text-white'>
                                 <tr>
                                     <td className='px-2 py-2 md:px-4'>Sr No</td>
                                     <td className='px-2 py-2 md:px-4'>Event Name</td>

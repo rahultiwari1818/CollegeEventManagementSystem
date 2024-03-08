@@ -158,7 +158,7 @@ export default function ViewFaculties() {
 
                 <section className="overflow-x-auto max-h-[57vh] overflow-y-auto border border-blue-500 border-solid rounded-t-lg">
                     <table className="table-auto min-w-full bg-white shadow-md rounded-lg overflow-hidden ">
-                        <thead className="bg-blue-500 text-white">
+                        <thead className="bg-gradient-to-r from-cyan-500 to-blue-500  text-white">
                             <tr>
                                 <th className="px-4 py-2 min-w-[5%]">Sr No</th>
                                 <th className="px-4 py-2 min-w-[5%]">Salutation</th>
@@ -334,7 +334,7 @@ export default function ViewFaculties() {
                     </section>
                     <section className="flex justify-center gap-3 mt-4 md:w-[30vw] float-right pb-8">
                         <button
-                            className={`mx-1 px-3 py-1 rounded-md ${currentPage === 1 ? 'bg-blue-500 text-white cursor-not-allowed' : 'bg-blue-500 hover:text-blue-500 hover:bg-white hover:outline hover:outline-blue-500 text-white'}`}
+                            className={`mx-1 px-3 py-1 rounded-md ${currentPage === 1 ? 'bg-gradient-to-r from-cyan-500 to-blue-500  text-white cursor-not-allowed' : 'bg-gradient-to-r from-cyan-500 to-blue-500  hover:text-blue-500 hover:bg-white hover:outline hover:outline-blue-500 text-white'}`}
                             onClick={() => handlePageChange(currentPage - 1)}
                             disabled={currentPage === 1}
                         >
@@ -350,7 +350,7 @@ export default function ViewFaculties() {
                         />
 
                         <button
-                            className={`mx-1 px-3 py-1 rounded-md ${currentPage === totalPages ? 'bg-blue-500 text-white cursor-not-allowed' : 'bg-blue-500 hover:text-blue-500 hover:bg-white hover:outline hover:outline-blue-500 text-white'}`}
+                            className={`mx-1 px-3 py-1 rounded-md ${currentPage === totalPages ? 'bg-gradient-to-r from-cyan-500 to-blue-500  text-white cursor-not-allowed' : 'bg-gradient-to-r from-cyan-500 to-blue-500  hover:text-blue-500 hover:bg-white hover:outline hover:outline-blue-500 text-white'}`}
                             onClick={() => handlePageChange(currentPage + 1)}
                             disabled={currentPage === totalPages}
                         >

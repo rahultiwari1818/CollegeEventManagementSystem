@@ -30,7 +30,7 @@ export default function Courses() {
             <Overlay/>
         }
         <section className='flex justify-center items-center my-5'>
-        <section className="absolute left-5 md:left-12 top-20 cursor-pointer p-2 md:p-3 rounded-full bg-blue-500">
+        <section className="absolute left-5 md:left-12 top-20 cursor-pointer p-2 md:p-3 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 ">
 					<BackIcon
 						onClick={() => {
 							navigate("/adminDashboard");

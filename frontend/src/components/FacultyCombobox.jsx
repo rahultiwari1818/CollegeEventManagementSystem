@@ -54,7 +54,7 @@ export default function FacultyCombobox({ label, placeholder, peopleData, disabl
                             {
                                 peopleData.length === 0 ?
                                     <Combobox.Option className={({ active }) =>
-                                        `relative cursor-default select-none py-2 pl-10 pr-4 ${active ? 'bg-blue-500 text-white' : 'text-gray-900'
+                                        `relative cursor-default select-none py-2 pl-10 pr-4 ${active ? 'bg-gradient-to-r from-cyan-500 to-blue-500  text-white' : 'text-gray-900'
                                         }`
                                     }
                                         disabled={true}
@@ -67,7 +67,7 @@ export default function FacultyCombobox({ label, placeholder, peopleData, disabl
                                         <Combobox.Option
                                             key={person.email}
                                             className={({ active }) =>
-                                                `relative cursor-default select-none py-2 pl-10 pr-4 ${active ? 'bg-blue-500 text-white' : 'text-gray-900'
+                                                `relative cursor-default select-none py-2 pl-10 pr-4 ${active ? 'bg-gradient-to-r from-cyan-500 to-blue-500  text-white' : 'text-gray-900'
                                                 }`
                                             }
                                             value={person}

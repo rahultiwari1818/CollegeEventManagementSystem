@@ -17,7 +17,7 @@ export default function ToggleSwitch({ headingText, selected, updateSelected }) 
         <Switch
           checked={enabled}
           onChange={setEnabled}
-          className={`${enabled ? 'bg-blue-500' : 'bg-white'}
+          className={`${enabled ? 'bg-gradient-to-r from-cyan-500 to-blue-500 ' : 'bg-white'}
         relative inline-flex h-[28px] w-[54px] shrink-0 cursor-pointer outline outline-blue-500 rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2  focus-visible:ring-white/75`}
         >
           <span

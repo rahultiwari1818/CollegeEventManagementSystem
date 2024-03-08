@@ -319,7 +319,7 @@ export default function EventDetails() {
                                                                 <td className="py-2 px-4 border-b">
 
                                                                     <button
-                                                                        className='px-5 py-3 bg-blue-500 rounded-lg shadow-lg text-white hover:text-blue-500 hover:bg-white hover:outline hover:outline-blue-500'
+                                                                        className='px-5 py-3 bg-gradient-to-r from-cyan-500 to-blue-500  rounded-lg shadow-lg text-white hover:text-blue-500 hover:bg-white hover:outline hover:outline-blue-500'
                                                                         onClick={() => handleSubEventRegister(event?.sId)}
 
                                                                     >
@@ -458,7 +458,7 @@ export default function EventDetails() {
                             (!data?.hasSubEvents && !data?.isCanceled && curDate.toLocaleDateString('en-GB') <= new Date(data.rcdate).toLocaleDateString('en-GB') && userData?.role === "Student") &&
                             <section className="my-2 py-2">
                                 <button
-                                    className='px-5 py-3 bg-blue-500 rounded-lg shadow-lg text-white hover:text-blue-500 hover:bg-white hover:outline hover:outline-blue-500'
+                                    className='px-5 py-3 bg-gradient-to-r from-cyan-500 to-blue-500  rounded-lg shadow-lg text-white hover:text-blue-500 hover:bg-white hover:outline hover:outline-blue-500'
                                     onClick={handleRegisterEvent}
 
                                 >
