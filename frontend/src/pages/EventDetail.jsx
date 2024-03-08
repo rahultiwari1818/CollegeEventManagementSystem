@@ -28,8 +28,9 @@ export default function EventDetails() {
     const userData = useSelector((state) => state.UserSlice);
     const [openDetailsModel, setOpenDetailsModel] = useState(false);
     const [subEventDataToShow, setSubEventDataToShow] = useState({});
+    const [isOpenViewResultsModal,setIsOpenViewResultsModal] = useState(false);
 
-    const [isOpenUpdationLogModal,setIsOpenUpdationLogModal] = useState(false);
+    const [isOpenUpdationLogModal, setIsOpenUpdationLogModal] = useState(false);
 
 
 
@@ -45,9 +46,9 @@ export default function EventDetails() {
             if (data.data.length === 0) {
                 navigate("/home");
             }
-            if(data.result){
-                const eligibleCourses = data.data.eligibleCourses.map((course)=>course._id);
-                setData(() => ({...data.data,eligibleCourses:eligibleCourses}));
+            if (data.result) {
+                const eligibleCourses = data.data.eligibleCourses.map((course) => course._id);
+                setData(() => ({ ...data.data, eligibleCourses: eligibleCourses }));
             }
             setIsLoading(() => false);
         } catch (error) {
@@ -138,7 +139,7 @@ export default function EventDetails() {
     }, [])
 
 
-    const closeUpdationLogModal = () =>{
+    const closeUpdationLogModal = () => {
         setIsOpenUpdationLogModal(false);
     }
 
@@ -497,7 +498,7 @@ export default function EventDetails() {
                                     &&
                                     <section className='my-2'>
                                         <button
-                                            className='px-5 py-3 bg-green-500 rounded-lg shadow-lg text-white hover:text-green-500 hover:bg-white hover:outline hover:outline-green-500'
+                                            className=' px-5 py-3 bg-yellow-500 rounded-lg shadow-lg text-white hover:text-yellow-500 hover:bg-white hover:outline hover:outline-yellow-500'
                                             onClick={() => {
                                                 navigate(`/declareResult/${data?._id}`)
                                             }}
@@ -541,11 +542,19 @@ export default function EventDetails() {
                                 <section className='my-2'>
                                     <button
                                         className='px-5 py-3 bg-green-500 rounded-lg shadow-lg text-white hover:text-green-500 hover:bg-white hover:outline hover:outline-green-500'
-                                        onClick={()=>{
+                                        onClick={() => {
                                             setIsOpenUpdationLogModal(true);
                                         }}
                                     >
                                         View Updation Log
+                                    </button>
+                                </section>
+                                <section className='my-2'>
+                                    <button
+                                        className='px-5 py-3 bg-green-500 rounded-lg shadow-lg text-white hover:text-green-500 hover:bg-white hover:outline hover:outline-green-500'
+                                        
+                                    >
+                                        View Results
                                     </button>
                                 </section>
                             </section>
@@ -562,7 +571,7 @@ export default function EventDetails() {
             <UpdateEvent openUpdateModal={openUpdateModal} setOpenUpdateModal={setOpenUpdateModal} dataToUpdate={data} setDataUpdated={setDataUpdated} userId={userData._id} />
             <CancelEvent openCancelCnfModal={openCancelCnfModal} setOpenCancelCnfModal={setOpenCancelCnfModal} changeEventStatus={changeEventStatus} />
             <ViewSubEventDetails openDetailsModel={openDetailsModel} setOpenDetailsModel={setOpenDetailsModel} eventData={subEventDataToShow} />
-            <EventUpdationLog isOpen={isOpenUpdationLogModal} close={closeUpdationLogModal} heading={"Updation Log"} updationLog={data.updationLog}/>
+            <EventUpdationLog isOpen={isOpenUpdationLogModal} close={closeUpdationLogModal} heading={"Updation Log"} updationLog={data.updationLog} />
         </>
     )
 }

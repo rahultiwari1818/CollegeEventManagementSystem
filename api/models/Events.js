@@ -10,7 +10,8 @@ const EventsSchema = new Schema({
     },
     etype:{
         required:true,
-        type:String
+        type:String,
+        enum: ['Inter-College', 'Intra-College'],
     },
     ptype:{
         type:String

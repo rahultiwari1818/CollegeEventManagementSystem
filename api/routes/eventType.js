@@ -10,6 +10,6 @@ const upload = multer({ storage: storage });
 
 router.post("/addEventType",checkIsSuperAdmin,upload.single("eventTypeLogo"),addEventType)
 router.get("/getEventTypes",fetchUser,getAllEventTypes);
-router.patch("/updateEventType",checkIsSuperAdmin,updateEventType);
+router.patch("/updateEventType",checkIsSuperAdmin,upload.single("newEventTypeLogo"),updateEventType);
 
 module.exports = router;

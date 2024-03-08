@@ -456,10 +456,18 @@ const studentParticipatedEvents = async (req, res) => {
 const resultDeclaration = async (req, res) => {
 
     try {
-
+        const teamIds = req.body.teamIds;
+    
+        // Iterate over the teamIds array and update the ranks accordingly
+        for (let i = 0; i < teamIds.length; i++) {
+            await Registration.updateOne({ _id: teamIds[i] }, { $set: { rank: i + 1 } });
+        }
+    
+        // Send a success response
+        return res.status(200).json({ message: "Result Declared Successfully.!", result: true });
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ "message": "Some Error Occured", "result": false });
+        return res.status(500).json({ message: "Some Error Occurred", result: false });
     }
 
 }
