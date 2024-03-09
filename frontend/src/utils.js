@@ -97,7 +97,7 @@ export function isValidEmail(email){
 export function transformCourseData(coursesData,requiresAll) {
 	const arr = [];
 	if(requiresAll){
-		arr.push({ name: "All" });
+		arr.push({ name: "All",_id:0,noOfSemesters:0 });
 	}
 	for (let course of coursesData) {
 		arr.push({ name: course.courseName,_id:course._id,noOfSemesters:course.noOfSemesters });

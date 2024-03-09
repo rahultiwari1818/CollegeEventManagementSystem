@@ -53,7 +53,7 @@ export default function ViewFaculties() {
         try {
             setIsDataLoading(true);
             const { search, searchCourse, } = searchParams;
-            const course = searchCourse === "All" ? "" : searchCourse;
+            const course = searchCourse == 0 ? "" : searchCourse;
 
             const { data } = await axios.get(`${API_URL}/api/faculties/getFaculties`, {
                 params: {

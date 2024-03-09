@@ -12,7 +12,8 @@ const {
     getRegistrationDataOfEvent,
     approveOrRejectRegistrationRequest,
     studentParticipatedEvents,
-    resultDeclaration
+    resultDeclaration,
+    getResults
 } = require("../controllers/events.controller.js");
 const fetchUser = require("../middlewares/fetchUser.js");
 const checkIsAdmin = require("../middlewares/checkIsAdmin.js");
@@ -43,5 +44,7 @@ router.patch("/changeRequestStatus",checkIsAdmin,approveOrRejectRegistrationRequ
 router.get('/studentParticipatedEvents/:studentId',fetchUser,studentParticipatedEvents)
 
 router.post("/declareResult/:eventId",checkIsAdmin,resultDeclaration);
+
+router.get("/:eventId/getResults",fetchUser,getResults);
 
 module.exports = router;

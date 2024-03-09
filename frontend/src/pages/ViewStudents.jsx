@@ -95,7 +95,7 @@ export default function ViewStudents() {
         try {
             setIsDataLoading(true);
             const { search, searchCourse, searchSemester, searchdivision,status } = searchParams;
-            const course = searchCourse === "All" ? "" : searchCourse;
+            const course = searchCourse == 0 ? "" : searchCourse;
             const semester = searchSemester === "All" ? "" : searchSemester;
             const section = searchdivision === "All" ? "" : searchdivision;
             
