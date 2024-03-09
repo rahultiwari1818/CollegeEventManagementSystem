@@ -143,19 +143,19 @@ export default function Navbar() {
                       {
                         userData.role === "Super Admin"
                         &&
-                        <Link to="/adminDashboard" className='py-3 px-4 hover:border hover:border-white  hover:bg-gradient-to-r from-cyan-500 to-blue-500  hover:text-white bg-white text-blue-500  shadow-lg rounded-lg mx-3' > Dashboard </Link>
+                        <Link to="/adminDashboard" className='py-3 px-4 border border-white  hover:bg-gradient-to-r from-cyan-500 to-blue-500  hover:text-white bg-white text-blue-500  shadow-lg rounded-lg mx-3' > Dashboard </Link>
                       }
 
                       {
                         userData.role !== "Super Admin"
                         &&
 
-                        <Link to="/home" className='py-3 px-4 hover:border hover:border-white  hover:bg-gradient-to-r from-cyan-500 to-blue-500  hover:text-white bg-white text-blue-500  shadow-lg rounded-lg mx-3' > Home </Link>
+                        <Link to="/home" className='py-3 px-4 border border-white  hover:bg-gradient-to-r from-cyan-500 to-blue-500  hover:text-white bg-white text-blue-500  shadow-lg rounded-lg mx-3' > Home </Link>
                       }
                       {
                         userData.role === "Student"
                         &&
-                        <Link to="/myEvents" className='py-3 px-4 hover:border hover:border-white  hover:bg-gradient-to-r from-cyan-500 to-blue-500  hover:text-white bg-white text-blue-500  shadow-lg rounded-lg mx-3' > My Events </Link>
+                        <Link to="/myEvents" className='py-3 px-4 border border-white  hover:bg-gradient-to-r from-cyan-500 to-blue-500  hover:text-white bg-white text-blue-500  shadow-lg rounded-lg mx-3' > My Events </Link>
                       }
 
                       {
@@ -168,7 +168,7 @@ export default function Navbar() {
                         &&
                         <>
                           <PopoverComponent options={userRoutes} label="Manage Users" />
-                          <Link to="/courses" className='py-3 px-4 hover:border hover:border-white  hover:bg-gradient-to-r from-cyan-500 to-blue-500  hover:text-white bg-white text-blue-500  shadow-lg rounded-lg mx-3' > Manage Courses </Link>
+                          <Link to="/courses" className='py-3 px-4 border border-white  hover:bg-gradient-to-r from-cyan-500 to-blue-500  hover:text-white bg-white text-blue-500  shadow-lg rounded-lg mx-3' > Manage Courses </Link>
                         </>
                       }
                       <ProfilePopOver logoutHandler={logoutHandler} />

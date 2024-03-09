@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 import Overlay from '../components/Overlay';
 import { ReactComponent as CheckIcon } from "../assets/Icons/CheckIcon.svg";
 import { toast } from 'react-toastify';
-import { debounce } from '../utils';
+import { debounce, transformCourseData } from '../utils';
 import { ReactComponent as DownloadIcon } from "../assets/Icons/DownloadIcon.svg"
 import ParticipationListPdf from '../PDF_Generator/ParticipationListPdf';
 import { PDFDownloadLink } from '@react-pdf/renderer';
@@ -18,12 +18,11 @@ export default function ViewRegistration() {
     const API_URL = process.env.REACT_APP_BASE_URL;
 
     const [registrationData, setRegistrationData] = useState([]);
+    const [showOverlay,setShowOverlay] = useState(true);
     const [collegeData,setCollegeData] = useState({});
     const [searchParams, setSearchParams] = useState(""); // State to hold filter criteria
-    const [eventData, setEventData] = useState({
-        ename: "",
-        hasSubEvents: ""
-    });
+    const [eventData, setEventData] = useState({});
+    const [eligibleCourses,setEligibleCourses] = useState([]);
 
     const [filteredData,setFilteredData] = useState([]);
 
@@ -43,10 +42,8 @@ export default function ViewRegistration() {
                 });
                 console.log("data data", data.data);
                 if (data.result) {
-                    setEventData((old) => ({ ...old, ename: data?.data[0]?.ename }));
 
                     if (data?.data[0]?.sId) {
-                        setEventData((old) => ({ ...old, hasSubEvents: true }));
                         const map = {};
                         for (let subEvent of data.data) {
                             map[subEvent.sId] ? map[subEvent.sId].push(subEvent) : map[subEvent.sId] = [subEvent];
@@ -55,7 +52,6 @@ export default function ViewRegistration() {
                         const events = Object.values(map);
                         setRegistrationData(events);
                     } else {
-                        setEventData((old) => ({ ...old, hasSubEvents: false }));
                         setRegistrationData(data?.data);
                     }
                 }
@@ -63,6 +59,33 @@ export default function ViewRegistration() {
                 // Handle error
             }
         };
+
+        const fetchEventData = async () => {
+
+            try {
+
+                const { data } = await axios.get(`${API_URL}/api/events/getSpecificEvent/${eventId}`, {
+                    headers: {
+                        "auth-token": token
+                    }
+                })
+
+                if (data?.result) {
+                    setEventData(data?.data);
+                    console.log(data.data.eligibleCourses)
+                    setEligibleCourses(() => transformCourseData(data.data.eligibleCourses))
+                }
+                else {
+                    setEventData({});
+                }
+
+
+            } catch (error) {
+                console.log(error)
+            }
+        }
+
+        fetchEventData();
 
         fetchRegistrationDetails();
     }, [eventId, searchParams]);
@@ -155,11 +178,15 @@ export default function ViewRegistration() {
         setSearchParams(filterParam); // Update searchParams state
     };
 
+    useEffect(()=>{
+        setShowOverlay(false);
+    },[])
+
 
     return (
         <>
             {
-                false &&
+                showOverlay &&
                 <Overlay />
             }
             <section className='mb-5'>

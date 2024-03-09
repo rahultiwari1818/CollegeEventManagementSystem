@@ -190,7 +190,7 @@ isLoading &&
 <Overlay/>
 }
         <form onSubmit={handleSubmit} className="p-4 bg-white shadow-lg rounded-lg mx-4 my-3">
-            <section className="grid md:grid-cols-2 grid-col-1 gap-4 my-3">
+            <section className="grid md:grid-cols-2 grid-col-1 gap-4 my-3 px-2 md:px-10">
 
             <section>
                     <label htmlFor="salutation" className="block mb-1">Salutation:</label>
@@ -347,7 +347,7 @@ isLoading &&
                     </label>
                 </section>
             </section>
-            <section className="flex justify-center mt-4">
+            <section className="flex justify-center mt-4 px-2 md:px-10">
                 <button type="submit" className='text-red-500 bg-white rounded-lg shadow-lg px-5 py-3 w-full m-2 outline outline-red-500 hover:text-white hover:bg-red-500'>Add Faculty</button>
             </section>
         </form>

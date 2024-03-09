@@ -2,7 +2,7 @@ import { Fragment, useRef, useState, useEffect, useMemo } from 'react';
 import { Listbox, Transition } from '@headlessui/react';
 import { ReactComponent as UpIcon } from '../assets/Icons/up_arrow.svg';
 
-const Dropdown = ({ dataArr, selected, setSelected, name, label, disabled,passedId,className }) => {
+const Dropdown = ({ dataArr, selected, setSelected, name, label, disabled,passedId,className ,widthLess}) => {
   const dropdownRef = useRef(null);
   const [menuPosition, setMenuPosition] = useState('bottom-0');
 

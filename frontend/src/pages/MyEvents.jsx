@@ -7,6 +7,7 @@ import RejectedImage from "../assets/images/RejectedIcon.png"
 import PendingImage from "../assets/images/PendingIcon.png"
 import ApprovalImage from "../assets/images/ApprovalIcon.png"
 import moment from "moment";
+import Skeleton from 'react-loading-skeleton';
 
 export default function MyEvents() {
 
@@ -15,6 +16,7 @@ export default function MyEvents() {
     const API_URL = process.env.REACT_APP_BASE_URL;
 
     const [registeredEvents, setRegisteredEvents] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [showOverLay, setShowOverLay] = useState(true);
 
     const user = useSelector((state) => state.UserSlice);
@@ -33,8 +35,14 @@ export default function MyEvents() {
             }
 
         } catch (error) {
+
             console.log(error)
+            setRegisteredEvents([])
         }
+        finally{
+            setIsLoading(false)
+        }
+
     }
 
 
@@ -86,108 +94,239 @@ export default function MyEvents() {
                             {/* Table body */}
                             <tbody>
                                 {
-                                    registeredEvents?.length > 0 ?
-                                    registeredEvents?.map((event, eventIdx) => {
-                                        return (
-                                            event.studentData?.map((student, stdIdx) => {
+                                    isLoading
+                                        ?
+                                        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]?.map((event, eventIdx) => {
+                                            return (
+                                                <tr key={eventIdx}>
+
+                                                    <td
+                                                        className='border px-2 py-2 md:px-4 '
+                                                    >
+                                                        <Skeleton
+                                                            count={1}
+                                                            height="50%"
+                                                            width="100%"
+                                                            baseColor="#4299e1"
+                                                            highlightColor="#f7fafc"
+                                                            duration={0.9}
+                                                        />
+                                                    </td>
+                                                    <td
+                                                        className='border px-2 py-2 md:px-4 '
+                                                    >
+                                                        <Skeleton
+                                                            count={1}
+                                                            height="50%"
+                                                            width="100%"
+                                                            baseColor="#4299e1"
+                                                            highlightColor="#f7fafc"
+                                                            duration={0.9}
+                                                        />
+                                                    </td>
+                                                    <td
+                                                        className='border px-2 py-2 md:px-4 '
+                                                    >
+                                                        <Skeleton
+                                                            count={1}
+                                                            height="50%"
+                                                            width="100%"
+                                                            baseColor="#4299e1"
+                                                            highlightColor="#f7fafc"
+                                                            duration={0.9}
+                                                        />
+                                                    </td>
+
+                                                    <td className="border px-2 py-2 md:px-4">
+                                                        <Skeleton
+                                                            count={1}
+                                                            height="50%"
+                                                            width="100%"
+                                                            baseColor="#4299e1"
+                                                            highlightColor="#f7fafc"
+                                                            duration={0.9}
+                                                        />
+                                                    </td>
+                                                    <td className="border px-2 py-2 md:px-4">
+                                                        <Skeleton
+                                                            count={1}
+                                                            height="50%"
+                                                            width="100%"
+                                                            baseColor="#4299e1"
+                                                            highlightColor="#f7fafc"
+                                                            duration={0.9}
+                                                        />
+                                                    </td>
+                                                    <td className="border px-2 py-2 md:px-4">
+                                                        <Skeleton
+                                                            count={1}
+                                                            height="50%"
+                                                            width="100%"
+                                                            baseColor="#4299e1"
+                                                            highlightColor="#f7fafc"
+                                                            duration={0.9}
+                                                        />
+                                                    </td>
+                                                    <td className="border px-2 py-2 md:px-4">
+                                                        <Skeleton
+                                                            count={1}
+                                                            height="50%"
+                                                            width="100%"
+                                                            baseColor="#4299e1"
+                                                            highlightColor="#f7fafc"
+                                                            duration={0.9}
+                                                        />
+                                                    </td>
+                                                    <td className="border px-2 py-2 md:px-4">
+                                                        <Skeleton
+                                                            count={1}
+                                                            height="50%"
+                                                            width="100%"
+                                                            baseColor="#4299e1"
+                                                            highlightColor="#f7fafc"
+                                                            duration={0.9}
+                                                        />
+                                                    </td>
+                                                    <td className="border px-2 py-2 md:px-4">
+                                                        <Skeleton
+                                                            count={1}
+                                                            height="50%"
+                                                            width="100%"
+                                                            baseColor="#4299e1"
+                                                            highlightColor="#f7fafc"
+                                                            duration={0.9}
+                                                        />
+                                                    </td>
+                                                    <td className="border px-2 py-2 md:px-4">
+
+                                                        <Skeleton
+                                                            count={1}
+                                                            height="50%"
+                                                            width="100%"
+                                                            baseColor="#4299e1"
+                                                            highlightColor="#f7fafc"
+                                                            duration={0.9}
+                                                        />
+
+                                                    </td>
+                                                    <td className='border px-2 py-2 md:px-4'
+                                                    >
+                                                        <Skeleton
+                                                            count={1}
+                                                            height="50%"
+                                                            width="100%"
+                                                            baseColor="#4299e1"
+                                                            highlightColor="#f7fafc"
+                                                            duration={0.9}
+                                                        />
+                                                    </td>
+                                                </tr>
+                                            )
+                                        })
+
+                                        :
+                                        registeredEvents?.length > 0 ?
+                                            registeredEvents?.map((event, eventIdx) => {
                                                 return (
-                                                    <tr key={event._id}>
-                                                        {
-                                                            stdIdx === 0 &&
-                                                            <>
-                                                                <td
-                                                                    className='border px-2 py-2 md:px-4 '
-                                                                    rowSpan={event.studentData.length}>
+                                                    event.studentData?.map((student, stdIdx) => {
+                                                        return (
+                                                            <tr key={event._id}>
+                                                                {
+                                                                    stdIdx === 0 &&
+                                                                    <>
+                                                                        <td
+                                                                            className='border px-2 py-2 md:px-4 '
+                                                                            rowSpan={event.studentData.length}>
+                                                                            {
+                                                                                eventIdx + 1
+                                                                            }
+                                                                        </td>
+                                                                        <td
+                                                                            className='border px-2 py-2 md:px-4 '
+                                                                            rowSpan={event.studentData.length}
+                                                                        >
+                                                                            {event.ename}
+                                                                        </td>
+                                                                        <td
+                                                                            className='border px-2 py-2 md:px-4 '
+                                                                            rowSpan={event.studentData.length}
+                                                                        >
+                                                                            {event?.subEventName ? event?.subEventName : "-"}
+                                                                        </td>
+                                                                    </>
+                                                                }
+                                                                <td className="border px-2 py-2 md:px-4">
                                                                     {
-                                                                        eventIdx + 1
+                                                                        student.sid
                                                                     }
                                                                 </td>
-                                                                <td
-                                                                    className='border px-2 py-2 md:px-4 '
-                                                                    rowSpan={event.studentData.length}
-                                                                >
-                                                                    {event.ename}
+                                                                <td className="border px-2 py-2 md:px-4">
+                                                                    {
+
+                                                                        student.studentName
+                                                                    }
                                                                 </td>
-                                                                <td
-                                                                    className='border px-2 py-2 md:px-4 '
-                                                                    rowSpan={event.studentData.length}
-                                                                >
-                                                                    {event?.subEventName ? event?.subEventName : "-"}
+                                                                <td className="border px-2 py-2 md:px-4">
+                                                                    {
+                                                                        student.course.courseName
+                                                                    }
                                                                 </td>
-                                                            </>
-                                                        }
-                                                        <td className="border px-2 py-2 md:px-4">
-                                                            {
-                                                                student.sid
-                                                            }
-                                                        </td>
-                                                        <td className="border px-2 py-2 md:px-4">
-                                                        {
-                                                                
-                                                                student.studentName
-                                                            }
-                                                            </td>
-                                                            <td className="border px-2 py-2 md:px-4">
-                                                            {
-                                                                student.course.courseName
-                                                            }
-                                                            </td>
-                                                            <td className="border px-2 py-2 md:px-4">
-                                                            {
-                                                                student.semester
-                                                            }
-                                                            </td>
-                                                            <td className="border px-2 py-2 md:px-4">
-                                                            {
-                                                                student.division
-                                                            }
-                                                            </td>
-                                                            <td className="border px-2 py-2 md:px-4">
-                                                            {
-                                                                student.phno
-                                                            }
-                                                            </td>
-                                                            <td className="border px-2 py-2 md:px-4">
-                                                            
+                                                                <td className="border px-2 py-2 md:px-4">
+                                                                    {
+                                                                        student.semester
+                                                                    }
+                                                                </td>
+                                                                <td className="border px-2 py-2 md:px-4">
+                                                                    {
+                                                                        student.division
+                                                                    }
+                                                                </td>
+                                                                <td className="border px-2 py-2 md:px-4">
+                                                                    {
+                                                                        student.phno
+                                                                    }
+                                                                </td>
+                                                                <td className="border px-2 py-2 md:px-4">
+
                                                                     {
                                                                         moment(event.createdAt).format("lll")
                                                                     }
-                                                            
-                                                            </td>
-                                                            {
-                                                                stdIdx === 0
-                                                                &&
-                                                                <td className='border px-2 py-2 md:px-4'
-                                                                rowSpan={event.studentData.length}
-                                                                >
-                                                                    {
-                                                                     event.status === "pending"
-                                                                        ?
-                                                                       <img src={PendingImage} className='w-10' alt="pending"/>
-                                                                        :
-                                                                        event.status === "rejected"
-                                                                        ?
-                                                                        <img src={RejectedImage} className='w-10' alt="rejected"/>
-                                                                        :
-                                                                       <img src={ApprovalImage} className='w-10' alt="approval"/>
-                                                                    }
-                                                                </td>
-                                                            }
-                                                    </tr>
-                                                )
-                                            })
-                                        )
 
-                                    })
-                                    :
-                                    <tr>
-                                        <td
-                                        colSpan={11}
-                                        className='border px-2 py-2 md:px-4 text-center'
-                                        >
-                                            You Have Not Participated in any Event Till Now.
-                                        </td>
-                                    </tr>
+                                                                </td>
+                                                                {
+                                                                    stdIdx === 0
+                                                                    &&
+                                                                    <td className='border px-2 py-2 md:px-4'
+                                                                        rowSpan={event.studentData.length}
+                                                                    >
+                                                                        {
+                                                                            event.status === "pending"
+                                                                                ?
+                                                                                <img src={PendingImage} className='w-10' alt="pending" />
+                                                                                :
+                                                                                event.status === "rejected"
+                                                                                    ?
+                                                                                    <img src={RejectedImage} className='w-10' alt="rejected" />
+                                                                                    :
+                                                                                    <img src={ApprovalImage} className='w-10' alt="approval" />
+                                                                        }
+                                                                    </td>
+                                                                }
+                                                            </tr>
+                                                        )
+                                                    })
+                                                )
+
+                                            })
+                                            :
+                                            <tr>
+                                                <td
+                                                    colSpan={11}
+                                                    className='border px-2 py-2 md:px-4 text-center'
+                                                >
+                                                    You Have Not Participated in any Event Till Now.
+                                                </td>
+                                            </tr>
                                 }
                             </tbody>
                         </table>

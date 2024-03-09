@@ -465,7 +465,7 @@ export default function Profile() {
                                 </section>
                         }
                     </section>
-                    <section className="my-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 px-5">
+                    <section className="my-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 px-5 pb-5">
                    {
                     user.role === "Super Admin"
                     &&

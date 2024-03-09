@@ -26,8 +26,8 @@ export default function ViewEventTypes() {
             &&
             <Overlay/>
         }
-            <section className=''>
-				<section className="absolute left-8 md:left-12 top-20 lg:top-24 cursor-pointer p-2 md:p-3 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 ">
+            <section className='relative py-3'>
+				<section className="absolute left-8 md:left-12 top-3 cursor-pointer p-2 md:p-3 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 ">
 					<BackIcon
 						onClick={() => {
 							navigate("/adminDashboard");
@@ -35,7 +35,7 @@ export default function ViewEventTypes() {
 					/>
 				</section>
 
-                <section className='mt-14'>
+                <section className=' relative mt-10'>
                     <ViewEventTypeComp />
                 </section>
             </section>

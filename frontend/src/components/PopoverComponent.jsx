@@ -21,7 +21,7 @@ export default function Example({options,label,closeSideBar}) {
             <Popover.Button
               className={`
                 ${open ? 'text-blue-500' : 'text-blue-500'}
-                py-3 px-4 bg-white  text-blue-500 shadow-lg hover:bg-gradient-to-r from-cyan-500 to-blue-500  hover:text-white hover:border hover:border-white rounded-lg mx-3 w-full flex justify-between items-center`}
+                py-3 px-4 bg-white  text-blue-500 shadow-lg hover:bg-gradient-to-r from-cyan-500 to-blue-500  hover:text-white border border-white rounded-lg mx-3 w-full flex justify-between items-center`}
             >
               <span>{label}</span>
               <UpIcon className={`md:h-5 md:w-5 w-3 h-3 ${!open ? 'transform rotate-180' : ''} float-right mx-3`} />
