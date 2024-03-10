@@ -70,8 +70,14 @@ const generateEvent = async (req, res) => {
 
         }
         const eligibleSemesters = JSON.parse(req.body.eligibleSemester || "[]");
-        const subEvents = JSON.parse(req.body.subEvents || "[]"); // Parse subEvents JSON string, default to empty array if not provided
+        const subEventData = JSON.parse(req.body.subEvents || "[]"); // Parse subEvents JSON string, default to empty array if not provided
         const eligibleCourses = JSON.parse(req.body.eligibleCourses || "[]"); // Parse subEvents JSON string, default to empty array if not provided
+        
+        const subEvents = subEventData?.map((event)=>({
+            ...event,
+            eligibleSemesters:JSON.parse(event.eligibleSemester)
+        }));
+        
         const genEvent = await Event.create({
             ename: ename.trim(),
             etype: etype.trim(),
@@ -250,9 +256,24 @@ const updateEventDetails = async (req, res) => {
         }
 
         // Update event details in the database
-        const subEvents = JSON.parse(req.body.subEvents);
+        const subEventData = JSON.parse(req.body.subEvents);
         const eligibleSemesters = JSON.parse(req.body.eligibleSemester || "[]");
         const eligibleCourses = JSON.parse(req.body.eligibleCourses); // Parse subEvents JSON string, default to empty array if not provided
+        const subEvents = subEventData?.map((event)=>{
+
+            return Array.isArray(event.eligibleSemester) ? {
+                ...event,
+                eligibleSemester:event.eligibleSemester
+            }
+            :
+            {
+                ...event,
+                eligibleSemester:JSON.parse(event.eligibleSemester)
+            }
+
+        });
+console.log(subEvents)
+
         const dataToUpdate = {
             ename, etype, ptype, enature, noOfParticipants, edate, edetails, rules, rcdate, ebrochureName: originalBrochureName, ebrochurePath: newBrochurePath, eposterName: originalPosterName, eposterPath: newPosterPath, hasSubEvents, subEvents, eligibleCourses, eligibleSemesters, courseWiseResultDeclaration: courseWiseResult
         };

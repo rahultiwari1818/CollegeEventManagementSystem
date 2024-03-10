@@ -42,8 +42,12 @@ export default function AddSubEvents({ openUpdateModal, setOpenUpdateModal, head
 
     useEffect(() => {
         if (dataToBeUpdated?.sId) {
-            setSubEventData((old)=>({...dataToBeUpdated,eligibleSemester:JSON.parse(dataToBeUpdated.eligibleSemester)}) )
-            console.log(dataToBeUpdated,"tu")
+            if(Array.isArray(dataToBeUpdated?.eligibleSemester)){
+                setSubEventData((old)=>({...dataToBeUpdated,eligibleSemester:dataToBeUpdated?.eligibleSemester}) )
+            }
+            else{
+                setSubEventData((old)=>({...dataToBeUpdated,eligibleSemester:JSON.parse(dataToBeUpdated?.eligibleSemester)}) )
+            }
         }
         else{
             setSubEventData(initialState);

@@ -703,6 +703,7 @@ const loginStudent = async (req, res) => {
                 role: "Student",
                 name: user.studentName,
                 course: user.course,
+                semester:user.semester,
                 token:user.token
             }
         };
