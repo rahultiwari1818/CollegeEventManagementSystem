@@ -2,7 +2,7 @@ import { Fragment, useRef, useState, useEffect, useMemo } from 'react';
 import { Listbox, Transition } from '@headlessui/react';
 import { ReactComponent as UpIcon } from '../assets/Icons/up_arrow.svg';
 
-const Dropdown = ({ dataArr, selected, setSelected, name, label, disabled,passedId,className }) => {
+const Dropdown = ({ dataArr, selected, setSelected, name, label, disabled,passedId,className ,widthLess}) => {
   const dropdownRef = useRef(null);
   const [menuPosition, setMenuPosition] = useState('bottom-0');
 
@@ -66,7 +66,7 @@ const Dropdown = ({ dataArr, selected, setSelected, name, label, disabled,passed
                   <Listbox.Option
                     key={index}
                     className={({ active }) =>
-                      `relative cursor-default select-none py-2 px-10 ${active ? 'bg-blue-500 text-white' : 'text-gray-900'}`
+                      `relative cursor-default select-none py-2 px-10 ${active ? 'bg-gradient-to-r from-cyan-500 to-blue-500  text-white' : 'text-gray-900'}`
                     }
                     value={option}
                   >

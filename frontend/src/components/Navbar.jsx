@@ -50,7 +50,7 @@ export default function Navbar() {
           }
         });
         setIsLoggedIn(() => true);
-        console.log(data.user)
+        // console.log(data.user)
         if (location?.pathname === "/login") navigate("/home");
         dispatch(setNewUser(data.user));
       } catch (error) {
@@ -122,7 +122,7 @@ export default function Navbar() {
 
 
 
-    <nav className='bg-blue-500 p-2  top-0 sticky z-10 '>
+    <nav className='bg-gradient-to-r from-cyan-500 to-blue-500  p-2  top-0 sticky z-10 '>
       <section className='lg:flex items-center  lg:justify-around '>
         <img src={CollegeLogo} alt="logo" className='w-12 h-12 md:h-20 md:w-20  lg:m-0 mx-5' />
         <section className='hidden lg:flex items-center'>
@@ -143,19 +143,19 @@ export default function Navbar() {
                       {
                         userData.role === "Super Admin"
                         &&
-                        <Link to="/adminDashboard" className='py-3 px-4 hover:border hover:border-white  hover:bg-blue-500 hover:text-white bg-white text-blue-500  shadow-lg rounded-lg mx-3' > Dashboard </Link>
+                        <Link to="/adminDashboard" className='py-3 px-4 border border-white  hover:bg-gradient-to-r from-cyan-500 to-blue-500  hover:text-white bg-white text-blue-500  shadow-lg rounded-lg mx-3' > Dashboard </Link>
                       }
 
                       {
                         userData.role !== "Super Admin"
                         &&
 
-                        <Link to="/home" className='py-3 px-4 hover:border hover:border-white  hover:bg-blue-500 hover:text-white bg-white text-blue-500  shadow-lg rounded-lg mx-3' > Home </Link>
+                        <Link to="/home" className='py-3 px-4 border border-white  hover:bg-gradient-to-r from-cyan-500 to-blue-500  hover:text-white bg-white text-blue-500  shadow-lg rounded-lg mx-3' > Home </Link>
                       }
                       {
                         userData.role === "Student"
                         &&
-                        <Link to="/myEvents" className='py-3 px-4 hover:border hover:border-white  hover:bg-blue-500 hover:text-white bg-white text-blue-500  shadow-lg rounded-lg mx-3' > My Events </Link>
+                        <Link to="/myEvents" className='py-3 px-4 border border-white  hover:bg-gradient-to-r from-cyan-500 to-blue-500  hover:text-white bg-white text-blue-500  shadow-lg rounded-lg mx-3' > My Events </Link>
                       }
 
                       {
@@ -168,7 +168,7 @@ export default function Navbar() {
                         &&
                         <>
                           <PopoverComponent options={userRoutes} label="Manage Users" />
-                          <Link to="/courses" className='py-3 px-4 hover:border hover:border-white  hover:bg-blue-500 hover:text-white bg-white text-blue-500  shadow-lg rounded-lg mx-3' > Manage Courses </Link>
+                          <Link to="/courses" className='py-3 px-4 border border-white  hover:bg-gradient-to-r from-cyan-500 to-blue-500  hover:text-white bg-white text-blue-500  shadow-lg rounded-lg mx-3' > Manage Courses </Link>
                         </>
                       }
                       <ProfilePopOver logoutHandler={logoutHandler} />
@@ -202,7 +202,7 @@ export default function Navbar() {
         }
         {
           openSideBar &&
-          <section className='lg:hidden fixed h-screen bg-blue-500 right-0 top-0 w-2/3'>
+          <section className='lg:hidden fixed h-screen bg-gradient-to-r from-cyan-500 to-blue-500  right-0 top-0 w-2/3'>
             {
               pathname !== "/"
               &&
@@ -228,19 +228,19 @@ export default function Navbar() {
                         {
                           userData.role === "Super Admin"
                           &&
-                          <Link to="/adminDashboard" className='w-full block py-3 px-4 hover:border hover:border-white  hover:bg-blue-500 hover:text-white bg-white text-blue-500   shadow-lg rounded-lg mx-3' onClick={() => closeSideBar()} > Dashboard </Link>
+                          <Link to="/adminDashboard" className='w-full block py-3 px-4 hover:border hover:border-white  hover:bg-gradient-to-r from-cyan-500 to-blue-500  hover:text-white bg-white text-blue-500   shadow-lg rounded-lg mx-3' onClick={() => closeSideBar()} > Dashboard </Link>
                         }
 
                         {
                           userData.role !== "Super Admin"
                           &&
 
-                          <Link to="/home" className=' w-full block py-3 px-4 hover:border hover:border-white  hover:bg-blue-500 hover:text-white bg-white text-blue-500   shadow-lg rounded-lg mx-3 my-2' onClick={() => closeSideBar()} > Home </Link>
+                          <Link to="/home" className=' w-full block py-3 px-4 hover:border hover:border-white  hover:bg-gradient-to-r from-cyan-500 to-blue-500  hover:text-white bg-white text-blue-500   shadow-lg rounded-lg mx-3 my-2' onClick={() => closeSideBar()} > Home </Link>
                         }
                         {
                           userData.role === "Student"
                           &&
-                          <Link to="/myEvents" className=' w-full block py-3 px-4 hover:border hover:border-white  hover:bg-blue-500 hover:text-white bg-white text-blue-500   shadow-lg rounded-lg mx-3 my-2' onClick={() => closeSideBar()} > My Events </Link>
+                          <Link to="/myEvents" className=' w-full block py-3 px-4 hover:border hover:border-white  hover:bg-gradient-to-r from-cyan-500 to-blue-500  hover:text-white bg-white text-blue-500   shadow-lg rounded-lg mx-3 my-2' onClick={() => closeSideBar()} > My Events </Link>
                         }
 
                         {
@@ -253,7 +253,7 @@ export default function Navbar() {
                           &&
                           <>
                             <PopoverComponent options={userRoutes} label=" Users" closeSideBar={closeSideBar} />
-                            <Link to="/courses" className='py-3 px-4 hover:border hover:border-white  hover:bg-blue-500 hover:text-white bg-white text-blue-500  shadow-lg rounded-lg mx-3 my-3 block w-full' >  Courses </Link>
+                            <Link to="/courses" className='py-3 px-4 hover:border hover:border-white  hover:bg-gradient-to-r from-cyan-500 to-blue-500  hover:text-white bg-white text-blue-500  shadow-lg rounded-lg mx-3 my-3 block w-full' >  Courses </Link>
 
                           </>
                         }
@@ -323,7 +323,7 @@ const ProfilePopOver = ({ logoutHandler }) => {
                     <div className="relative bg-white">
                       <Link
                         to="profile"
-                        className="block w-full py-3 px-4 bg-blue-500 text-white hover:text-blue-500 hover:bg-white  hover:border shadow-lg"
+                        className="block w-full py-3 px-4 bg-gradient-to-r from-cyan-500 to-blue-500  text-white  hover:border shadow-lg"
                       >
                         View Profile
                       </Link>

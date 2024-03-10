@@ -76,7 +76,7 @@ export default function RegisterInEvent() {
             
             <section className='flex justify-center items-center mt-5'>
                 <section className='p-5 md:p-10 shadow-lg bg-white border  border-blue-500 md:mt-0 md:mb-0  w-full max-w-4xl '>
-                    <p className='text-base md:text-2xl text-center text-white bg-blue-500 p-2'>Registration Form</p>
+                    <p className='text-base md:text-2xl text-center text-white bg-gradient-to-r from-cyan-500 to-blue-500  p-2'>Registration Form</p>
                         <section className='md:p-2 md:m-2 p-1 m-1'>
                             <ParticipantDetail noOfParticipants={eventData?.noOfParticipants} studentData={studentData}  eventData={eventData}/>
                         </section>

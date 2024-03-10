@@ -234,7 +234,7 @@ export default function UpdateEventType({ isOpen, close, dataToBeUpdated }) {
                             }}
                         />
                                 <button
-                                    className="px-5 py-2 my-3 shadow-lg rounded-lg bg-blue-500 text-white hover:bg-white hover:text-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                                    className="px-5 py-2 my-3 shadow-lg rounded-lg bg-gradient-to-r from-cyan-500 to-blue-500  text-white hover:bg-white hover:text-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-600"
                                     onClick={()=>{
                                         fileInputRef.current.click();
 

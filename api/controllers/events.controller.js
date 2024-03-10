@@ -1,7 +1,7 @@
 const Event = require("../models/Events.js");
 const fs = require("fs").promises;
 const path = require("path");
-const { uploadToCloudinary, deleteFromCloudinary } = require("../utils.js");
+const { uploadToCloudinary, deleteFromCloudinary, parseBoolean } = require("../utils.js");
 const Registration = require("../models/Registration.js");
 const { isValidObjectId } = require("mongoose");
 const Students = require("../models/Students.js");
@@ -10,7 +10,7 @@ const Students = require("../models/Students.js");
 
 
 const generateEvent = async (req, res) => {
-    const { ename, etype, ptype, noOfParticipants, edate, edetails, rules, rcdate, hasSubEvents, enature, generator ,courseWiseResult} = req.body;
+    const { ename, etype, ptype, noOfParticipants, edate, edetails, rules, rcdate, hasSubEvents, enature, generator, courseWiseResult } = req.body;
     let brochure, poster;
     try {
 
@@ -89,8 +89,8 @@ const generateEvent = async (req, res) => {
             hasSubEvents: hasSubEvents,
             subEvents: subEvents,
             eligibleCourses: eligibleCourses,
-            courseWiseResultDeclaration:courseWiseResult,
-            eligibleSemesters:eligibleSemesters,
+            courseWiseResultDeclaration: courseWiseResult,
+            eligibleSemesters: eligibleSemesters,
             isCanceled: false,
             updationLog: [{ change: "Generated", by: generator, at: Date.now() }]
         });
@@ -160,13 +160,14 @@ const changeEventStatus = async (req, res) => {
         const text = data ? 'Cancelled' : 'Activated';
         const updateData = {
             isCanceled: data,
-            
+
         };
 
-        const result = await Event.updateOne({ _id: id }, { $set: updateData , $push: {
-            updationLog: { change: text, by: userId, at: Date.now() },
-            
-        }
+        const result = await Event.updateOne({ _id: id }, {
+            $set: updateData, $push: {
+                updationLog: { change: text, by: userId, at: Date.now() },
+
+            }
         });
         const message = (data.isCanceled) ? "Event Cancelled Successfully" : "Event Activated Successfully";
         return res.status(200).json({ "message": message, "result": true })
@@ -182,7 +183,7 @@ const updateEventDetails = async (req, res) => {
     const data = await Event.findById(id);
 
     try {
-        const { ename, etype, ptype, noOfParticipants, edate, edetails, rules, rcdate, hasSubEvents, enature, updatedBy,courseWiseResult } = req.body;
+        const { ename, etype, ptype, noOfParticipants, edate, edetails, rules, rcdate, hasSubEvents, enature, updatedBy, courseWiseResult } = req.body;
 
         const trimmedFields = {
             ename: ename.trim(),
@@ -253,7 +254,7 @@ const updateEventDetails = async (req, res) => {
         const eligibleSemesters = JSON.parse(req.body.eligibleSemester || "[]");
         const eligibleCourses = JSON.parse(req.body.eligibleCourses); // Parse subEvents JSON string, default to empty array if not provided
         const dataToUpdate = {
-            ename, etype, ptype, enature, noOfParticipants, edate, edetails, rules, rcdate, ebrochureName: originalBrochureName, ebrochurePath: newBrochurePath, eposterName: originalPosterName, eposterPath: newPosterPath, hasSubEvents, subEvents, eligibleCourses,eligibleSemesters,courseWiseResultDeclaration:courseWiseResult
+            ename, etype, ptype, enature, noOfParticipants, edate, edetails, rules, rcdate, ebrochureName: originalBrochureName, ebrochurePath: newBrochurePath, eposterName: originalPosterName, eposterPath: newPosterPath, hasSubEvents, subEvents, eligibleCourses, eligibleSemesters, courseWiseResultDeclaration: courseWiseResult
         };
 
         // Use findOneAndUpdate with $push to add to the updationLog array
@@ -322,7 +323,7 @@ const registerInEvent = async (req, res) => {
             createdAt: Date.now(),
             status: 'pending',
             updatedAt: Date.now(),
-            rank:0
+            rank: 0
         })
 
         // const tokens = await Students.find(
@@ -457,12 +458,12 @@ const resultDeclaration = async (req, res) => {
 
     try {
         const teamIds = req.body.teamIds;
-    
+
         // Iterate over the teamIds array and update the ranks accordingly
         for (let i = 0; i < teamIds.length; i++) {
             await Registration.updateOne({ _id: teamIds[i] }, { $set: { rank: i + 1 } });
         }
-    
+
         // Send a success response
         return res.status(200).json({ message: "Result Declared Successfully.!", result: true });
     } catch (error) {
@@ -470,6 +471,128 @@ const resultDeclaration = async (req, res) => {
         return res.status(500).json({ message: "Some Error Occurred", result: false });
     }
 
+}
+
+
+const getResults = async (req, res) => {
+    try {
+        const eventId = req.params.eventId;
+        let hasSubEvents = parseBoolean(req.query.hasSubEvents);
+        let courseWiseResultDeclaration = parseBoolean(req.query.courseWiseResultDeclaration);
+        // Find registrations for the event where rank is between 1 and 3
+        const registrations = await Registration.find({ eventId, rank: { $gte: 1, $lte: 3 } }).populate({
+            path:"studentData",
+            populate:{
+                path:"course"
+            },
+            select:"-password"
+        });
+        // Initialize result object
+
+        registrations.sort((teamA,teamB)=>teamA.rank-teamB.rank)
+
+
+        if ((!courseWiseResultDeclaration) && (!hasSubEvents)) {
+            return res.status(200).json({
+                message: "Results Fetched Successfully",
+                data: registrations,
+                result: true
+            });
+        }
+        else if(courseWiseResultDeclaration && !hasSubEvents){
+            const courseWiseResults = {};
+            registrations.forEach((team)=>{
+                const courseId = team.studentData.at(0).course._id;
+                if(courseWiseResults[courseId]){
+                    courseWiseResults[courseId].push(team);
+                }
+                else{
+                    courseWiseResults[courseId] = [team];
+                }
+            })
+            const results = [];
+            for(let courseId in courseWiseResults){
+                const courseObj = {};
+                courseObj["courseId"] = courseId;
+                courseObj["results"] = courseWiseResults[courseId];
+                results.push(courseObj);
+            }
+            return res.status(200).json({
+                message: "Results Fetched Successfully",
+                data: results,
+                result: true
+            });
+        }
+        else if(hasSubEvents && !courseWiseResultDeclaration){
+            const subEventWiseResults = {};
+            registrations.forEach((team)=>{
+                const sId = team.sId;
+                const subEventName = team.subEventName;
+                if(subEventWiseResults[sId]){
+                    subEventWiseResults[sId].push(team);
+                }
+                else{
+                    subEventWiseResults[sId] = [team];
+                }
+            })
+            const results = [];
+            for(let sId in subEventWiseResults){
+                const courseObj = {};
+                courseObj["sId"] = sId;
+                courseObj["results"] = subEventWiseResults[sId];
+                results.push(courseObj);
+            }
+            return res.status(200).json({
+                message: "Results Fetched Successfully",
+                data: results,
+                result: true
+            });
+        }
+        else{
+            const results = [];
+
+            const courses = {};
+
+            registrations.forEach(team=>{
+                const courseId = team.studentData.at(0).course._id;
+                const subeventId  = team.sId;
+                const subEventName = team.subEventName;
+                if(courses[courseId]){
+                    let sIdFound = false;
+                    for(let subEvent of courses[courseId]){
+                        if(subEvent.sId==subeventId){
+                            subEvent.results.push(team);
+                            sIdFound = true;
+                            break;
+                        }
+                    }
+                    if(!sIdFound){
+                        courses[courseId].push({sId:subeventId,subEventName:subEventName,results:[team]})
+                    }
+                }
+                else{
+                    courses[courseId] = [{sId:subeventId,subEventName:subEventName,results:[team]}];
+                }
+            })
+
+            for(let course in courses){
+                const courseObj = {};
+                courseObj["courseId"] = course;
+                courseObj["subEvents"] =courses[course];
+                results.push(courseObj)
+            }
+
+            return res.status(200).json({
+                message: "Results Fetched Successfully",
+                data: results,
+                result: true
+            });
+        }
+        
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal server error", result: false });
+    }
 }
 
 module.exports = {
@@ -482,6 +605,7 @@ module.exports = {
     getRegistrationDataOfEvent,
     approveOrRejectRegistrationRequest,
     studentParticipatedEvents,
-    resultDeclaration
+    resultDeclaration,
+    getResults
 };
 

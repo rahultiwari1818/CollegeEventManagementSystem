@@ -68,5 +68,8 @@ function generateOTP() {
     return otp.toString();
 }
 
+function parseBoolean(string) {
+    return string === "true" ? true : string === "false" ? false : undefined;
+  };
 
-module.exports = {storage,uploadToCloudinary,deleteFromCloudinary,generateOTP};
+module.exports = {storage,uploadToCloudinary,deleteFromCloudinary,generateOTP,parseBoolean};

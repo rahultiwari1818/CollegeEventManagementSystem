@@ -20,7 +20,7 @@ export default function ViewCourses() {
     <section className='my-2'>
         <section className='overflow-x-auto'>
 			<table className='table-auto min-w-full bg-white shadow-md rounded-lg overflow-hidden'>
-				<thead className='bg-blue-500 text-white'>
+				<thead className='bg-gradient-to-r from-cyan-500 to-blue-500  text-white'>
 					<tr>
 						<th className='px-4 py-2'>Sr No</th>
 						<th className='px-4 py-2'>Course Name</th>

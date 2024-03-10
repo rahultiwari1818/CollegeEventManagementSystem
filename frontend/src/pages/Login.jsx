@@ -51,7 +51,7 @@ export default function Login() {
         try {
 
             const response = await axios.post(`${API_URL}/api/${route}/login`, data);
-            console.log(response.data.data)
+            // console.log(response.data.data)
             if (response.data.result) {
                 localStorage.setItem("token", response.data.token);
                 toast.success(response.data.message);

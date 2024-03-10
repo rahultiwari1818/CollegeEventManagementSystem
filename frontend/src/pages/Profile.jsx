@@ -130,7 +130,7 @@ export default function Profile() {
         <section className="h-full pt-3 my-2 pb-5  ">
             <section className="flex items-center justify-center">
                 <section className="max-w-lg w-full bg-white rounded-xl shadow-lg overflow-hidden md:max-w-2xl">
-                    <section className="bg-blue-500">
+                    <section className="bg-gradient-to-r from-cyan-500 to-blue-500 ">
                         <section className="uppercase tracking-wide text-xl sm:text-2xl md:text-3xl lg:text-4xl text-center py-5 sm:py-8 text-white font-semibold">
                             {
                                 user.role
@@ -465,7 +465,7 @@ export default function Profile() {
                                 </section>
                         }
                     </section>
-                    <section className="my-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 px-5">
+                    <section className="my-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 px-5 pb-5">
                    {
                     user.role === "Super Admin"
                     &&
@@ -628,7 +628,7 @@ const ChangeCollegeNameModal = ({isOpen,close,heading,dataToBeUpdated,updateStat
                         />
                         {
                                 <button
-                                    className="px-5 py-2 shadow-lg rounded-lg bg-blue-500 text-white hover:bg-white hover:text-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                                    className="px-5 py-2 shadow-lg rounded-lg bg-gradient-to-r from-cyan-500 to-blue-500  text-white hover:bg-white hover:text-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-600"
                                     onClick={()=>{
                                         fileInputRef.current.click();
                                     }}

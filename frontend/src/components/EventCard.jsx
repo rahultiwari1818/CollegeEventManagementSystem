@@ -15,7 +15,7 @@ export default function EventCard({ data, isLoading }) {
 
   return (
     <section className=' text-blue-500 text-bold  p-5 mt-3 rounded-lg shadow-lg bg-white h-[250px] w-[300px] md:w-[330px] outline outline-blue-400 sm:mt-5 relative'>
-      <img src={isLoading ? CardBG :data?.enature.eventTypeLogoPath} alt="event type" className='absolute top-0 bottom-0 left-0 right-0 w-full h-[250px] opacity-30' />
+      <img src={isLoading ? CardBG :data?.enature.eventTypeLogoPath} alt="event type" className='absolute rounded-lg top-0 bottom-0 left-0 right-0 w-full h-[250px] opacity-30' />
      <section className='relative'>
 
         <section className="h-[125px]">

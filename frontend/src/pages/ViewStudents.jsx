@@ -67,7 +67,7 @@ export default function ViewStudents() {
     },[setSearchParams]);
 
     const changeSearchStatus = useCallback((value)=>{
-        console.log(value,"status")
+        // console.log(value,"status")
         setSearchParams((old) => ({ ...old, status: value }));
     },[setSearchParams])
 
@@ -95,7 +95,7 @@ export default function ViewStudents() {
         try {
             setIsDataLoading(true);
             const { search, searchCourse, searchSemester, searchdivision,status } = searchParams;
-            const course = searchCourse === "All" ? "" : searchCourse;
+            const course = searchCourse == 0 ? "" : searchCourse;
             const semester = searchSemester === "All" ? "" : searchSemester;
             const section = searchdivision === "All" ? "" : searchdivision;
             
@@ -227,18 +227,18 @@ export default function ViewStudents() {
             <Overlay/>
         }
             <section className='mx-2 my-2 p-2'>
-                <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-3 lg:gap-5 p-2">
+                <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-2 md:gap-3 lg:gap-5 p-2">
                     <Search placeholder="Search Student" searchValue={searchParams?.search} changeSearch={changeSearch} />
                     <Dropdown dataArr={courses} selected={searchParams.searchCourse} setSelected={changeSearchCourse} name="searchCourse" label="Select Course" passedId={true} />
-                    <Dropdown dataArr={semestersArr} selected={searchParams.searchSemester} setSelected={changeSemesterCourse} name="searchSemester" label="Select Semester" />
-                    <Dropdown dataArr={division} selected={searchParams.searchdivision} setSelected={changeSearchDivision} name="searchdivisions" label="Select Division" disabled={disablesection} />
+                    <Dropdown dataArr={semestersArr} selected={searchParams.searchSemester} setSelected={changeSemesterCourse} name="searchSemester" label="Select Sem"  />
+                    <Dropdown dataArr={division} selected={searchParams.searchdivision} setSelected={changeSearchDivision} name="searchdivisions" label="Select Div" disabled={disablesection}  />
                     <Dropdown dataArr={statusArr} selected={searchParams.status} setSelected={changeSearchStatus} name="searchdivisions" label="Select Status" />
                 </section>
 
 
                 <section className="overflow-x-auto max-h-[57vh] overflow-y-auto border border-blue-500 border-solid rounded-t-lg">
                     <table className="table-auto min-w-full bg-white shadow-md rounded-lg overflow-hidden ">
-                        <thead className="bg-blue-500 text-white">
+                        <thead className="bg-gradient-to-r from-cyan-500 to-blue-500  text-white">
                             <tr>
                                 <th className="px-2 py-2 md:px-4 min-w-[3%]">Sr No</th>
                                 <th className="px-2 py-2 md:px-4 min-w-[10%]">SID</th>
@@ -455,7 +455,7 @@ export default function ViewStudents() {
                     </section>
                     <section className="flex justify-center gap-3 mt-4 md:w-[30vw] float-right pb-8">
                         <button
-                            className={`mx-1 px-3 py-1 rounded-md ${currentPage === 1 ? 'bg-blue-500 text-white cursor-not-allowed' : 'bg-blue-500 hover:text-blue-500 hover:bg-white hover:outline hover:outline-blue-500 text-white'}`}
+                            className={`mx-1 px-3 py-1 rounded-md ${currentPage === 1 ? 'bg-gradient-to-r from-cyan-500 to-blue-500  text-white cursor-not-allowed' : 'bg-gradient-to-r from-cyan-500 to-blue-500  hover:text-blue-500 hover:bg-white hover:outline hover:outline-blue-500 text-white'}`}
                             onClick={() => handlePageChange(currentPage - 1)}
                             disabled={currentPage === 1}
                         >
@@ -471,7 +471,7 @@ export default function ViewStudents() {
                         />
 
                         <button
-                            className={`mx-1 px-3 py-1 rounded-md ${currentPage === totalPages ? 'bg-blue-500 text-white cursor-not-allowed' : 'bg-blue-500 hover:text-blue-500 hover:bg-white hover:outline hover:outline-blue-500 text-white'}`}
+                            className={`mx-1 px-3 py-1 rounded-md ${currentPage === totalPages ? 'bg-gradient-to-r from-cyan-500 to-blue-500  text-white cursor-not-allowed' : 'bg-gradient-to-r from-cyan-500 to-blue-500  hover:text-blue-500 hover:bg-white hover:outline hover:outline-blue-500 text-white'}`}
                             onClick={() => handlePageChange(currentPage + 1)}
                             disabled={currentPage === totalPages}
                         >

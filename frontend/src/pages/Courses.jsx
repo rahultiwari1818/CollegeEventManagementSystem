@@ -14,7 +14,7 @@ export default function Courses() {
     
     useEffect(()=>{
         if(!user || user?.role == "" || user?.role === undefined) return;
-        console.log("role",user.role)
+        // console.log("role",user.role)
         if(user.role !== "Super Admin"){
             navigate("/home");
         }
@@ -29,15 +29,15 @@ export default function Courses() {
             &&
             <Overlay/>
         }
-        <section className='flex justify-center items-center my-5'>
-        <section className="absolute left-5 md:left-12 top-20 cursor-pointer p-2 md:p-3 rounded-full bg-blue-500">
+        <section className='flex justify-center items-center my-5 relative'>
+        <section className="absolute left-5 md:left-12 top-2 cursor-pointer p-2 md:p-3 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 ">
 					<BackIcon
 						onClick={() => {
 							navigate("/adminDashboard");
 						}}
 					/>
 				</section>
-            <section className='lg:flex justify-center items-start gap-10 mt-12 lg:mt-0'>
+            <section className='lg:flex justify-center items-start gap-10 mt-14   relative'>
                 <AddCourse />
                 <ViewCourses />
             </section>

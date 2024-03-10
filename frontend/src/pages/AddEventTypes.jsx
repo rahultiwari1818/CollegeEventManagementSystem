@@ -135,7 +135,7 @@ export default function AddEventType() {
                     return course
                 }
             })
-            console.log(oldFaculties, newFaculties, id, data, "fac")
+            // console.log(oldFaculties, newFaculties, id, data, "fac")
             return {
                 ...old,
                 courseWiseFaculties: newFaculties
@@ -371,50 +371,52 @@ const AddFacultiesInEventType = ({ course, idx, updateCourseWiseFacultiesData,se
     return (
         <>
             <section
-                className='border border-blue-500 rounded-lg px-2 py-2 shadow-lg'
+                className='border border-blue-500 rounded-lg  shadow-lg'
             >
-                <section className="border border-blue-500 px-3 py-2 text-blue-500 text-center">
+                <section className="border-b rounded-t-lg border-blue-500 px-3 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 text-white text-center">
                     {
                         course?.courseName
                     }
                 </section>
-                <section className="my-2">
+                <section className="px-2">
+                    <section className="my-2">
 
-                    <FacultyCombobox
-                        placeholder={"Add Faculty by Email"}
-                        peopleData={searchedFaculty}
-                        searchFaculty={ddebouncedFetchedFacultyData}
-                        updateSelectedFaculty={updateSelectedFaculty}
-                    />
-                </section>
-                <section className="my-2 border border-blue-500">
-                    {
-                        facultyData.length > 0 
-                        ?
-                        facultyData?.map((faculty, idx) => {
-                            return (
-                                <section className="flex justify-between item-center gap-3 my-2 mx-2 text-blue-500  py-2 px-2 border border-blue-500" key={faculty._id}>
-                                    <p className=' '>
-                                        {
-                                            faculty.name
-                                        }
-                                    </p>
-                                    <button className='bg-red-500 rounded-full px-2 py-2  text-white'
-                                        onClick={() => removeFaculty(faculty._id)}
-                                    >
-                                        <WhiteCloseIcon />
-                                    </button>
-                                </section>
-
-                            )
-                        })
-                        :
-                        <section className="flex justify-between item-center gap-3 my-2 mx-2 text-blue-500  py-2 px-2 border border-blue-500">
-                        <p className="text-center">
-                            No Faculties Added.
-                        </p>
+                        <FacultyCombobox
+                            placeholder={"Add Faculty by Email"}
+                            peopleData={searchedFaculty}
+                            searchFaculty={ddebouncedFetchedFacultyData}
+                            updateSelectedFaculty={updateSelectedFaculty}
+                        />
                     </section>
-                    }
+                    <section className="my-2 border border-blue-500">
+                        {
+                            facultyData.length > 0 
+                            ?
+                            facultyData?.map((faculty, idx) => {
+                                return (
+                                    <section className="flex justify-between item-center gap-3 my-2 mx-2 text-blue-500  py-2 px-2 border-b border-blue-500" key={faculty._id}>
+                                        <p className=' '>
+                                            {
+                                                faculty.name
+                                            }
+                                        </p>
+                                        <button className='bg-red-500 rounded-full px-2 py-2  text-white'
+                                            onClick={() => removeFaculty(faculty._id)}
+                                        >
+                                            <WhiteCloseIcon />
+                                        </button>
+                                    </section>
+
+                                )
+                            })
+                            :
+                            <section className="flex justify-between item-center gap-3 my-2 mx-2 text-blue-500  py-2 px-2 ">
+                            <p className="text-center">
+                                No Faculties Added.
+                            </p>
+                        </section>
+                        }
+                    </section>
                 </section>
 
             </section>

@@ -175,7 +175,7 @@ export default function GenerateEvent() {
         }
         const enature = eventNatures.find(e=>e._id===data.enature) || null;
         if(enature){
-            console.log(user._id,enature)
+            // console.log(user._id,enature)
             if (!enature.committeeMembers.includes(user._id) && user.role !== "Super Admin") {
                 setErrors((old) => ({ ...old, enatureErr: `You Can Not Generate  ${enature.name} Events as You are Not The Member of This Committe.!` }));
                 isValidated = false;
@@ -278,7 +278,7 @@ export default function GenerateEvent() {
 
         if(response.data.result){
 
-            console.log(response.data.data)
+            // console.log(response.data.data)
             setEventNatures((old)=>transformEventTypesData(response.data.data))
         }
         else{
@@ -344,7 +344,7 @@ export default function GenerateEvent() {
             }
             <section className='flex justify-center items-center'>
                 <section className='p-5 md:p-10 shadow-2xl bg-white md:outline-none outline outline-blue-500 md:mt-0 md:mb-0 mt-2 w-full max-w-4xl'>
-                    <p className='text-2xl text-center text-white bg-blue-500 p-2'>Generate Event</p>
+                    <p className='text-2xl text-center text-white bg-gradient-to-r from-cyan-500 to-blue-500  p-2'>Generate Event</p>
                     <form method="post" className='p-4' onSubmit={generateEventHandler}>
                         <section className='md:p-2 md:m-2 p-1 m-1'>
                             <label htmlFor="ename">Event Name:</label>

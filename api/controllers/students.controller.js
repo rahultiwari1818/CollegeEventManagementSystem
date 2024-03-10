@@ -393,7 +393,7 @@ const getStudents = async (req, res) => {
 const getDivisions = async (req, res) => {
 
     try {
-        const course = req.query.course || "";
+        const course = req.query.course== 0 ? "" : req.query.course;
         if(!course){
             return res.status(200).json({
                 message:"Select Course to fetch Division",

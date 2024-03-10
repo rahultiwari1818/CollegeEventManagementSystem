@@ -12,6 +12,7 @@ import Overlay from '../components/Overlay';
 import { ReactComponent as View } from "../assets/Icons/View.svg";
 import Modal from '../components/Modal';
 import EventUpdationLog from '../components/EventUpdationLog';
+import ViewResultsModal from "../components/ViewResultsModal";
 export default function EventDetails() {
 
     const { id } = useParams();
@@ -29,7 +30,7 @@ export default function EventDetails() {
     const [openDetailsModel, setOpenDetailsModel] = useState(false);
     const [subEventDataToShow, setSubEventDataToShow] = useState({});
     const [isOpenViewResultsModal,setIsOpenViewResultsModal] = useState(false);
-
+    const  [eligibleCourses,setEligibleCourses] = useState([]);
     const [isOpenUpdationLogModal, setIsOpenUpdationLogModal] = useState(false);
 
 
@@ -49,6 +50,7 @@ export default function EventDetails() {
             if (data.result) {
                 const eligibleCourses = data.data.eligibleCourses.map((course) => course._id);
                 setData(() => ({ ...data.data, eligibleCourses: eligibleCourses }));
+                setEligibleCourses(data?.data.eligibleCourses);
             }
             setIsLoading(() => false);
         } catch (error) {
@@ -62,7 +64,7 @@ export default function EventDetails() {
 
 
     const viewBrochure = () => {
-        console.log("path", data.ebrochurePath)
+        // console.log("path", data.ebrochurePath)
         window.open(`${data?.ebrochurePath}`, "_blank")
     }
 
@@ -141,6 +143,10 @@ export default function EventDetails() {
 
     const closeUpdationLogModal = () => {
         setIsOpenUpdationLogModal(false);
+    }
+
+    const closeResultModal = () =>{
+        setIsOpenViewResultsModal(false);
     }
 
 
@@ -319,7 +325,7 @@ export default function EventDetails() {
                                                                 <td className="py-2 px-4 border-b">
 
                                                                     <button
-                                                                        className='px-5 py-3 bg-blue-500 rounded-lg shadow-lg text-white hover:text-blue-500 hover:bg-white hover:outline hover:outline-blue-500'
+                                                                        className='px-5 py-3 bg-gradient-to-r from-cyan-500 to-blue-500  rounded-lg shadow-lg text-white hover:text-blue-500 hover:bg-white hover:outline hover:outline-blue-500'
                                                                         onClick={() => handleSubEventRegister(event?.sId)}
 
                                                                     >
@@ -458,7 +464,7 @@ export default function EventDetails() {
                             (!data?.hasSubEvents && !data?.isCanceled && curDate.toLocaleDateString('en-GB') <= new Date(data.rcdate).toLocaleDateString('en-GB') && userData?.role === "Student") &&
                             <section className="my-2 py-2">
                                 <button
-                                    className='px-5 py-3 bg-blue-500 rounded-lg shadow-lg text-white hover:text-blue-500 hover:bg-white hover:outline hover:outline-blue-500'
+                                    className='px-5 py-3 bg-gradient-to-r from-cyan-500 to-blue-500  rounded-lg shadow-lg text-white hover:text-blue-500 hover:bg-white hover:outline hover:outline-blue-500'
                                     onClick={handleRegisterEvent}
 
                                 >
@@ -552,7 +558,9 @@ export default function EventDetails() {
                                 <section className='my-2'>
                                     <button
                                         className='px-5 py-3 bg-green-500 rounded-lg shadow-lg text-white hover:text-green-500 hover:bg-white hover:outline hover:outline-green-500'
-                                        
+                                        onClick={()=>{
+                                            setIsOpenViewResultsModal(true);
+                                        }}
                                     >
                                         View Results
                                     </button>
@@ -572,6 +580,7 @@ export default function EventDetails() {
             <CancelEvent openCancelCnfModal={openCancelCnfModal} setOpenCancelCnfModal={setOpenCancelCnfModal} changeEventStatus={changeEventStatus} />
             <ViewSubEventDetails openDetailsModel={openDetailsModel} setOpenDetailsModel={setOpenDetailsModel} eventData={subEventDataToShow} />
             <EventUpdationLog isOpen={isOpenUpdationLogModal} close={closeUpdationLogModal} heading={"Updation Log"} updationLog={data.updationLog} />
+            <ViewResultsModal isOpen={isOpenViewResultsModal} close={closeResultModal} eventData={data} courses={eligibleCourses}/>
         </>
     )
 }
