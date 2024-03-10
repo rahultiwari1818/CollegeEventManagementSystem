@@ -489,6 +489,8 @@ const getResults = async (req, res) => {
         });
         // Initialize result object
 
+        registrations.sort((teamA,teamB)=>teamA.rank-teamB.rank)
+
 
         if ((!courseWiseResultDeclaration) && (!hasSubEvents)) {
             return res.status(200).json({
