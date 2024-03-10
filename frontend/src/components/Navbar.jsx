@@ -50,7 +50,7 @@ export default function Navbar() {
           }
         });
         setIsLoggedIn(() => true);
-        console.log(data.user)
+        // console.log(data.user)
         if (location?.pathname === "/login") navigate("/home");
         dispatch(setNewUser(data.user));
       } catch (error) {

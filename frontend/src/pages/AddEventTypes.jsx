@@ -135,7 +135,7 @@ export default function AddEventType() {
                     return course
                 }
             })
-            console.log(oldFaculties, newFaculties, id, data, "fac")
+            // console.log(oldFaculties, newFaculties, id, data, "fac")
             return {
                 ...old,
                 courseWiseFaculties: newFaculties

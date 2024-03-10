@@ -64,7 +64,7 @@ export default function EventDetails() {
 
 
     const viewBrochure = () => {
-        console.log("path", data.ebrochurePath)
+        // console.log("path", data.ebrochurePath)
         window.open(`${data?.ebrochurePath}`, "_blank")
     }
 

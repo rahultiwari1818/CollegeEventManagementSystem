@@ -14,7 +14,7 @@ export default function Courses() {
     
     useEffect(()=>{
         if(!user || user?.role == "" || user?.role === undefined) return;
-        console.log("role",user.role)
+        // console.log("role",user.role)
         if(user.role !== "Super Admin"){
             navigate("/home");
         }

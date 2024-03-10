@@ -48,7 +48,7 @@ export default function ViewRegistration() {
                         "auth-token": token
                     }
                 });
-                console.log("data data", data.data);
+                // console.log("data data", data.data);
                 if (data.result) {
 
                     if (data?.data[0]?.sId) {
@@ -83,7 +83,7 @@ export default function ViewRegistration() {
 
                 if (data?.result) {
                     setEventData(data?.data);
-                    console.log(data.data.eligibleCourses)
+                    // console.log(data.data.eligibleCourses)
                     setEligibleCourses(() => transformCourseData(data.data.eligibleCourses, true))
                 }
                 else {
@@ -213,7 +213,7 @@ export default function ViewRegistration() {
 
                             filtered.push(subEvent.filter(team => team.studentData?.at(0)?.course._id === filterParams.courseId))
                         });
-                        console.log(filtered)
+                        // console.log(filtered)
                         setFilteredData(filtered);
                     }
 
@@ -232,7 +232,7 @@ export default function ViewRegistration() {
                         const filtered = registrationData.filter(team => {
                             return team.studentData?.at(0).course._id === filterParams.courseId
                         });
-                        console.log(filtered)
+                        // console.log(filtered)
                         setFilteredData(filtered);
                     }
 

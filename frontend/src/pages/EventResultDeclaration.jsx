@@ -72,7 +72,7 @@ export default function EventResultDeclaration() {
                     if (data?.data?.hasSubEvents) {
                         setSubEvents(transformSubEventData(data?.data.subEvents))
                     }
-                    console.log(data.data.eligibleCourses)
+                    // console.log(data.data.eligibleCourses)
                     setEligibleCourses(() => transformCourseData(data.data.eligibleCourses))
                 }
                 else {

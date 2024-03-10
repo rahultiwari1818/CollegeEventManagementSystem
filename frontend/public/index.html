@@ -74,6 +74,8 @@
                             return registration.pushManager
                                 .getSubscription()
                                 .then(function (existedSubscription) {
+                                    const title = "";
+                                    const message = "";
                                     if (existedSubscription === null) {
                                         registration.pushManager
                                             .subscribe({

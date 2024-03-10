@@ -67,7 +67,7 @@ export default function ViewStudents() {
     },[setSearchParams]);
 
     const changeSearchStatus = useCallback((value)=>{
-        console.log(value,"status")
+        // console.log(value,"status")
         setSearchParams((old) => ({ ...old, status: value }));
     },[setSearchParams])
 
