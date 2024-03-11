@@ -61,7 +61,7 @@ export default function Faculties() {
 				<Overlay />
 			}
 			<section className='w-full h-full py-3 '>
-			<section className="absolute left-8 md:left-12 top-18 cursor-pointer p-3 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 ">
+				<section className="absolute left-8 md:left-12 top-18 cursor-pointer p-3 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 ">
 					<BackIcon
 						onClick={() => {
 							navigate("/adminDashboard");
@@ -136,7 +136,7 @@ export default function Faculties() {
 							:
 							facultyData?.map((course) => {
 								return (
-									<section className='bg-white rounded-lg shadow-lg px-5 py-4 mx-3 my-3 hover:transform hover:-translate-y-3 hover:translate-x-3 hover:transition-transform'>
+									<section className='bg-white rounded-lg shadow-lg px-5 py-4 mx-3 my-3 hover:transform hover:-translate-y-1 hover:translate-x-1  hover:transition-transform'>
 										<p className="text-center text-blue-500 text-xl md:text-2xl lg:text-3xl">
 											{
 												isLoading ?
@@ -151,7 +151,6 @@ export default function Faculties() {
 													:
 													course?.count
 											}
-
 										</p>
 										<p className="text-center text-blue-500 text-base md:text-xl">Total Faculties</p>
 										<p className="text-center text-blue-500 text-xl md:text-2xl lg:text-3xl">
@@ -168,10 +167,9 @@ export default function Faculties() {
 													:
 													course?.course._id === null ? "Super Admin" : course?.course?.courseName
 											}
-
 										</p>
-
 									</section>
+
 								)
 							})
 					}

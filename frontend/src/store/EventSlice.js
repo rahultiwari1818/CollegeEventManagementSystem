@@ -5,6 +5,7 @@ import axios from "axios";
 let initialState = {
     isLoading : false,
     data:[],
+    totalEvents:0,
     isError : false,
     errorObj :{}
 };
@@ -14,19 +15,20 @@ const API_URL = process.env.REACT_APP_BASE_URL;
 
 export const fetchAllEvents = createAsyncThunk(
     "fetchAllEvents",
-    async(course,{getState})=>{
+    async({course,page},{getState})=>{
         const token = localStorage.getItem("token");
         try{
             const response = await axios.get(`${API_URL}/api/events/getevents`,{
                 params:{
-                    course:course
+                    course:course,
+                    // page:page,
                 },
                 headers:{
                     "auth-token": token,
                 }
             });
             // console.log(response,"res");
-            return response.data.data || [];
+            return response.data;
         }
         catch(error){
             console.log(error)
@@ -49,7 +51,8 @@ export const EventSlice = createSlice({
             state.isLoading = true;
         })
         .addCase(fetchAllEvents.fulfilled,(state,action)=>{
-            state.data = action.payload;
+            state.data = action.payload.data;
+            state.totalEvents = action.payload.totalEvents;
             state.isLoading = false;
         })
         .addCase(fetchAllEvents.rejected,(state,action)=>{

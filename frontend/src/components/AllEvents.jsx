@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAllEvents } from '../store/EventSlice';
@@ -9,9 +9,12 @@ export default function AllEvents() {
 
     // const API_URL = process.env.REACT_APP_BASE_URL;
 
+    // const [hasMore,setHasMore] = useState(false);
+
     const dispatch = useDispatch();
     const data = useSelector((state) => state.EventSlice.data);
     const isLoading = useSelector((state) => state.EventSlice.isLoading);
+    const totalEvents = useSelector((state)=>state.EventSlice.totalEvents);
     // const labels = useMemo(()=>{
     //   return data.length > 0 ? Object.keys(data[0]):[];
     // },[data]);

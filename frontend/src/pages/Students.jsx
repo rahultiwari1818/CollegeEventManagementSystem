@@ -9,6 +9,7 @@ import FemaleImage from "../assets/images/FemaleIcon.png"
 import OtherImage from "../assets/images/OtherIcon.png"
 import { toast } from "react-toastify";
 import { ReactComponent as BackIcon } from "../assets/Icons/BackIcon.svg";
+import Modal from '../components/Modal';
 
 export default function Students() {
 
@@ -20,7 +21,15 @@ export default function Students() {
 	const [isLoading, setIsLoading] = useState(true)
 	const [studentData, setStudentData] = useState([]);
 	const userData = useSelector((state) => state.UserSlice);
+	const [isOpenPromoteStudentModal, setIsOpenPromoteStudentModal] = useState(false);
+	const [courseToBePromoted, setCourseToBePromoted] = useState("");
 	const navigate = useNavigate();
+
+	const closePromoteStudentModal = () => {
+		setCourseToBePromoted("");
+		setIsOpenPromoteStudentModal(false);
+	}
+
 
 	const fetchStudentData = async () => {
 
@@ -173,7 +182,7 @@ export default function Students() {
 							:
 							studentData?.map((course) => {
 								return (
-									<section className='bg-white rounded-lg shadow-lg px-5 py-4 mx-3 my-3 hover:transform hover:-translate-y-3 hover:translate-x-3 hover:transition-transform'>
+									<section className='bg-white rounded-lg shadow-lg px-5 py-4 mx-3 my-3 hover:transform hover:-translate-y-1 hover:translate-x-1  hover:transition-transform'>
 										<p className="text-center text-blue-500 text-xl md:text-2xl lg:text-3xl">
 											{
 												isLoading ?
@@ -229,7 +238,10 @@ export default function Students() {
 										</section>
 										<section className="flex justify-center items-center mt-3">
 											<button className='py-2 rounded-lg shadow-lg px-5 bg-gradient-to-r from-cyan-500 to-blue-500  text-white '
-												onClick={() => promoteStudentsToNextSemester(course.course)}
+												onClick={() => {
+													setIsOpenPromoteStudentModal(true);
+													setCourseToBePromoted(course.course)
+												}}
 											>
 												Promote Students to Next Semester
 											</button>
@@ -240,6 +252,41 @@ export default function Students() {
 					}
 				</section>
 			</section>
+			<PromoteStudentModal isOpen={isOpenPromoteStudentModal} close={closePromoteStudentModal} promoteStudentsToNextSemester={promoteStudentsToNextSemester} course={courseToBePromoted} />
 		</>
 	)
+}
+
+
+const PromoteStudentModal = ({ isOpen, close, course, promoteStudentsToNextSemester }) => {
+
+	return (
+		<Modal isOpen={isOpen} close={close} heading={"Promote Student to Next Semester"}>
+			<section className="py-2">
+				<section>
+					<p className="text-center text-xl py-2 text-red-500">
+						This Action Can Not be Reverted ! <br />
+						Are You Sure To Promote Students to Next Semester.?
+					</p>
+					<section className="my-2 grid grid-cols-1 md:grid-cols-2 gap-5">
+						<button
+							className='text-yellow-500 cursor-pointer bg-white rounded-lg shadow-lg px-5 py-3 w-full m-2 outline outline-yellow-500 hover:text-white hover:bg-yellow-500 '
+
+							onClick={() => close()}
+						>Cancel</button>
+						<button
+							className='text-red-500 cursor-pointer bg-white rounded-lg shadow-lg px-5 py-3 w-full m-2 outline outline-red-500 hover:text-white hover:bg-red-500 '
+
+							onClick={() => {
+								promoteStudentsToNextSemester(course)
+							}}
+						>
+							Promote Students
+						</button>
+					</section>
+				</section>
+			</section>
+		</Modal>
+	)
+
 }

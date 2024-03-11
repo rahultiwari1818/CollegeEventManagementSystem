@@ -83,7 +83,7 @@ const EventTypeCard = ({ eventType ,openUpdateModal,disabled}) => {
     return (
         <>
         <section className="shadow-lg px-2 md:px-5 pt-5 pb-3 bg-white relative text-blue-500 h-[30vh] " >
-            <img src={eventType.eventTypeLogoPath} alt="event type" srcSet={""} className='absolute opacity-40 left-0 right-0 top-0 bottom-0 w-full h-[30vh]' />
+            <img src={eventType.eventTypeLogoPath} alt="event type"  className='absolute opacity-40 left-0 right-0 top-0 bottom-0 w-full h-[30vh]' />
             <section className=' py-2 px-3  relative h-full'>
                 <section className="flex justify-between items-center">
                     <p className='text-3xl  font-black'>{
