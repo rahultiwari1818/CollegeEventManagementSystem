@@ -70,8 +70,14 @@ const generateEvent = async (req, res) => {
 
         }
         const eligibleSemesters = JSON.parse(req.body.eligibleSemester || "[]");
-        const subEvents = JSON.parse(req.body.subEvents || "[]"); // Parse subEvents JSON string, default to empty array if not provided
+        const subEventData = JSON.parse(req.body.subEvents || "[]"); // Parse subEvents JSON string, default to empty array if not provided
         const eligibleCourses = JSON.parse(req.body.eligibleCourses || "[]"); // Parse subEvents JSON string, default to empty array if not provided
+
+        const subEvents = subEventData?.map((event) => ({
+            ...event,
+            eligibleSemesters: JSON.parse(event.eligibleSemester)
+        }));
+
         const genEvent = await Event.create({
             ename: ename.trim(),
             etype: etype.trim(),
@@ -115,15 +121,23 @@ const getAllEvents = async (req, res) => {
         let query = {};
 
         // Check if course parameter is provided
-        const { course } = req.query;
+        let { course, page } = req.query;
+
+        page = parseInt(page) || 1;
+        const limit = 8;
+        const skip = (page - 1) * limit;
+
         if (course && course !== "") {
             // If course is provided, filter events by the course parameter
             query = { eligibleCourses: { $in: [course] } };
         }
         // console.log(query)
         // Fetch events based on the query
-        const data = await Event.find(query).sort({ edate: 1 }).populate("enature");
-        return res.status(200).json({ "message": "Event Fetched Successfully", "data": data, "result": true });
+        const totalEvents = await Event.countDocuments(query);
+        const data = await Event.find(query).sort({ edate: 1 }).populate("enature")
+        
+        // .skip(skip).limit(limit);
+        return res.status(200).json({ "message": "Event Fetched Successfully", "data": data, totalEvents, "result": true });
     } catch (error) {
         console.log(error)
         return res.status(500).json({ "message": "Some Error Occured", "result": false });
@@ -250,9 +264,23 @@ const updateEventDetails = async (req, res) => {
         }
 
         // Update event details in the database
-        const subEvents = JSON.parse(req.body.subEvents);
+        const subEventData = JSON.parse(req.body.subEvents);
         const eligibleSemesters = JSON.parse(req.body.eligibleSemester || "[]");
         const eligibleCourses = JSON.parse(req.body.eligibleCourses); // Parse subEvents JSON string, default to empty array if not provided
+        const subEvents = subEventData?.map((event) => {
+
+            return Array.isArray(event.eligibleSemester) ? {
+                ...event,
+                eligibleSemester: event.eligibleSemester
+            }
+                :
+                {
+                    ...event,
+                    eligibleSemester: JSON.parse(event.eligibleSemester)
+                }
+
+        });
+
         const dataToUpdate = {
             ename, etype, ptype, enature, noOfParticipants, edate, edetails, rules, rcdate, ebrochureName: originalBrochureName, ebrochurePath: newBrochurePath, eposterName: originalPosterName, eposterPath: newPosterPath, hasSubEvents, subEvents, eligibleCourses, eligibleSemesters, courseWiseResultDeclaration: courseWiseResult
         };
@@ -481,15 +509,15 @@ const getResults = async (req, res) => {
         let courseWiseResultDeclaration = parseBoolean(req.query.courseWiseResultDeclaration);
         // Find registrations for the event where rank is between 1 and 3
         const registrations = await Registration.find({ eventId, rank: { $gte: 1, $lte: 3 } }).populate({
-            path:"studentData",
-            populate:{
-                path:"course"
+            path: "studentData",
+            populate: {
+                path: "course"
             },
-            select:"-password"
+            select: "-password"
         });
         // Initialize result object
 
-        registrations.sort((teamA,teamB)=>teamA.rank-teamB.rank)
+        registrations.sort((teamA, teamB) => teamA.rank - teamB.rank)
 
 
         if ((!courseWiseResultDeclaration) && (!hasSubEvents)) {
@@ -499,19 +527,19 @@ const getResults = async (req, res) => {
                 result: true
             });
         }
-        else if(courseWiseResultDeclaration && !hasSubEvents){
+        else if (courseWiseResultDeclaration && !hasSubEvents) {
             const courseWiseResults = {};
-            registrations.forEach((team)=>{
+            registrations.forEach((team) => {
                 const courseId = team.studentData.at(0).course._id;
-                if(courseWiseResults[courseId]){
+                if (courseWiseResults[courseId]) {
                     courseWiseResults[courseId].push(team);
                 }
-                else{
+                else {
                     courseWiseResults[courseId] = [team];
                 }
             })
             const results = [];
-            for(let courseId in courseWiseResults){
+            for (let courseId in courseWiseResults) {
                 const courseObj = {};
                 courseObj["courseId"] = courseId;
                 courseObj["results"] = courseWiseResults[courseId];
@@ -523,20 +551,20 @@ const getResults = async (req, res) => {
                 result: true
             });
         }
-        else if(hasSubEvents && !courseWiseResultDeclaration){
+        else if (hasSubEvents && !courseWiseResultDeclaration) {
             const subEventWiseResults = {};
-            registrations.forEach((team)=>{
+            registrations.forEach((team) => {
                 const sId = team.sId;
                 const subEventName = team.subEventName;
-                if(subEventWiseResults[sId]){
+                if (subEventWiseResults[sId]) {
                     subEventWiseResults[sId].push(team);
                 }
-                else{
+                else {
                     subEventWiseResults[sId] = [team];
                 }
             })
             const results = [];
-            for(let sId in subEventWiseResults){
+            for (let sId in subEventWiseResults) {
                 const courseObj = {};
                 courseObj["sId"] = sId;
                 courseObj["results"] = subEventWiseResults[sId];
@@ -548,37 +576,37 @@ const getResults = async (req, res) => {
                 result: true
             });
         }
-        else{
+        else {
             const results = [];
 
             const courses = {};
 
-            registrations.forEach(team=>{
+            registrations.forEach(team => {
                 const courseId = team.studentData.at(0).course._id;
-                const subeventId  = team.sId;
+                const subeventId = team.sId;
                 const subEventName = team.subEventName;
-                if(courses[courseId]){
+                if (courses[courseId]) {
                     let sIdFound = false;
-                    for(let subEvent of courses[courseId]){
-                        if(subEvent.sId==subeventId){
+                    for (let subEvent of courses[courseId]) {
+                        if (subEvent.sId == subeventId) {
                             subEvent.results.push(team);
                             sIdFound = true;
                             break;
                         }
                     }
-                    if(!sIdFound){
-                        courses[courseId].push({sId:subeventId,subEventName:subEventName,results:[team]})
+                    if (!sIdFound) {
+                        courses[courseId].push({ sId: subeventId, subEventName: subEventName, results: [team] })
                     }
                 }
-                else{
-                    courses[courseId] = [{sId:subeventId,subEventName:subEventName,results:[team]}];
+                else {
+                    courses[courseId] = [{ sId: subeventId, subEventName: subEventName, results: [team] }];
                 }
             })
 
-            for(let course in courses){
+            for (let course in courses) {
                 const courseObj = {};
                 courseObj["courseId"] = course;
-                courseObj["subEvents"] =courses[course];
+                courseObj["subEvents"] = courses[course];
                 results.push(courseObj)
             }
 
@@ -588,7 +616,7 @@ const getResults = async (req, res) => {
                 result: true
             });
         }
-        
+
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Internal server error", result: false });

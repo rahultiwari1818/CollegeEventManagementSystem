@@ -10,6 +10,7 @@ export const UserSlice = createSlice({
         name:"",
         role:"",
         course:"",
+        semester:0
     },
     reducers:{
         setNewUser:(state,action)=>{
@@ -17,12 +18,14 @@ export const UserSlice = createSlice({
             state.role = action.payload.role
             state.name = action.payload.name
             state.course = action.payload?.course || ""
+            state.semester = action.payload?.semester || 0
         } ,
         logoutUser:(state,action)=>{
             state._id=""
             state.name=""
             state.role=""
             state.course=""
+            state.semester=0
         }
     },
     extraReducers: (builder)=>{

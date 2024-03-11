@@ -29,8 +29,8 @@ export default function EventDetails() {
     const userData = useSelector((state) => state.UserSlice);
     const [openDetailsModel, setOpenDetailsModel] = useState(false);
     const [subEventDataToShow, setSubEventDataToShow] = useState({});
-    const [isOpenViewResultsModal,setIsOpenViewResultsModal] = useState(false);
-    const  [eligibleCourses,setEligibleCourses] = useState([]);
+    const [isOpenViewResultsModal, setIsOpenViewResultsModal] = useState(false);
+    const [eligibleCourses, setEligibleCourses] = useState([]);
     const [isOpenUpdationLogModal, setIsOpenUpdationLogModal] = useState(false);
 
 
@@ -145,7 +145,7 @@ export default function EventDetails() {
         setIsOpenUpdationLogModal(false);
     }
 
-    const closeResultModal = () =>{
+    const closeResultModal = () => {
         setIsOpenViewResultsModal(false);
     }
 
@@ -153,7 +153,7 @@ export default function EventDetails() {
     return (
         <>
             {
-                isLoading
+                isPageLoading
                 &&
                 <Overlay />
             }
@@ -321,7 +321,7 @@ export default function EventDetails() {
                                                             <td className="py-2 px-4 border-b">{event.noOfParticipants}</td>
                                                             <td className="py-2 px-4 border-b"><View className="cursor-pointer" onClick={() => viewSubEventDetails(event)} /></td>
                                                             {
-                                                                !data?.isCanceled && curDate.toLocaleDateString('en-GB') <= new Date(data.rcdate).toLocaleDateString('en-GB') && userData?.role === "Student" &&
+                                                                !data?.isCanceled && curDate.toLocaleDateString('en-GB') <= new Date(data.rcdate).toLocaleDateString('en-GB') && userData?.role === "Student" && event?.eligibleSemesters?.includes(userData?.semester) &&
                                                                 <td className="py-2 px-4 border-b">
 
                                                                     <button
@@ -450,6 +450,21 @@ export default function EventDetails() {
                                     View Poster
                                 </button>
                             }
+                            {
+                                curDate.toLocaleDateString('en-GB') >= new Date(data.edate).toLocaleDateString('en-GB')
+
+                                &&
+
+                                    <button
+                                        className='px-5 py-3 mx-4 my-2 bg-green-500 rounded-lg shadow-lg text-white hover:text-green-500 hover:bg-white hover:outline hover:outline-green-500'
+                                        onClick={() => {
+                                            setIsOpenViewResultsModal(true);
+                                        }}
+                                    >
+                                        View Results
+                                    </button>
+                            }
+
                         </section>
 
 
@@ -461,10 +476,10 @@ export default function EventDetails() {
 
                         {/* Conditional Rendering  for Participants -- where user is not admin */}
                         {
-                            (!data?.hasSubEvents && !data?.isCanceled && curDate.toLocaleDateString('en-GB') <= new Date(data.rcdate).toLocaleDateString('en-GB') && userData?.role === "Student") &&
+                            (!data?.hasSubEvents && !data?.isCanceled && curDate.toLocaleDateString('en-GB') <= new Date(data.rcdate).toLocaleDateString('en-GB') && userData?.role === "Student" && data?.eligibleSemesters?.includes(userData?.semester)) &&
                             <section className="my-2 py-2">
                                 <button
-                                    className='px-5 py-3 bg-gradient-to-r from-cyan-500 to-blue-500  rounded-lg shadow-lg text-white hover:text-blue-500 hover:bg-white hover:outline hover:outline-blue-500'
+                                    className='px-5 py-3 bg-gradient-to-r from-cyan-500 to-blue-500  rounded-lg  text-white hover:shadow-lg'
                                     onClick={handleRegisterEvent}
 
                                 >
@@ -499,8 +514,8 @@ export default function EventDetails() {
                                 </section>
 
                                 {
-                                    // curDate >= new Date(data.edate)
-                                    true
+                                    curDate.toLocaleDateString('en-GB') >= new Date(data.edate).toLocaleDateString('en-GB')
+
                                     &&
                                     <section className='my-2'>
                                         <button
@@ -555,16 +570,9 @@ export default function EventDetails() {
                                         View Updation Log
                                     </button>
                                 </section>
-                                <section className='my-2'>
-                                    <button
-                                        className='px-5 py-3 bg-green-500 rounded-lg shadow-lg text-white hover:text-green-500 hover:bg-white hover:outline hover:outline-green-500'
-                                        onClick={()=>{
-                                            setIsOpenViewResultsModal(true);
-                                        }}
-                                    >
-                                        View Results
-                                    </button>
-                                </section>
+
+
+
                             </section>
 
 
@@ -580,7 +588,7 @@ export default function EventDetails() {
             <CancelEvent openCancelCnfModal={openCancelCnfModal} setOpenCancelCnfModal={setOpenCancelCnfModal} changeEventStatus={changeEventStatus} />
             <ViewSubEventDetails openDetailsModel={openDetailsModel} setOpenDetailsModel={setOpenDetailsModel} eventData={subEventDataToShow} />
             <EventUpdationLog isOpen={isOpenUpdationLogModal} close={closeUpdationLogModal} heading={"Updation Log"} updationLog={data.updationLog} />
-            <ViewResultsModal isOpen={isOpenViewResultsModal} close={closeResultModal} eventData={data} courses={eligibleCourses}/>
+            <ViewResultsModal isOpen={isOpenViewResultsModal} close={closeResultModal} eventData={data} courses={eligibleCourses} />
         </>
     )
 }

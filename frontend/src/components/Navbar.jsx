@@ -49,13 +49,13 @@ export default function Navbar() {
             "auth-token": token
           }
         });
-        setIsLoggedIn(() => true);
+        setIsLoggedIn((old) => true);
         // console.log(data.user)
         if (location?.pathname === "/login") navigate("/home");
         dispatch(setNewUser(data.user));
       } catch (error) {
-        setIsLoggedIn(() => false);
-        console.error(error.response);
+        setIsLoggedIn((old) => false);
+        // console.error(error.response);
         if (error.response?.status === 401 && location?.pathname !== "/login") {
           navigate("/login");
         }
@@ -245,7 +245,7 @@ export default function Navbar() {
 
                         {
                           userData.role !== "Student" &&
-                          <PopoverComponent options={userData.role==="Super Admin" ? eventRoutesForSuperAdmin :eventRoutesForFaculties} label=" Events" />
+                          <PopoverComponent options={userData.role==="Super Admin" ? eventRoutesForSuperAdmin :eventRoutesForFaculties} label=" Events" closeSideBar={closeSideBar}/>
                         }
 
                         {

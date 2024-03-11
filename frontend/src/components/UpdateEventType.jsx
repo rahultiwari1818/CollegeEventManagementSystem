@@ -7,6 +7,7 @@ import { ReactComponent as WhiteCloseIcon } from "../assets/Icons/WhiteCloseIcon
 import FacultyCombobox from './FacultyCombobox';
 import { debounce, isValidName } from '../utils';
 import { toast } from 'react-toastify';
+import Overlay from "./Overlay";
 
 export default function UpdateEventType({ isOpen, close, dataToBeUpdated }) {
 
@@ -15,6 +16,7 @@ export default function UpdateEventType({ isOpen, close, dataToBeUpdated }) {
     const API_URL = process.env.REACT_APP_BASE_URL;
 
     const [data, setData] = useState({ newEventTypeLogo: null });
+    const [isLoading,setIsLoading] = useState(false);
     const [errors, setErrors] = useState({
         eventTypeNameErr: ""
     })
@@ -106,7 +108,7 @@ export default function UpdateEventType({ isOpen, close, dataToBeUpdated }) {
             if (!validateData()) {
                 return;
             }
-
+            setIsLoading(true);
 
             const courseWiseFaculties = [];
             data.courseWiseFaculties?.forEach((course) => {
@@ -161,7 +163,7 @@ export default function UpdateEventType({ isOpen, close, dataToBeUpdated }) {
             toast.error(error?.response?.data?.message);
         }
         finally {
-
+            setIsLoading(false);
         }
 
 
@@ -172,6 +174,12 @@ export default function UpdateEventType({ isOpen, close, dataToBeUpdated }) {
 
 
     return (
+        <>
+        {
+            isLoading
+            &&
+            <Overlay/>
+        }
         <Modal isOpen={isOpen} close={close} heading={"Update Event Type"}>
             <section className="py-2 px-2">
                 <section className='md:p-2 md:m-2 p-1 m-1'>
@@ -234,7 +242,7 @@ export default function UpdateEventType({ isOpen, close, dataToBeUpdated }) {
                             }}
                         />
                                 <button
-                                    className="px-5 py-2 my-3 shadow-lg rounded-lg bg-gradient-to-r from-cyan-500 to-blue-500  text-white hover:bg-white hover:text-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                                    className="px-5 py-2 my-3 shadow-lg rounded-lg bg-gradient-to-r from-cyan-500 to-blue-500  text-white  focus:outline-none focus:ring-2 focus:ring-blue-600"
                                     onClick={()=>{
                                         fileInputRef.current.click();
 
@@ -255,6 +263,7 @@ export default function UpdateEventType({ isOpen, close, dataToBeUpdated }) {
 
             </section>
         </Modal>
+        </>
     )
 }
 
