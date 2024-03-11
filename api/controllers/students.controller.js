@@ -940,7 +940,7 @@ const changeStudentStatus = async (req, res) => {
             },
             { new: true } // To return the updated document
 
-        )
+        ).populate("course")
 
         return res.status(200).json({
             message: "Student Status Changed Successfully",
@@ -972,14 +972,8 @@ const promoteStudentsToNextSemester = async (req, res) => {
                         semester: {
                             $cond: [
                                 { $eq: ["$semester", course.noOfSemesters] },
-                                0,
-                                {
-                                    $cond: [
-                                        { $eq: ["$semester", 0] },
-                                        course.noOfSemesters,
-                                        { $add: ["$semester", 1] }
-                                    ]
-                                }
+                                "$semester",  // If equal, keep the current semester
+                                { $add: ["$semester", 1] }  // If not equal, increment the semester
                             ]
                         },
                         status: {
@@ -993,7 +987,7 @@ const promoteStudentsToNextSemester = async (req, res) => {
                 }
             ]
         );
-
+        
 
         // Now you can send a response back to the client
         res.status(200).json({ message: "Student Promoted  successfully", result: true, data: result, });

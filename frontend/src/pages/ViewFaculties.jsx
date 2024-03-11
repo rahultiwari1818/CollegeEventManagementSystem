@@ -32,6 +32,10 @@ export default function ViewFaculties() {
         data:{}
     })
 
+    const closeOpenUpdateModal = () =>{
+        setOpenUpdateModal(false);
+        setDataUpdated({});
+    }
 
     const changeSearch = useCallback((value) => {
         setSearchParams((old) => ({ ...old, search: value }));
@@ -121,6 +125,10 @@ export default function ViewFaculties() {
 
 
     const updateStateData = useCallback((data)=>{
+        if(!data){
+            fetchFacultyData();
+            return;
+        }
         setFacultyData((old)=>{
 
             return old?.map((faculty)=>{
@@ -360,7 +368,7 @@ export default function ViewFaculties() {
                 </section>
 
             </section>
-            <UpdateFaculty isOpen={openUpdateModal} close={setOpenUpdateModal} heading={"Update Student Data"} dataToBeUpdated={dataToBeUpdated} updateStateData={updateStateData}/>
+            <UpdateFaculty isOpen={openUpdateModal} close={closeOpenUpdateModal} heading={"Update Student Data"} dataToBeUpdated={dataToBeUpdated} updateStateData={updateStateData}/>
             <LockingConfirmation isOpen={isOpenChangeStatusModal.isOpen} close={closeChangeStatusModal} user={"Faculty"} data={isOpenChangeStatusModal.data} updateStateData={updateStateData}/>
         </>
     );

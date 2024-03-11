@@ -188,7 +188,7 @@ export default function AddEventType() {
         }
         <secction className="flex justify-center items-center px-5 py-5">
             <section className='p-3 rounded-lg border border-blue-500 my-2 shadow-lg'>
-                <p className="text-center text-xl border-b border-blue-500 text-blue-500">
+                <p className="text-center text-xl border-b bg-gradient-to-r from-cyan-500 to-blue-500 text-white py-2">
                     Add New Event Type and Committee Members
                 </p>
                 <section className='md:p-2 md:m-2 p-1 m-1'>

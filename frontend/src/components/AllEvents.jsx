@@ -41,6 +41,12 @@ export default function AllEvents() {
                             return <EventCard key={idx} isLoading={isLoading} />
                         })
                         :
+                        data.length === 0
+                        ?
+                        <p className="text-center text-4xl font-black text-blue-500 py-3 mt-10 w-full">
+                            No Events Found
+                        </p>
+                        :
                         data && data?.map((event, idx) => {
                             return <EventCard key={event._id} data={event} isLoading={isLoading} />
                         })

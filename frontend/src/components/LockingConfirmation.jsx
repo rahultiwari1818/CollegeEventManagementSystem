@@ -36,7 +36,7 @@ export default function LockingConfirmation({ isOpen, close, user, data, updateS
     return (
         <Modal isOpen={isOpen} close={close} heading={"Change Status"}>
             <section className='my-2 mx-3 '>
-                <p className="text-center text-red-500">Are You Sure To Change {user} Status</p>
+                <p className="text-center text-red-500">Are You Sure To Change {user} Status ?</p>
 
                 <section className='my-4 grid grid-cols-2 gap-5'>
                     <button className="px-5 py-3 rounded-lg shadow-lg bg-gradient-to-r from-cyan-500 to-blue-500  text-white hover:text-blue-500 hover:bg-white hover:outline  hover:outline-blue-500"
