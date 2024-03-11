@@ -34,12 +34,12 @@ export default function ViewEventTypes() {
 						}}
 					/>
 				</section>
-                <section className='my-1 float-right mx-3'>
-                        <Link to="/addEventType" className='px-5 py-2 block my-2 shadow-lg rounded-lg bg-yellow-500 text-white hover:outline hover:outline-yellow-500 hover:bg-white hover:text-yellow-500'>
+                <section className='my-1  mx-3 flex items-center justify-end '>
+                        <Link to="/addEventType" className='px-5 py-2 block my-2 shadow-lg rounded-lg bg-yellow-500 text-white hover:outline hover:outline-yellow-500 hover:bg-white hover:text-yellow-500 '>
                             Add New Event Type
                         </Link>
                 </section>
-                <section className=' relative mt-10'>
+                <section className=' relative md:mt-10 mt-3'>
                     <ViewEventTypeComp />
                 </section>
             </section>
