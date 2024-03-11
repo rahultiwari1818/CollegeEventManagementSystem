@@ -145,6 +145,14 @@ export default function UpdateStudent({ isOpen, close, heading, dataToBeUpdated 
 
     useEffect(()=>{
         setData((old)=>dataToBeUpdated)
+        setErrors((old)=>({ 
+            genderErr: "",
+        courseErr: "",
+        semesterErr: "",
+        phnoErr: "",
+        passwordErr: "",
+        emailErr:"",
+        nameErr:"",}))
     },[dataToBeUpdated])
 
     const coursesArr = useMemo(() => {

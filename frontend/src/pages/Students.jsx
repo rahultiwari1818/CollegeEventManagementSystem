@@ -61,6 +61,7 @@ export default function Students() {
 
 	const promoteStudentsToNextSemester = async (courseName) => {
 		setShowOverLay(true);
+		closePromoteStudentModal();
 		try {
 
 			const { data } = await axios.patch(`${API_URL}/api/students/promoteStudentsToNextSemester`, { courseName }, {

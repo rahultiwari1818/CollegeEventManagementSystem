@@ -34,11 +34,17 @@ export default function ViewStudents() {
     const [openUpdateModal,setOpenUpdateModal] = useState(false);
     const [dataToBeUpdated,setDataUpdated] = useState({});
 
+
+
     const [isOpenChangeStatusModal,setIsOpenChangeStatusModal] = useState({
         isOpen:false,
         data:{}
     })
 
+    const closeUpdateModal = () =>{
+        setDataUpdated({});
+        setOpenUpdateModal(false);
+    }
 
 
     const coursesData = useSelector((state)=>state.CourseSlice.data);
@@ -483,7 +489,7 @@ export default function ViewStudents() {
             </section>
 
 
-            <UpdateStudent isOpen={openUpdateModal} close={setOpenUpdateModal} heading={"Update Student Data"} dataToBeUpdated={dataToBeUpdated} updateStateData={updateStateData}/>
+            <UpdateStudent isOpen={openUpdateModal} close={closeUpdateModal} heading={"Update Student Data"} dataToBeUpdated={dataToBeUpdated} updateStateData={updateStateData}/>
             <LockingConfirmation isOpen={isOpenChangeStatusModal.isOpen} close={closeChangeStatusModal} user={"Student"} data={isOpenChangeStatusModal.data} updateStateData={updateStateData}/>
 
         </>

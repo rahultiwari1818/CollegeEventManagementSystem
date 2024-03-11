@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import ViewEventTypeComp from '../components/ViewEventType'
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import Overlay from '../components/Overlay';
 import { ReactComponent as BackIcon } from "../assets/Icons/BackIcon.svg";
@@ -34,8 +34,12 @@ export default function ViewEventTypes() {
 						}}
 					/>
 				</section>
-
-                <section className=' relative mt-10'>
+                <section className='my-1  mx-3 flex items-center justify-end '>
+                        <Link to="/addEventType" className='px-5 py-2 block my-2 shadow-lg rounded-lg bg-yellow-500 text-white hover:outline hover:outline-yellow-500 hover:bg-white hover:text-yellow-500 '>
+                            Add New Event Type
+                        </Link>
+                </section>
+                <section className=' relative md:mt-10 mt-3'>
                     <ViewEventTypeComp />
                 </section>
             </section>

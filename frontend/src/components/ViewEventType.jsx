@@ -59,6 +59,14 @@ const ViewEventType = () => {
                     })
 
                     :
+
+                    data.length === 0
+                        ?
+                        <p className="text-center text-4xl font-black text-blue-500 py-3 mt-10 w-full">
+                            No Event Types Found
+                        </p>
+                        :
+
                     data?.map((eventType) => (
                         <EventTypeCard key={eventType._id} eventType={eventType} openUpdateModal={openUpdateModal} />
                     ))

@@ -23,6 +23,8 @@ const registerIndividualFaculties = async (req, res) => {
         const { name, email, phno, course, password, salutation } = req.body;
 
         let user = await Faculties.findOne({ email: email });
+        let phnoUser = await Faculties.findOne({phno:phno});
+        
 
         if (!isValidObjectId(course)) {
             return res.status(200).json({
@@ -33,6 +35,10 @@ const registerIndividualFaculties = async (req, res) => {
 
         if (user) {
             return res.status(400).json({ "message": "Email Already registered.!", "result": false });
+        }
+
+        if(phnoUser){
+            return res.status(400).json({ "message": "Phone Number Already registered.!", "result": false });
         }
         const profilePic = req.file;
 
@@ -596,9 +602,18 @@ const updateFacultyData = async (req, res) => {
 
         const doesEmailAlreadyExists = await Faculties.findOne({ email: email, _id: { $ne: _id } })
 
+        let doesPhnoAlreadyExists = await Faculties.findOne({phno:phno,_id: { $ne: _id }});
+
+
         if (doesEmailAlreadyExists) {
             return res.status(400).json({
                 message: "This Email is Already registered.",
+                result: false
+            })
+        }
+        if (doesPhnoAlreadyExists) {
+            return res.status(400).json({
+                message: "This Phone Number is Already registered.",
                 result: false
             })
         }
@@ -795,7 +810,7 @@ const changeFacultyStatus = async (req, res) => {
             },
             { new: true } // To return the updated document
 
-        )
+        ).populate("course")
 
         return res.status(200).json({
             message: "Faculty Status Changed Successfully",

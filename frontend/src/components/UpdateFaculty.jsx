@@ -20,7 +20,7 @@ export default function UpdateFaculty({ isOpen, close, heading, dataToBeUpdated 
         phno: '',
         gender: '',
         password: '',
-        role:"",
+        role: "",
         // profilePic: null,
         email: ""
     };
@@ -29,16 +29,22 @@ export default function UpdateFaculty({ isOpen, close, heading, dataToBeUpdated 
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
-        console.log(dataToBeUpdated)
         setFormData(dataToBeUpdated)
+        setErrors({
+            courseErr: "",
+            phnoErr: "",
+            salutationErr: "",
+            emailErr: "",
+            nameErr: ""
+        })
     }, [dataToBeUpdated])
 
     const [errors, setErrors] = useState({
         courseErr: "",
         phnoErr: "",
         salutationErr: "",
-        emailErr:"",
-        nameErr:""
+        emailErr: "",
+        nameErr: ""
     })
     const coursesData = useSelector((state) => state.CourseSlice.data);
     const dispatch = useDispatch();
@@ -66,7 +72,7 @@ export default function UpdateFaculty({ isOpen, close, heading, dataToBeUpdated 
         let result = true;
 
 
-        if (!isValidName( formData.name)) {
+        if (!isValidName(formData.name)) {
             result = false;
             setErrors((old) => ({ ...old, nameErr: "Enter Valid Name" }))
         }
@@ -117,15 +123,15 @@ export default function UpdateFaculty({ isOpen, close, heading, dataToBeUpdated 
         try {
 
             setIsLoading(true);
-          const course =  typeof formData.course === "object"  ? formData.course._id : formData.course;
+            const course = typeof formData.course === "object" ? formData.course._id : formData.course;
             const dataToPost = {
-                course:course,
-                name:formData.name,
-                phno:formData.phno,
-                salutation:formData.salutation,
-                email:formData.email,
-                _id:formData._id,
-                role:formData.role
+                course: course,
+                name: formData.name,
+                phno: formData.phno,
+                salutation: formData.salutation,
+                email: formData.email,
+                _id: formData._id,
+                role: formData.role
             };
 
 
@@ -146,8 +152,9 @@ export default function UpdateFaculty({ isOpen, close, heading, dataToBeUpdated 
 
             }
             close();
-        } catch (error) {
-            console.log(error)
+        } catch ({ response }) {
+            toast.error(response?.data.message)
+            console.log(response)
 
         }
         finally {
@@ -167,11 +174,11 @@ export default function UpdateFaculty({ isOpen, close, heading, dataToBeUpdated 
     }, [coursesData])
 
     const salutations = [
-        { name: "Mr." },
-        { name: "Mrs." },
-        { name: "Ms." },
-        { name: "Dr." },
-        { name: "Asst Prof." },
+        { name: "Mr" },
+        { name: "Mrs" },
+        { name: "Ms" },
+        { name: "Dr" },
+        { name: "Asst. Prof." },
         { name: "Prin." },
         { name: "Prof.Dr." },
         { name: "I/c. Prin." },
@@ -233,7 +240,7 @@ export default function UpdateFaculty({ isOpen, close, heading, dataToBeUpdated 
                             <label htmlFor="course">Course:</label>
                             <Dropdown
                                 dataArr={coursesArr}
-                                selected={typeof formData.course === "object"  ? formData.course._id : formData.course}
+                                selected={typeof formData.course === "object" ? formData.course._id : formData.course}
                                 setSelected={changeCourse}
                                 name={"course"}
                                 label={"Select Course"}

@@ -53,13 +53,15 @@ export default function Installation() {
     }, [data.sadminphno])
 
     useEffect(() => {
-        if (isValidPassword(data.sadminpassword)) {
-            setErrors((old) => ({ ...old, sadminpasswordErr: "" }));
-        }
-        else {
-            setErrors((old) => ({
-                ...old, sadminpasswordErr: `Password Should Have at least 1 UpperCase Letter , 1 LowerCase Letter , 1 Digit and 1 Special Character.
-            its length should be greater than 8` }));
+        if(data.sadminpassword.length > 0){
+            if (isValidPassword(data.sadminpassword)) {
+                setErrors((old) => ({ ...old, sadminpasswordErr: "" }));
+            }
+            else {
+                setErrors((old) => ({
+                    ...old, sadminpasswordErr: `Password Should Have at least 1 UpperCase Letter , 1 LowerCase Letter , 1 Digit and 1 Special Character.
+                its length should be greater than 8` }));
+            }
         }
 
     }, [data.sadminpassword])
@@ -129,6 +131,27 @@ export default function Installation() {
                 ...old, sadminemailErr: ``
             }));
         }
+
+        if (isValidPassword(data.sadminpassword)) {
+            setErrors((old) => ({ ...old, sadminpasswordErr: "" }));
+        }
+        else {
+            result =  false;
+
+            setErrors((old) => ({
+                
+                ...old, sadminpasswordErr: `Password Should Have at least 1 UpperCase Letter , 1 LowerCase Letter , 1 Digit and 1 Special Character.
+            its length should be greater than 8` }));
+        }
+
+        if (validatePhno(data.sadminphno)) {
+            setErrors((old) => ({ ...old, sadminphnoErr: "" }));
+        }
+        else {
+            result = false
+
+            setErrors((old) => ({ ...old, sadminphnoErr: "Phone Number Should Have Exactly 10 Digits." }));
+        }
         return result;
 
     }
@@ -195,11 +218,11 @@ export default function Installation() {
 
 
     const salutations = [
-        { name: "Mr." },
-        { name: "Mrs." },
-        { name: "Ms." },
-        { name: "Dr." },
-        { name: "Prof." },
+        { name: "Mr" },
+        { name: "Mrs" },
+        { name: "Ms" },
+        { name: "Dr" },
+        { name: "Asst. Prof."},
         { name: "Prin." },
         { name: "Prof.Dr." },
         { name: "I/c. Prin." },
@@ -251,14 +274,14 @@ export default function Installation() {
                                         <section className="flex flex-col items-center justify-center pt-5 pb-6">
                                             <FileUploadIcon className="h-10 w-10"/>
                                             <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                                                <span className="font-semibold">Click to upload</span> or drag and drop College Logo
+                                                <span className="font-semibold">Click to upload</span> or drag and drop College Pdf Banner
                                             </p>
                                             <p className="text-xs text-gray-500 dark:text-gray-400">
 
                                             </p>
                                         </section>
                                         <section className="mt-2">
-                                            {data.collegelogo ? (
+                                            {data.newCollegePdfBanner ? (
                                                 <>
                                                     <p className="text-xs text-gray-500 dark:text-gray-400">
                                                         Selected File: {data.newCollegePdfBanner.name}

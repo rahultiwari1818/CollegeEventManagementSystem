@@ -86,7 +86,7 @@ const registerStudentsInBulk = async (req, res) => {
             if (sids.includes(Number(entry["sid"].trim()))) {
                 flag = false;
             }
-            else{
+            else {
                 sids.push(Number(entry["sid"].trim()))
             }
 
@@ -345,8 +345,8 @@ const getStudents = async (req, res) => {
                 semesterFilter ? { semester: semesterFilter } : {}, // Direct comparison for numeric fields
                 divisionFilter ? { division: divisionFilter } : {}, // Direct comparison for numeric fields
                 sidFilter ? { sid: sidFilter } : {}, // Direct comparison for numeric fields
-                rollnoFilter ? { rollno: rollnoFilter } : {} ,// Direct comparison for numeric fields
-                statusFilter ? { status: statusFilter } :{}// Filter for active status
+                rollnoFilter ? { rollno: rollnoFilter } : {},// Direct comparison for numeric fields
+                statusFilter ? { status: statusFilter } : {}// Filter for active status
 
             ]
         };
@@ -393,12 +393,12 @@ const getStudents = async (req, res) => {
 const getDivisions = async (req, res) => {
 
     try {
-        const course = req.query.course== 0 ? "" : req.query.course;
-        if(!course){
+        const course = req.query.course == 0 ? "" : req.query.course;
+        if (!course) {
             return res.status(200).json({
-                message:"Select Course to fetch Division",
-                data:[],
-                result:true
+                message: "Select Course to fetch Division",
+                data: [],
+                result: true
             })
         }
         const semester = req.query.semester || "";
@@ -459,7 +459,7 @@ const getIndividualStudentsFromId = async (req, res) => {
             return res.status(200).json({
                 "message": "Student Data Fetched Successfully.",
                 "data": {
-                    courseId:student.course._id,
+                    courseId: student.course._id,
                     courseName: student.course.courseName,
                     division: student.division,
                     dob: student.dob,
@@ -473,7 +473,7 @@ const getIndividualStudentsFromId = async (req, res) => {
                     _id: student._id,
                     profilePicName: student.profilePicName,
                     profilePicPath: student.profilePicPath,
-                    status:student.status
+                    status: student.status
                 },
                 "result": true
             });
@@ -498,7 +498,7 @@ const studentForgotPassword = async (req, res) => {
         // Assuming Student is a Mongoose model
         const studentData = await Student.findOne({ sid: sid });
 
-        if(studentData.status!=="Active"){
+        if (studentData.status !== "Active") {
             return res.status(400).json({
                 message: "Your Account Has Been Locked by Super Admin",
                 result: false
@@ -587,9 +587,9 @@ const studentForgotPassword = async (req, res) => {
             }
         });
         return res.status(200).json({
-                    message: `OTP sent to your Registered Email.`,
-                    result: true
-                });
+            message: `OTP sent to your Registered Email.`,
+            result: true
+        });
 
 
     } catch (error) {
@@ -703,8 +703,8 @@ const loginStudent = async (req, res) => {
                 role: "Student",
                 name: user.studentName,
                 course: user.course,
-                semester:user.semester,
-                token:user.token
+                semester: user.semester,
+                token: user.token
             }
         };
         console.log(data)
@@ -740,7 +740,9 @@ const updateStudentData = async (req, res) => {
             semester: semester,
             division: division,
             rollno: rollno,
-            status:"Active"
+            status: "Active",
+            _id: { $ne: _id },
+            sid: { $ne: sid }
         });
 
         if (doesRollNoInSameDivExists) {
@@ -938,7 +940,7 @@ const changeStudentStatus = async (req, res) => {
             },
             { new: true } // To return the updated document
 
-        )
+        ).populate("course")
 
         return res.status(200).json({
             message: "Student Status Changed Successfully",
@@ -959,7 +961,7 @@ const promoteStudentsToNextSemester = async (req, res) => {
         const { courseName } = req.body;
 
         // Find the course
-        const course = await Course.findOne({ _id:courseName });
+        const course = await Course.findOne({ _id: courseName });
 
         // Update student data based on the course's number of semesters
         const result = await Student.updateMany(
@@ -970,14 +972,8 @@ const promoteStudentsToNextSemester = async (req, res) => {
                         semester: {
                             $cond: [
                                 { $eq: ["$semester", course.noOfSemesters] },
-                                0,
-                                {
-                                    $cond: [
-                                        { $eq: ["$semester", 0] },
-                                        course.noOfSemesters,
-                                        { $add: ["$semester", 1] }
-                                    ]
-                                }
+                                "$semester",  // If equal, keep the current semester
+                                { $add: ["$semester", 1] }  // If not equal, increment the semester
                             ]
                         },
                         status: {
@@ -991,7 +987,7 @@ const promoteStudentsToNextSemester = async (req, res) => {
                 }
             ]
         );
-
+        
 
         // Now you can send a response back to the client
         res.status(200).json({ message: "Student Promoted  successfully", result: true, data: result, });
@@ -1097,35 +1093,35 @@ const getStudentCountCourseWise = async (req, res) => {
 };
 
 
-const registerFireBaseToken = async(req,res)=>{
+const registerFireBaseToken = async (req, res) => {
 
     try {
 
-        const {token,_id} = req.body;
+        const { token, _id } = req.body;
 
-        if(!isValidObjectId(_id)){
+        if (!isValidObjectId(_id)) {
             return res.status(400).json({
-                message:"Invalid User",
-                result:false
+                message: "Invalid User",
+                result: false
             })
         }
 
         const updatedData = await Student.findOneAndUpdate(
-            {_id:_id},
+            { _id: _id },
             {
                 $set
-                :
+                    :
                 {
-                    token:token
+                    token: token
                 }
             }
         )
 
         return res.status(200).json({
-            message:"Token Registered Successfully",
-            result:true
+            message: "Token Registered Successfully",
+            result: true
         })
-        
+
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: "Some Error Occurred", result: false });
