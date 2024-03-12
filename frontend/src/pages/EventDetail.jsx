@@ -158,6 +158,7 @@ export default function EventDetails() {
                 <Overlay />
             }
             <section className='m-5'>
+                
                 <section className='flex justify-center items-center '>
 
                     <section className='shadow-xl overflow-auto rounded-xl w-[90vw] md:w-[70vw]  px-5 py-5'>
