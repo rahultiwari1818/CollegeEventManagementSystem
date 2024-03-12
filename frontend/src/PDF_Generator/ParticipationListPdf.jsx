@@ -4,6 +4,13 @@ import CollegeBanner from "../assets/images/CollegeBanner.jpg"
 import moment from "moment";
 
 export default function ParticipationListPdf({ eventData, registrationData, collegeData }) {
+
+
+    const currentProtocol = window.location.protocol;
+
+    // Update the image URL with the current protocol
+    const updatedImageUrl = collegeData?.collegePdfBannerPath?.replace('http:', currentProtocol);
+
     const styles = StyleSheet.create({
         pageContainer: {
             fontSize: 12,
@@ -127,8 +134,11 @@ export default function ParticipationListPdf({ eventData, registrationData, coll
     });
 
     const CollegeHeader = ({ collegeData }) => (
+        
         <View>
-            <Image style={styles.logo} src={collegeData.collegePdfBannerPath === "." ? CollegeBanner : collegeData.collegePdfBannerPath} />
+            <Image style={styles.logo}
+            
+            src={collegeData.collegePdfBannerPath === "." ? CollegeBanner : updatedImageUrl} />
             <View style={{ paddingRight: 20, paddingTop: 10, }}>
                 <Text style={{ textAlign: "right", fontSize: 12, textDecoration: "underline" }}>
                     <Text style={{ paddingRight: 10, }}>

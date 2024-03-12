@@ -266,9 +266,9 @@ export default function ViewRegistration() {
 
 
                         {eventData?.ename &&
-                            <PDFDownloadLink document={<ParticipationListPdf eventData={eventData} registrationData={filteredData} collegeData={collegeData} />} fileName={`${eventData?.ename}ParticipationList.pdf`} className='w-full'>
+                            <PDFDownloadLink document={<ParticipationListPdf eventData={eventData} registrationData={filteredData} collegeData={collegeData} />} fileName={`${eventData?.ename}ParticipationList.pdf`} className='w-full my-2'>
 
-                                <button className='px-5 py-2 rounded-lg shadow-lg text-white bg-green-500  hover:outline hover:outline-green-700'>
+                                <button className='px-5 py-2 rounded-lg shadow-lg text-white bg-green-500  hover:outline hover:outline-green-700 my-3'>
                                     <section className="flex justify-between items-center gap-5">
                                         <p>Download {searchParams === "" ? "All" : searchParams} Participation List</p>
                                         <DownloadIcon />
