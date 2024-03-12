@@ -9,7 +9,9 @@ export default function ParticipationListPdf({ eventData, registrationData, coll
     const currentProtocol = window.location.protocol;
 
     // Update the image URL with the current protocol
-    const updatedImageUrl = collegeData?.collegePdfBannerPath?.replace('http:', currentProtocol);
+    let updatedImageUrl = collegeData?.collegePdfBannerPath?.includes("https:") ? collegeData?.collegePdfBannerPath
+    :
+    collegeData?.collegePdfBannerPath?.replace('http:', currentProtocol);
 
     const styles = StyleSheet.create({
         pageContainer: {

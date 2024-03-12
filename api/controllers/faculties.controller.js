@@ -23,8 +23,8 @@ const registerIndividualFaculties = async (req, res) => {
         const { name, email, phno, course, password, salutation } = req.body;
 
         let user = await Faculties.findOne({ email: email });
-        let phnoUser = await Faculties.findOne({phno:phno});
-        
+        let phnoUser = await Faculties.findOne({ phno: phno });
+
 
         if (!isValidObjectId(course)) {
             return res.status(200).json({
@@ -37,7 +37,7 @@ const registerIndividualFaculties = async (req, res) => {
             return res.status(400).json({ "message": "Email Already registered.!", "result": false });
         }
 
-        if(phnoUser){
+        if (phnoUser) {
             return res.status(400).json({ "message": "Phone Number Already registered.!", "result": false });
         }
         const profilePic = req.file;
@@ -83,10 +83,61 @@ const registerIndividualFaculties = async (req, res) => {
         const mailOptions = {
             from: process.env.EMAIL_ID,
             to: email,
-            subject: 'Successfull Registration in CEMS',
-            text: `Your Login Credentials are for CEMS are:
-                email : ${email} and Password : ${password}.
-                please change your password after login
+            subject: 'Successful Registration in CEMS',
+            html: `
+                <html>
+                    <head>
+                        <style>
+                            /* Define styles for your email */
+                            body {
+                                font-family: Arial, sans-serif;
+                                color: #333;
+                            }
+                            .container {
+                                max-width: 600px;
+                                margin: 0 auto;
+                                padding: 20px;
+                                border: 1px solid #ccc;
+                                border-radius: 10px;
+                                background-color: #f9f9f9;
+                            }
+                            .header {
+                                background-color: #4299e1; /* Tailwind bg-blue-500 */
+                                padding: 10px;
+                                border-radius: 5px;
+                                color: #ffd700; /* Golden color */
+                                text-align: center;
+                                font-size: 24px;
+                                font-weight: bold;
+                            }
+                            p {
+                                margin-bottom: 15px;
+                                font-size: 18px;
+                            }
+                            .credentials {
+                                background-color: #4299e1; /* Tailwind bg-blue-500 */
+                                padding: 10px;
+                                border-radius: 5px;
+                                color: #ffd700; /* Golden color */
+                                font-size: 18px;
+                                margin-top: 20px;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="container">
+                            <p>
+                                Your Login Credentials for CEMS are:
+                            </p>
+                            <div class="credentials">
+                                <p>Email : ${email}</p>
+                                <p>Password : ${password}</p>
+                                <p>Please change your password after login.</p>
+                            </div>
+                            <p>From CEMS.</p>
+                        </div>
+                    </body>
+                </html>
             `
         };
 
@@ -247,7 +298,7 @@ const loginFaculty = async (req, res) => {
                 id: user._id,
                 role: user.role,
                 name: user.name,
-                token:user.token
+                token: user.token
             }
         };
 
@@ -331,13 +382,13 @@ const getIndividualFaculty = async (req, res) => {
             _id: data._id,
             salutation: data.salutation,
             name: data.name,
-            courseId:data?.course?._id,
+            courseId: data?.course?._id,
             course: data?.course?.courseName, // Now 'course' will be populated with course details
             phno: data.phno,
             email: data.email,
             profilePicName: data.profilePicName,
             profilePicPath: data.profilePicPath,
-            role:data.role
+            role: data.role
         }
 
         return res.status(200).json({ "message": "Faculty Data Fetched Successfully.", "data": user, "result": true });
@@ -352,11 +403,11 @@ const setUpSystem = async (req, res) => {
 
     try {
 
-        const {sadminsalutation, sadminemail, sadminname, sadminphno, sadminpassword, collegename } = req.body;
+        const { sadminsalutation, sadminemail, sadminname, sadminphno, sadminpassword, collegename } = req.body;
 
         const newCollegePdfBanner = req?.file;
 
-        if(!newCollegePdfBanner){
+        if (!newCollegePdfBanner) {
             return res.status(400).json({
                 message: "Please Provide College Banner",
                 result: false
@@ -371,14 +422,14 @@ const setUpSystem = async (req, res) => {
         }
 
 
-        if(sadminsalutation.trim().length==0){
+        if (sadminsalutation.trim().length == 0) {
             return res.status(400).json({
                 message: "Please Provide a admin salutation.!",
                 result: false
             })
         }
 
-        if(collegename.trim().length==0){
+        if (collegename.trim().length == 0) {
             return res.status(400).json({
                 message: "Please Provide a valid College Name.!",
                 result: false
@@ -399,7 +450,7 @@ const setUpSystem = async (req, res) => {
             })
         }
 
-      const  newCollegePDFBannerName = newCollegePdfBanner.originalname;
+        const newCollegePDFBannerName = newCollegePdfBanner.originalname;
 
         const result = await uploadToCloudinary(newCollegePdfBanner.path, "image");
         if (result.message === "Fail") {
@@ -408,7 +459,7 @@ const setUpSystem = async (req, res) => {
                 result: false
             })
         }
-      const  newCollegePDFBannerPath = result.url;
+        const newCollegePDFBannerPath = result.url;
 
 
         const salt = await bcrypt.genSalt(10);
@@ -417,14 +468,14 @@ const setUpSystem = async (req, res) => {
 
         college = await College.create({
             collegename: collegename.trim(),
-            collegePdfBannerName:newCollegePDFBannerName,
-            collegePdfBannerPath:newCollegePDFBannerPath
+            collegePdfBannerName: newCollegePDFBannerName,
+            collegePdfBannerPath: newCollegePDFBannerPath
         })
 
         user = await Faculties.create({
             name: sadminname.trim(),
             password: secPass,
-            salutation:sadminsalutation,
+            salutation: sadminsalutation,
             email: sadminemail.trim(),
             role: "Super Admin",
             phno: sadminphno.trim(),
@@ -433,17 +484,90 @@ const setUpSystem = async (req, res) => {
             profilePicPath: "."
         });
 
-
         const mailOptions = {
             from: process.env.EMAIL_ID,
             to: sadminemail,
-            subject: 'Successfull Registration in CEMS',
-            text: `Congratulations.! You Have Succesfully Set Up College Event Management System For Your College.
-                    Your Login Credentials are for CEMS are:
-                email : ${sadminemail} and Password : ${sadminpassword}.
-                please change your password after login.!
+            subject: 'Successful Set Up Of CEMS and Admin Account.',
+        
+            html: `
+                <html>
+                    <head>
+                        <style>
+                            /* Define styles for your email */
+                            body {
+                                font-family: Arial, sans-serif;
+                                color: #333;
+                            }
+                            .container {
+                                max-width: 600px;
+                                margin: 0 auto;
+                                padding: 20px;
+                                border: 1px solid #ccc;
+                                border-radius: 10px;
+                                background-color: #f9f9f9;
+                            }
+                            .header {
+                                background-color: #4299e1; /* Tailwind bg-blue-500 */
+                                padding: 10px;
+                                border-radius: 5px;
+                                color: #ffd700; /* Golden color */
+                                text-align: center;
+                                font-size: 24px;
+                                font-weight: bold;
+                            }
+                            p {
+                                margin-bottom: 15px;
+                                font-size: 18px;
+                            }
+                            .credentials {
+                                background-color: #4299e1; /* Tailwind bg-blue-500 */
+                                padding: 10px;
+                                border-radius: 5px;
+                                color: #ffd700; /* Golden color */
+                                font-size: 18px;
+                                margin-top: 20px;
+                            }
+                            .contact-support {
+                                margin-top: 20px;
+                                text-align: center;
+                            }
+                            .contact-support p {
+                                font-size: 16px;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="container">
+                            <div class="header">Congratulations, Admin!</div>
+                            <p>
+                                You have successfully set up the College Event Management System for your college.
+                            </p>
+                            <p>
+                                Your login credentials for CEMS are:
+                            </p>
+                            <div class="credentials">
+                                <p>Email: ${sadminemail}</p>
+                                <p>Password: ${sadminpassword}</p>
+                                <p>Now you can manage various aspects of the system:</p>
+                                <ul>
+                                    <li>Add students</li>
+                                    <li>Add faculties</li>
+                                    <li>Add courses</li>
+                                    <li>Add events</li>
+                                    <li>Add event types</li>
+                                </ul>
+                            </div>
+                            <div class="contact-support">
+                                <p>If you have any questions or need further assistance, please contact support.</p>
+                            </div>
+                            <p>Best regards,</p>
+                            <p>The CEMS Team</p>
+                        </div>
+                    </body>
+                </html>
             `
         };
+        
 
         // Send email
         transporter.sendMail(mailOptions, function (error, info) {
@@ -490,13 +614,65 @@ const facultyForgotPassword = async (req, res) => {
         client.set(email, otp);
 
 
+
         const mailOptions = {
             from: process.env.EMAIL_ID,
             to: email,
-            subject: 'OTP for Forgot Password in CEMS',
-            text: `Your OTP for CEMS is ${otp}. Dont share it with anyone.`
-        };
+            subject: 'OTP Verification',
+            html: `
+                <html>
+                    <head>
+                        <style>
+                            /* Define styles for your email */
+                            body {
+                                font-family: Arial, sans-serif;
+                                color: #333;
+                            }
+                            .container {
+                                max-width: 600px;
+                                margin: 0 auto;
+                                padding: 20px;
+                                border: 1px solid #ccc;
+                                border-radius: 10px;
+                                background-color: #f9f9f9;
+                            }
+                            .header {
+                                background-color: #4299e1; /* Tailwind bg-blue-500 */
+                                padding: 10px;
+                                border-radius: 5px;
+                                color: #ffd700; /* Golden color */
+                                text-align: center;
+                                font-size: 24px;
+                                font-weight: bold;
+                            }
+                            p {
+                                margin-bottom: 15px;
+                                font-size: 18px;
+                            }
+                            .credentials {
+                                background-color: #4299e1; /* Tailwind bg-blue-500 */
+                                padding: 10px;
+                                border-radius: 5px;
+                                color: #ffd700; /* Golden color */
+                                font-size: 18px;
+                                margin-top: 20px;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="container">
+                            
+                            <div class="credentials">
+    <p>                            Your OTP for CEMS is ${otp}. </p>
 
+                                <p>Don't Share it with anyone..</p>
+                            </div>
+                            <p>From CEMS.</p>
+                        </div>
+                    </body>
+                </html>
+            `
+        };
         // Send email
         transporter.sendMail(mailOptions, function (error, info) {
             if (error) {
@@ -535,7 +711,8 @@ const verifyOTP = async (req, res) => {
 
             const data = {
                 user: {
-                    _id: facultydata._id
+                    _id: facultydata._id,
+                    email:facultydata.email
                 }
             };
             const token = jwtToken.sign(data, SECRET_KEY);
@@ -579,6 +756,93 @@ const resetPassword = async (req, res) => {
         // Update the password for the user with the specified userId
         await Faculties.updateOne({ _id: userId }, { password: hashedPassword });
 
+        const mailOptions = {
+            from: process.env.EMAIL_ID,
+            to: req.user.email,
+            subject: 'Password Reset',
+        
+            html: `
+                <html>
+                    <head>
+                        <style>
+                            /* Define styles for your email */
+                            body {
+                                font-family: Arial, sans-serif;
+                                color: #333;
+                            }
+                            .container {
+                                max-width: 600px;
+                                margin: 0 auto;
+                                padding: 20px;
+                                border: 1px solid #ccc;
+                                border-radius: 10px;
+                                background-color: #f9f9f9;
+                            }
+                            .header {
+                                background-color: #4299e1; /* Tailwind bg-blue-500 */
+                                padding: 10px;
+                                border-radius: 5px;
+                                color: #ffd700; /* Golden color */
+                                text-align: center;
+                                font-size: 24px;
+                                font-weight: bold;
+                            }
+                            p {
+                                margin-bottom: 15px;
+                                font-size: 18px;
+                            }
+                            .credentials {
+                                background-color: #4299e1; /* Tailwind bg-blue-500 */
+                                padding: 10px;
+                                border-radius: 5px;
+                                color: #ffd700; /* Golden color */
+                                font-size: 18px;
+                                margin-top: 20px;
+                            }
+                            .contact-support {
+                                margin-top: 20px;
+                                text-align: center;
+                            }
+                            .contact-support p {
+                                font-size: 16px;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="container">
+                            <p>
+                               Respected Faculty ,  Your Password has been Reset Recently.
+                            </p>
+                            <div class="credentials">
+                                <p> Your New Password: ${newPassword} .</p>
+                            </div>
+                            
+                            <div class="contact-support">
+                                <p>If you have any questions or need further assistance, please contact support.</p>
+                            </div>
+                            <p>Best regards,</p>
+                            <p>The CEMS Team</p>
+                        </div>
+                    </body>
+                </html>
+            `
+        };
+        
+        transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+                return res.status(500).json({
+                    message: "Unable to send Email",
+                    result: false
+                })
+            } else {
+                return res.status(200).json({
+                    message: "Mail Sent Successfully",
+                    result: true
+                });
+
+            }
+        });
+
         return res.status(200).json({
             message: "Password Reset Successfully",
             result: true
@@ -598,11 +862,11 @@ const updateFacultyData = async (req, res) => {
     try {
 
 
-        const { _id, course, name, phno, email, salutation,role } = req.body;
+        const { _id, course, name, phno, email, salutation, role } = req.body;
 
         const doesEmailAlreadyExists = await Faculties.findOne({ email: email, _id: { $ne: _id } })
 
-        let doesPhnoAlreadyExists = await Faculties.findOne({phno:phno,_id: { $ne: _id }});
+        let doesPhnoAlreadyExists = await Faculties.findOne({ phno: phno, _id: { $ne: _id } });
 
 
         if (doesEmailAlreadyExists) {
@@ -618,7 +882,7 @@ const updateFacultyData = async (req, res) => {
             })
         }
 
-        if(role !== "Super Admin" && !isValidObjectId(course)){
+        if (role !== "Super Admin" && !isValidObjectId(course)) {
             return res.status(400).json({
                 message: "Provide Course .!",
                 result: false
@@ -642,6 +906,96 @@ const updateFacultyData = async (req, res) => {
             },
             { new: true } // To return the updated document
         ).populate('course');
+
+        const mailOptions = {
+            from: process.env.EMAIL_ID,
+            to: email,
+            subject: 'Account Updated',
+        
+            html: `
+                <html>
+                    <head>
+                        <style>
+                            /* Define styles for your email */
+                            body {
+                                font-family: Arial, sans-serif;
+                                color: #333;
+                            }
+                            .container {
+                                max-width: 600px;
+                                margin: 0 auto;
+                                padding: 20px;
+                                border: 1px solid #ccc;
+                                border-radius: 10px;
+                                background-color: #f9f9f9;
+                            }
+                            .header {
+                                background-color: #4299e1; /* Tailwind bg-blue-500 */
+                                padding: 10px;
+                                border-radius: 5px;
+                                color: #ffd700; /* Golden color */
+                                text-align: center;
+                                font-size: 24px;
+                                font-weight: bold;
+                            }
+                            p {
+                                margin-bottom: 15px;
+                                font-size: 18px;
+                            }
+                            .credentials {
+                                background-color: #4299e1; /* Tailwind bg-blue-500 */
+                                padding: 10px;
+                                border-radius: 5px;
+                                color: #ffd700; /* Golden color */
+                                font-size: 18px;
+                                margin-top: 20px;
+                            }
+                            .contact-support {
+                                margin-top: 20px;
+                                text-align: center;
+                            }
+                            .contact-support p {
+                                font-size: 16px;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="container">
+                            <p>
+                               Respected Faculty ,  Your Data Has Been Successfully Updated By the Admin.
+                            </p>
+                            <div class="credentials">
+                                <p>Your New EmailId and Phone Number.</p>
+                                <p>Email: ${email}</p>
+                                <p>Phone Number: ${phno}</p>
+                            </div>
+                            
+                            <div class="contact-support">
+                            <p>To Check Other Updated Data Login to Your Account.!</p>
+                                <p>If you have any questions or need further assistance, please contact support.</p>
+                            </div>
+                            <p>Best regards,</p>
+                            <p>The CEMS Team</p>
+                        </div>
+                    </body>
+                </html>
+            `
+        };
+        
+        transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+                return res.status(500).json({
+                    message: "Unable to send Email",
+                    result: false
+                })
+            } else {
+                return res.status(200).json({
+                    message: "Mail Sent Successfully",
+                    result: true
+                });
+
+            }
+        });
 
         // Return success response with updated student data
         return res.status(200).json({
@@ -753,30 +1107,93 @@ const changePassword = async (req, res) => {
                 }
             }
         )
-
         const mailOptions = {
             from: process.env.EMAIL_ID,
             to: user.email,
-            subject: 'Password Changed in CEMS',
-            text: `Your Password has been changed in CEMS.`
+            subject: 'Password Changed',
+        
+            html: `
+                <html>
+                    <head>
+                        <style>
+                            /* Define styles for your email */
+                            body {
+                                font-family: Arial, sans-serif;
+                                color: #333;
+                            }
+                            .container {
+                                max-width: 600px;
+                                margin: 0 auto;
+                                padding: 20px;
+                                border: 1px solid #ccc;
+                                border-radius: 10px;
+                                background-color: #f9f9f9;
+                            }
+                            .header {
+                                background-color: #4299e1; /* Tailwind bg-blue-500 */
+                                padding: 10px;
+                                border-radius: 5px;
+                                color: #ffd700; /* Golden color */
+                                text-align: center;
+                                font-size: 24px;
+                                font-weight: bold;
+                            }
+                            p {
+                                margin-bottom: 15px;
+                                font-size: 18px;
+                            }
+                            .credentials {
+                                background-color: #4299e1; /* Tailwind bg-blue-500 */
+                                padding: 10px;
+                                border-radius: 5px;
+                                color: #ffd700; /* Golden color */
+                                font-size: 18px;
+                                margin-top: 20px;
+                            }
+                            .contact-support {
+                                margin-top: 20px;
+                                text-align: center;
+                            }
+                            .contact-support p {
+                                font-size: 16px;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="container">
+                            <p>
+                               Dear Faculty ,  Your Password has been Changed Recently.
+                            </p>
+                            <div class="credentials">
+                                <p> Your New Password: ${newPassword} .</p>
+                            </div>
+                            
+                            <div class="contact-support">
+                                <p>If you have any questions or need further assistance, please contact support.</p>
+                            </div>
+                            <p>Best regards,</p>
+                            <p>The CEMS Team</p>
+                        </div>
+                    </body>
+                </html>
+            `
         };
-
-        // Send email
+        
         transporter.sendMail(mailOptions, function (error, info) {
             if (error) {
-                // return res.status(500).json({
-                //     message:"Unable to send Email",
-                //     result:false
-                // })
-                console.log("error in sending mail", error)
+                return res.status(500).json({
+                    message: "Unable to send Email",
+                    result: false
+                })
             } else {
-                // return res.status(200).json({
-                //     message:"OTP Mailed Successfully",
-                //     result:true
-                // });
-                console.log("Mail Send Successfully.");
+                return res.status(200).json({
+                    message: "Mail Sent Successfully",
+                    result: true
+                });
+
             }
         });
+
 
         return res.status(200).json({ "message": "Password Updated  Successfully!", "result": true });
 
@@ -869,35 +1286,35 @@ const countFacultiesByCourse = async (req, res) => {
     }
 };
 
-const registerFireBaseToken = async(req,res)=>{
+const registerFireBaseToken = async (req, res) => {
 
     try {
 
-        const {token,_id} = req.body;
+        const { token, _id } = req.body;
 
-        if(!isValidObjectId(_id)){
+        if (!isValidObjectId(_id)) {
             return res.status(400).json({
-                message:"Invalid User",
-                result:false
+                message: "Invalid User",
+                result: false
             })
         }
 
         const updatedData = await Faculties.findOneAndUpdate(
-            {_id:_id},
+            { _id: _id },
             {
                 $set
-                :
+                    :
                 {
-                    token:token
+                    token: token
                 }
             }
         )
 
         return res.status(200).json({
-            message:"Token Registered Successfully",
-            result:true
+            message: "Token Registered Successfully",
+            result: true
         })
-        
+
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: "Some Error Occurred", result: false });
