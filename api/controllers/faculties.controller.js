@@ -604,7 +604,7 @@ const facultyForgotPassword = async (req, res) => {
         const facultyData = await Faculties.findOne({ email: email });
         if (!facultyData) {
             return res.status(400).json({
-                message: "EmailId Not Registered.",
+                message: "Email Id Not Registered.",
                 result: false
             })
         }
@@ -965,13 +965,13 @@ const updateFacultyData = async (req, res) => {
                                Respected Faculty ,  Your Data Has Been Successfully Updated By the Admin.
                             </p>
                             <div class="credentials">
-                                <p>Your New EmailId and Phone Number.</p>
+                                <p>Your New Email Id and Phone Number.</p>
                                 <p>Email: ${email}</p>
                                 <p>Phone Number: ${phno}</p>
                             </div>
                             
                             <div class="contact-support">
-                            <p>To Check Other Updated Data Login to Your Account.!</p>
+                            <p>To check for updated data, please log in to your account.</p>
                                 <p>If you have any questions or need further assistance, please contact support.</p>
                             </div>
                             <p>Best regards,</p>

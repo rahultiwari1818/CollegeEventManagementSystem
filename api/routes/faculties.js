@@ -1,6 +1,6 @@
 const express = require("express");
 const { setUpSystem, getFaculties,registerIndividualFaculties, loginFaculty, registerFacultiesInBulk, getIndividualFaculty, facultyForgotPassword, verifyOTP, resetPassword, updateFacultyData, changeFacultyProfilePic, changePassword, changeFacultyStatus, countFacultiesByCourse, registerFireBaseToken } = require("../controllers/faculties.controller");
-const {checkSetUp, getCollegeData, getWholeCollegeData, updateCollegeData} = require("../controllers/college.controller");
+const {checkSetUp, getCollegeData, getWholeCollegeData, updateCollegeData, getAnalytics} = require("../controllers/college.controller");
 const fetchUser = require("../middlewares/fetchUser");
 const checkIsAdmin = require("../middlewares/checkIsAdmin.js");
 const multer = require("multer");
@@ -26,15 +26,14 @@ router.post("/login",loginFaculty)
 router.get("/isSetUpDone",checkSetUp)
 router.get("/getfaculties",checkIsAdmin,getFaculties);
 router.get("/getSpecificFaculty/:id",checkIsFaculty,getIndividualFaculty)
-router.post("/setup",upload.single("newCollegePdfBanner"),setUpSystem);
 
-router.get("/getCollegeData",checkIsSuperAdmin,getWholeCollegeData);
-
-router.get("/getCollegeDetails",fetchUser,getCollegeData);
 router.post("/registerFireBaseToken",fetchUser,registerFireBaseToken);
 
-router.patch("/updateCollegeData",upload.single("newCollegePdfBanner"),checkIsSuperAdmin,updateCollegeData);
 
 router.get("/countFacultiesByCourse",checkIsSuperAdmin,countFacultiesByCourse);
-
+router.post("/setup",upload.single("newCollegePdfBanner"),setUpSystem);
+router.patch("/updateCollegeData",upload.single("newCollegePdfBanner"),checkIsSuperAdmin,updateCollegeData);
+router.get("/getCollegeData",checkIsSuperAdmin,getWholeCollegeData);
+router.get("/getCollegeDetails",fetchUser,getCollegeData);
+router.get("/getAnalytics",checkIsSuperAdmin,getAnalytics);
 module.exports = router;
