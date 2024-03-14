@@ -7,12 +7,14 @@ import { fetchAllEventTypes } from '../store/EventTypeSlice';
 import { transformEventTypesData } from '../utils';
 import { ReactComponent as CalanderIcon } from "../assets/Icons/calander_icon.svg";
 import axios from 'axios';
+import AnalyticsCard from '../components/AnalyticsCard';
+import { fetchCollegeDetails } from '../store/CollegeSlice';
 
 
 export default function Analytics() {
 
     const token = localStorage.getItem("token");
-	const API_URL = process.env.REACT_APP_BASE_URL;
+    const API_URL = process.env.REACT_APP_BASE_URL;
 
 
 
@@ -25,30 +27,32 @@ export default function Analytics() {
     const [filterParams, setFilterParams] = useState({
         eventType: "",
         fromDate: new Date(),
-        toDate:  new Date(new Date().setDate(new Date().getDate() - 7))
+        toDate: new Date(new Date().setDate(new Date().getDate() - 7))
 
     })
-    const [eventAnalytics,setEventAnalytics] = useState([]);
+    const [eventAnalytics, setEventAnalytics] = useState([]);
 
 
 
-    const fetchEventAnalytics = async()=>{
+    const fetchEventAnalytics = async () => {
         try {
 
-            const {eventType,fromDate,toDate} = filterParams;
+            const { eventType, fromDate, toDate } = filterParams;
 
-            const {data} = await axios.get(`${API_URL}/api/faculties/getAnalytics`,{
-                params:{
-                    eventType,
+            const enature = eventType == 0 ? "" : eventType;
+
+            const { data } = await axios.get(`${API_URL}/api/faculties/getAnalytics`, {
+                params: {
+                    eventType:enature,
                     fromDate,
                     toDate
                 },
-                headers:{
-                    "auth-token":token
+                headers: {
+                    "auth-token": token
                 }
             });
 
-            if(data.result){
+            if (data.result) {
                 setEventAnalytics(data.data)
             }
 
@@ -66,16 +70,18 @@ export default function Analytics() {
         setFilterParams((old) => ({ ...old, eventType: value }));
     }, [])
 
-    useEffect(()=>{
+    useEffect(() => {
         fetchEventAnalytics();
-    },[filterParams.eventType,filterParams.fromDate,filterParams.toDate])
+    }, [filterParams.eventType, filterParams.fromDate, filterParams.toDate])
 
     useEffect(() => {
         dispatch(fetchAllEventTypes());
+        dispatch(fetchCollegeDetails());
     }, [dispatch]);
 
+
     useEffect(() => {
-        setEventTypes(transformEventTypesData(eventTypesArr));
+        setEventTypes(transformEventTypesData(eventTypesArr,true));
     }, [eventTypesArr])
 
 
@@ -128,7 +134,7 @@ export default function Analytics() {
                         }
                         }
                         dateFormat="dd-MM-yyyy"
-                        maxDate={new Date( new Date().setDate(new Date().getDate() - 1))}
+                        maxDate={new Date(new Date().setDate(new Date().getDate() - 1))}
                         className="w-full shadow-lg md:p-3 rounded-lg md:m-2 p-2 m-1"
                         showIcon
                         icon={
@@ -145,8 +151,22 @@ export default function Analytics() {
                     <section></section>
                 </section>
             </section>
-            <section className="my-2">
-
+            <section className="my-2 pb-5">
+                <p className="py-2 px-4 text-xl font-extrabold text-blue-500 border border-blue-500 rounded-lg">
+                    Total Results :
+                    <span className="px-2">
+                        {
+                            eventAnalytics.length
+                        }
+                    </span>
+                </p>
+                <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-5 px-5 py-3">
+                    {
+                      eventAnalytics?.map((event)=>{
+                        return <AnalyticsCard key={event.eventData._id} data={event}/>
+                      })  
+                    }
+                </section>
             </section>
 
         </section>

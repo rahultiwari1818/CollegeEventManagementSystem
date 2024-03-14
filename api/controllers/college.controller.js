@@ -173,10 +173,9 @@ const getWholeCollegeData = async (req,res) =>{
 
 const getAnalytics = async (req, res) => {
     try {
-        let { eventType, fromDate, toDate } = req.params;
+        let { eventType, fromDate, toDate } = req.query;
 
         let query = {};
-
         // Check if eventType is provided
         if (eventType && eventType !== "") {
             query.enature = eventType;
@@ -189,19 +188,28 @@ const getAnalytics = async (req, res) => {
             const toDateObj = new Date(toDate);
 
             // Add conditions to filter events based on updationLog generation date
-            query['updationLog.0.at'] = { $gte: fromDateObj, $lte: toDateObj };
+            query['edate'] = { $lte: fromDateObj, $gte: toDateObj };
         }
 
         // Fetch events based on the query
         const eventData = await Events.find(query).populate("enature");
 
-        const data = eventData.map(async(event)=>{
-            const approvedParticipation = await Registration.find({eventId:event._id,status:"approved"});
+        const data = await Promise.all(eventData.map(async (event) => {
+            const approvedParticipation = await Registration.find({ eventId: event._id, status: "approved" });
+            const results = await Registration.find({ eventId: event._id, status: "approved",rank:{$gt:0} }).populate({
+                path: "studentData",
+                populate: {
+                    path: "course"
+                },
+                select: "-password"
+            });
+            results.sort((teamA,teamB)=>teamA.rank-teamB.rank);
             return {
-                eventData:event,
-                approvedParticipation:approvedParticipation
-            }
-        })
+                eventData: event,
+                approvedParticipation: approvedParticipation,
+                results:results
+            };
+        }));
 
         return res.status(200).json({
             message: "Analytics Fetched Successfully!",
