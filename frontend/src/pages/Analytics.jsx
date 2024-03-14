@@ -151,7 +151,7 @@ export default function Analytics() {
                             </section>}
                     />
                 </section>
-                <PDFDownloadLink document={<AllEventResultList eventData={eventAnalytics} collegeData={collegeData} />} fileName={`AllEventResults.pdf`} className='w-full '>
+                <PDFDownloadLink document={<AllEventResultList eventAnalytics={eventAnalytics} collegeData={collegeData} fromDate={filterParams.fromDate} toDate={filterParams.toDate}  eventType={ eventTypes.find((eventType)=>eventType._id===filterParams.eventType)?.name || "" } />} fileName={`AllEventResults.pdf`} className='w-full '>
                     <button
                         className={` ${eventAnalytics.length === 0 ? "cursor-not-allowed" : ""}  text-nowrap px-5 py-3 bg-yellow-500 hover:text-yellow-500 hover:bg-white hover:outline hover:outline-yellow-500 rounded-lg text-white `}
                         // onClick={openViewAnalyticsModal}

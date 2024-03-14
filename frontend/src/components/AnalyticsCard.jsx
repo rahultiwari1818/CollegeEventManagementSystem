@@ -47,7 +47,7 @@ export default function AnalyticsCard({ data }) {
                         </p> */}
                             <PDFDownloadLink document={<EventResultList eventData={data.eventData} resultData={data.results} collegeData={collegeData} />} fileName={`${data.eventData?.ename}ResultList.pdf`} className='w-full my-2'>
                                 <button
-                                    className={` ${data.results.length === 0 ? "cursor-not-allowed" : ""}  text-nowrap px-5 py-3 bg-green-500 hover:text-green-500 hover:bg-white hover:outline hover:outline-green-500 rounded text-white `}
+                                    className={` ${data.results.length === 0 ? "cursor-not-allowed" : ""}  text-nowrap px-5 py-3 bg-yellow-500 hover:text-yellow-500 hover:bg-white hover:outline hover:outline-yellow-500 rounded text-white `}
                                     // onClick={openViewAnalyticsModal}
                                     disabled={data.results.length === 0}
                                 >
