@@ -192,7 +192,7 @@ const getAnalytics = async (req, res) => {
         }
 
         // Fetch events based on the query
-        const eventData = await Events.find(query).populate("enature");
+        const eventData = await Events.find(query).populate("enature").populate("eligibleCourses");
 
         const data = await Promise.all(eventData.map(async (event) => {
             const approvedParticipation = await Registration.find({ eventId: event._id, status: "approved" });

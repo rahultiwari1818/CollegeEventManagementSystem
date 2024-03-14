@@ -9,6 +9,8 @@ import { ReactComponent as CalanderIcon } from "../assets/Icons/calander_icon.sv
 import axios from 'axios';
 import AnalyticsCard from '../components/AnalyticsCard';
 import { fetchCollegeDetails } from '../store/CollegeSlice';
+import AllEventResultList from '../PDF_Generator/AllEventResultList';
+import { PDFDownloadLink } from '@react-pdf/renderer';
 
 
 export default function Analytics() {
@@ -22,6 +24,7 @@ export default function Analytics() {
     const dispatch = useDispatch();
     const userData = useSelector((state) => state.UserSlice);
     const eventTypesArr = useSelector((state) => state.EventTypeSlice.data);
+    const collegeData = useSelector((state) => state.CollegeSlice.data);
 
     const [eventTypes, setEventTypes] = useState([]);
     const [filterParams, setFilterParams] = useState({
@@ -43,7 +46,7 @@ export default function Analytics() {
 
             const { data } = await axios.get(`${API_URL}/api/faculties/getAnalytics`, {
                 params: {
-                    eventType:enature,
+                    eventType: enature,
                     fromDate,
                     toDate
                 },
@@ -81,7 +84,7 @@ export default function Analytics() {
 
 
     useEffect(() => {
-        setEventTypes(transformEventTypesData(eventTypesArr,true));
+        setEventTypes(transformEventTypesData(eventTypesArr, true));
     }, [eventTypesArr])
 
 
@@ -96,7 +99,7 @@ export default function Analytics() {
 
     return (
         <section className=' py-2 h-full w-full'>
-            <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-5 px-5 py-3">
+            <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5 px-5 py-3">
                 <Dropdown
                     dataArr={eventTypes}
                     selected={filterParams.eventType}
@@ -105,23 +108,22 @@ export default function Analytics() {
                     name={"eventType"}
                     passedId={true}
                 />
-                <section className='flex justify-between px-2 md:justify-center items-center md:gap-3 shadow-lg rounded-lg'>
-                    <label htmlFor="rcdate">From Date:</label><br />
+                <section className='flex justify-between px-2 md:justify-center items-center md:gap-2 shadow-lg rounded-lg'>
+                    <label htmlFor="rcdate" className='text-nowrap'>From Date:</label><br />
                     <DatePicker
                         name='fromDate'
                         selected={filterParams.fromDate}
                         onChange={(date) => {
-                            setFilterParams((old) => ({ ...old, fromDate: date }))
-                        }
-                        }
+                            
+                                // Otherwise, update only the "from" date
+                                setFilterParams((old) => ({ ...old, fromDate: date,toDate:date }));
+                            
+                        }}
                         dateFormat="dd-MM-yyyy"
                         maxDate={new Date()}
                         className="w-full shadow-lg md:p-3 rounded-lg md:m-2 p-2 m-1"
                         showIcon
-                        icon={
-                            <section className="m-2">
-                                <CalanderIcon />
-                            </section>}
+                        icon={<section className="m-2"><CalanderIcon /></section>}
                     />
                 </section>
                 <section className='flex justify-between px-2 md:justify-center items-center md:gap-3 shadow-lg rounded-lg'>
@@ -130,11 +132,17 @@ export default function Analytics() {
                         name='toDate'
                         selected={filterParams.toDate}
                         onChange={(date) => {
-                            setFilterParams((old) => ({ ...old, toDate: date }))
-                        }
+                            if (date > filterParams.fromDate) {
+                                // If the selected "to" date is less than the current "from" date,
+                                // set the "from" date to the selected "to" date
+                                
+                            } else {
+                                // Otherwise, update only the "to" date
+                                setFilterParams((old) => ({ ...old, toDate: date }));
+                            }                        }
                         }
                         dateFormat="dd-MM-yyyy"
-                        maxDate={new Date(new Date().setDate(new Date().getDate() - 1))}
+                        maxDate={new Date(new Date().setDate(new Date(filterParams.fromDate).getDate() - 1))}
                         className="w-full shadow-lg md:p-3 rounded-lg md:m-2 p-2 m-1"
                         showIcon
                         icon={
@@ -143,16 +151,18 @@ export default function Analytics() {
                             </section>}
                     />
                 </section>
-            </section>
-            <section className="my-2">
-                <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-5 px-5 py-3">
-                    <section></section>
-                    <section></section>
-                    <section></section>
-                </section>
+                <PDFDownloadLink document={<AllEventResultList eventData={eventAnalytics} collegeData={collegeData} />} fileName={`AllEventResults.pdf`} className='w-full '>
+                    <button
+                        className={` ${eventAnalytics.length === 0 ? "cursor-not-allowed" : ""}  text-nowrap px-5 py-3 bg-yellow-500 hover:text-yellow-500 hover:bg-white hover:outline hover:outline-yellow-500 rounded-lg text-white `}
+                        // onClick={openViewAnalyticsModal}
+                        disabled={eventAnalytics.length === 0}
+                    >
+                        Download Results
+                    </button>
+                </PDFDownloadLink>
             </section>
             <section className="my-2 pb-5">
-                <p className="py-2 px-4 text-xl font-extrabold text-blue-500 border border-blue-500 rounded-lg">
+                <p className="py-2 px-4 text-xl font-extrabold text-blue-500 border border-blue-500 rounded-lg mx-2">
                     Total Results :
                     <span className="px-2">
                         {
@@ -162,9 +172,9 @@ export default function Analytics() {
                 </p>
                 <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-5 px-5 py-3">
                     {
-                      eventAnalytics?.map((event)=>{
-                        return <AnalyticsCard key={event.eventData._id} data={event}/>
-                      })  
+                        eventAnalytics?.map((event) => {
+                            return <AnalyticsCard key={event.eventData._id} data={event} />
+                        })
                     }
                 </section>
             </section>

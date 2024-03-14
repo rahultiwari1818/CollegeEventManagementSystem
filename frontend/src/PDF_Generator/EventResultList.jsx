@@ -3,34 +3,93 @@ import { Image, Text, View, Page, Document, StyleSheet } from '@react-pdf/render
 import CollegeBanner from "../assets/images/DefaultPDFBanner.jpeg"
 import moment from "moment";
 
-export default function EventResultList({ collegeData ,eventData,resultData}) {
+export default function EventResultList({ collegeData, eventData, resultData }) {
 
-    const [filteredResultData,setFilteredData] = useState([]);
+    const [filteredResultData, setFilteredData] = useState([]);
 
-    const [courseWiseResultData,setCourseWiseResultData] = useState([]);
+    const [courseWiseResultData, setCourseWiseResultData] = useState([]);
 
-    useEffect(()=>{
-        if(!eventData) return;
-        if(eventData?.hasSubEvents){
-            const groupedData = resultData.reduce((acc, current) => {
-                // Check if there's already an entry for the current sId
-                if (acc[current.sId]) {
-                    // If yes, push the current element to the existing array
-                    acc[current.sId].push(current);
-                } else {
-                    // If no, create a new array with the current element
-                    acc[current.sId] = [current];
+    useEffect(() => {
+        if (!eventData) return;
+        if (eventData?.hasSubEvents) {
+            if (eventData?.courseWiseResultDeclaration) {
+                let courseResults = {};
+                for (let team of resultData) {
+                    const course = team.studentData[0].course._id;
+                    const courseName = team.studentData[0].course.courseName;
+                    if (courseResults[course]) {
+                        courseResults[course].result.push(team)
+                    }
+                    else {
+                        courseResults[course] = {
+                            course: courseName,
+                            result: [team]
+                        };
+                    }
                 }
-                return acc;
-            }, {});
+                courseResults = Object.values(courseResults)
+                const groupedData = [];
+                courseResults.forEach((course) => {
+                    const subEventWise = {};
+                    course?.result.forEach((team) => {
+                        const sId = team.sId;
+                        if (subEventWise[sId]) {
+                            subEventWise[sId].push(team);
+                        }
+                        else {
+                            subEventWise[sId] = [team];
+                        }
+                    })
 
-            setFilteredData( Object.values(groupedData));
+                    groupedData.push({
+                        course: course.course,
+                        result: Object.values(subEventWise),
+                    })
+                })
+                setCourseWiseResultData(groupedData)
+            }
+            else {
+                const groupedData = resultData.reduce((acc, current) => {
+                    // Check if there's already an entry for the current sId
+                    if (acc[current.sId]) {
+                        // If yes, push the current element to the existing array
+                        acc[current.sId].push(current);
+                    } else {
+                        // If no, create a new array with the current element
+                        acc[current.sId] = [current];
+                    }
+                    return acc;
+                }, {});
+
+                setFilteredData(Object.values(groupedData));
+            }
+
         }
-        else{
-            setFilteredData( resultData);
+        else {
+            if (eventData?.courseWiseResultDeclaration) {
+
+                const courseResults = {};
+                for (let team of resultData) {
+                    const course = team.studentData[0].course._id;
+                    const courseName = team.studentData[0].course.courseName;
+                    if (courseResults[course]) {
+                        courseResults[course].result.push(team)
+                    }
+                    else {
+                        courseResults[course] = {
+                            course: courseName,
+                            result: [team]
+                        };
+                    }
+                }
+                setCourseWiseResultData(Object.values(courseResults));
+            }
+            else {
+                setFilteredData(resultData);
+            }
         }
 
-    },[collegeData,eventData,resultData])
+    }, [collegeData, eventData, resultData])
 
     const currentProtocol = window.location.protocol;
 
@@ -91,6 +150,7 @@ export default function EventResultList({ collegeData ,eventData,resultData}) {
             width: "100%",
             color: "#0a0b27",
             marginBottom: 5,
+            marginTop: 10,
 
         },
         theader: {
@@ -166,7 +226,7 @@ export default function EventResultList({ collegeData ,eventData,resultData}) {
         <View>
             <Image style={styles.logo}
                 src={collegeData.collegePdfBannerPath === "." ? CollegeBanner : updatedImageUrl}
-             />
+            />
             <View style={{ paddingRight: 20, paddingTop: 10, }}>
                 <Text style={{ textAlign: "right", fontSize: 12, textDecoration: "underline" }}>
                     <Text style={{ paddingRight: 10, }}>
@@ -275,22 +335,65 @@ export default function EventResultList({ collegeData ,eventData,resultData}) {
                 <View style={{}}>
 
                     <ResultListTitle />
-                    {eventData.hasSubEvents ?
-                        (
-                            filteredResultData.map((subEvent, index) => (
-                                subEvent.length > 0 && (
-                                    <View key={index} >
-                                        <TableHead subEvent={subEvent} />
-                                        <TableBody subEvent={subEvent} />
-                                    </View>
-                                )
-                            ))
-                        ) : (
-                            <>
-                                <TableHead subEvent={filteredResultData} />
-                                <TableBody subEvent={filteredResultData} />
-                            </>
-                        )}
+                    {eventData.hasSubEvents
+                        ?
+                        eventData?.courseWiseResultDeclaration
+                            ?
+                            (
+                                courseWiseResultData.map((course, courseIdx) => {
+                                    return (
+                                        <View style={{border:"2px solid blue",paddingHorizontal:"10px"}}>
+                                            <Text style={[styles.subEventHeading,{borderBottom:"1px solid blue"}]}>Results  of {course.course}</Text>
+                                            {
+                                                course.result.map((subEvent, index) => (
+                                                    subEvent.length > 0 && (
+                                                        <View key={index} >
+                                                            <TableHead subEvent={subEvent} />
+                                                            <TableBody subEvent={subEvent} />
+                                                        </View>
+                                                    )
+                                                ))
+                                            }
+                                        </View>
+                                    )
+                                })
+                            )
+                            :
+
+                            (
+                                filteredResultData.map((subEvent, index) => (
+                                    subEvent.length > 0 && (
+                                        <View key={index} >
+                                            <TableHead subEvent={subEvent} />
+                                            <TableBody subEvent={subEvent} />
+                                        </View>
+                                    )
+                                ))
+                            )
+                        :
+
+                        eventData?.courseWiseResultDeclaration
+                            ?
+                            (
+                                courseWiseResultData.map((course) => {
+                                    return (
+                                        <View style={{border:"2px solid blue",paddingHorizontal:"10px"}}>
+                                            <Text style={[styles.subEventHeading,{borderBottom:"1px solid blue"}]}>Results  of {course.course}</Text>
+                                            <TableHead subEvent={course.result} />
+                                            <TableBody subEvent={course.result} />
+                                        </View>
+                                    )
+                                })
+                            )
+                            :
+                            (
+                                <>
+                                    <TableHead subEvent={filteredResultData} />
+                                    <TableBody subEvent={filteredResultData} />
+                                </>
+                            )
+
+                    }
                 </View>
             </Page>
         </Document>

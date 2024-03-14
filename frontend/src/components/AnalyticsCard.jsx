@@ -58,7 +58,7 @@ export default function AnalyticsCard({ data }) {
                                 className={`  text-nowrap px-5 py-3 bg-green-500 hover:text-green-500 hover:bg-white hover:outline hover:outline-green-500 rounded text-white `}
                                 onClick={openViewAnalyticsModal}
                             >
-                                Get Details
+                                View Details
                             </button>
                         </section>
                     </section>
