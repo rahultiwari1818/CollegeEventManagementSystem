@@ -8,6 +8,7 @@ import PendingImage from "../assets/images/PendingIcon.png"
 import ApprovalImage from "../assets/images/ApprovalIcon.png"
 import moment from "moment";
 import Skeleton from 'react-loading-skeleton';
+import Dropdown from '../components/Dropdown';
 
 export default function MyEvents() {
 
@@ -19,19 +20,33 @@ export default function MyEvents() {
     const [isLoading, setIsLoading] = useState(true);
     const [showOverLay, setShowOverLay] = useState(true);
 
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [selectedPage, setSelectedPage] = useState(1);
+    const [entriesPerPage, setEntriesPerPage] = useState(10); // State for selected entries per page
+    const [totalEntries, setTotalEntries] = useState(0); // State for total number of entries
+
     const user = useSelector((state) => state.UserSlice);
     const navigate = useNavigate();
 
     const fetchStudentEventData = async () => {
-
+        
         try {
+            setIsLoading(true);
             const { data } = await axios.get(`${API_URL}/api/events/studentParticipatedEvents/${user._id}`, {
+                params:{
+                    page:currentPage,
+                    perPage:entriesPerPage,
+                },
                 headers: {
                     "auth-token": token,
                 }
             })
             if (data.result) {
-                setRegisteredEvents(data?.data)
+
+                setRegisteredEvents((old)=>data?.data);
+                setTotalEntries(data?.totalCount);
+                setTotalPages(data?.totalPages);
             }
 
         } catch (error) {
@@ -39,11 +54,39 @@ export default function MyEvents() {
             console.log(error)
             setRegisteredEvents([])
         }
-        finally{
+        finally {
             setIsLoading(false)
         }
 
     }
+
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+        setSelectedPage(page); // Update the selected page number
+    };
+
+    const handleSelectedPageChange = (selectedPage) => {
+        setSelectedPage(selectedPage);
+        setCurrentPage(selectedPage);
+    };
+
+    const handleEntriesPerPageChange = (value) => {
+        setEntriesPerPage(value);
+        setCurrentPage(1); // Reset current page when entries per page changes
+    };
+    const getStartIndex = () => {
+        return (currentPage - 1) * entriesPerPage + 1;
+    };
+
+    const getEndIndex = () => {
+        const endIndex = currentPage * entriesPerPage;
+        return Math.min(endIndex, totalEntries);
+    };
+
+    useEffect(()=>{
+        if (!user || user?.role === "" || user?.role === undefined) return;
+        fetchStudentEventData();
+    },[user,currentPage,entriesPerPage])
 
 
     useEffect(() => {
@@ -52,7 +95,6 @@ export default function MyEvents() {
             navigate("/home");
         }
 
-        fetchStudentEventData();
 
         setShowOverLay(false)
     }, [user, navigate])
@@ -73,10 +115,10 @@ export default function MyEvents() {
                     </section>
                 </section>
                 <section className="py-2 px-4">
-                    <section className='w-full overflow-x-auto  overflow-y-auto my-3'>
-                        <table className="table-auto min-w-full bg-white shadow-md rounded-lg overflow-hidden ">
-                            {/* Table header */}
-                            <thead className='bg-gradient-to-r from-cyan-500 to-blue-500  text-white'>
+
+                <section className="overflow-x-auto max-h-[57vh] overflow-y-auto border border-blue-500 border-solid rounded-t-lg">
+                    <table className="table-auto min-w-full bg-white shadow-md rounded-lg overflow-hidden ">
+                        <thead className="bg-gradient-to-r from-cyan-500 to-blue-500  text-white">
                                 <tr>
                                     <td className='px-2 py-2 md:px-4'>Sr No</td>
                                     <td className='px-2 py-2 md:px-4'>Event Name</td>
@@ -286,13 +328,21 @@ export default function MyEvents() {
                                                                         student.phno
                                                                     }
                                                                 </td>
-                                                                <td className="border px-2 py-2 md:px-4">
+                                                                {
+                                                                    stdIdx === 0 &&
+                                                                    <>
+                                                                        <td
+                                                                            className='border px-2 py-2 md:px-4 '
+                                                                            rowSpan={event.studentData.length}>
 
-                                                                    {
-                                                                        moment(event.createdAt).format("lll")
-                                                                    }
+                                                                            {
+                                                                                moment(event.createdAt).format("lll")
+                                                                            }
 
-                                                                </td>
+                                                                        </td>
+
+                                                                    </>
+                                                                }
                                                                 {
                                                                     stdIdx === 0
                                                                     &&
@@ -330,6 +380,51 @@ export default function MyEvents() {
                                 }
                             </tbody>
                         </table>
+                    </section>
+
+                    <section className='md:flex justify-between items-center gap-5 '>
+                        <section className='flex justify-between items-center'>
+                            <p className='text-nowrap mx-2'>No of Entries : </p>
+                            <Dropdown
+                                dataArr={[{ name: 10 }, { name: 20 }, { name: 30 }]} // Options for entries per page
+                                selected={entriesPerPage}
+                                setSelected={(value) => handleEntriesPerPageChange(Number(value))} // Convert value to number before setting
+                                name="entriesPerPage"
+                                label="Entries Per Page"
+                            />
+                        </section>
+                        <section>
+                            {totalEntries > 0 && (
+                                <p className=" text-nowrap my-3">
+                                    Showing {getStartIndex()} - {getEndIndex()} of {totalEntries} Entries
+                                </p>
+                            )}
+                        </section>
+                        <section className="flex justify-center gap-3 mt-4 md:w-[30vw] float-right pb-8">
+                            <button
+                                className={`mx-1 px-3 py-1 rounded-md ${currentPage === 1 ? 'bg-gradient-to-r from-cyan-500 to-blue-500  text-white cursor-not-allowed' : 'bg-gradient-to-r from-cyan-500 to-blue-500     hover:outline hover:outline-blue-500 text-white'}`}
+                                onClick={() => handlePageChange(currentPage - 1)}
+                                disabled={currentPage === 1}
+                            >
+                                Previous
+                            </button>
+
+                            <Dropdown
+                                dataArr={Array.from({ length: totalPages }, (_, idx) => ({ name: idx + 1 }))}
+                                selected={selectedPage}
+                                setSelected={handleSelectedPageChange}
+                                name="pageDropdown"
+                                label="Go to Page"
+                            />
+
+                            <button
+                                className={`mx-1 px-3 py-1 rounded-md ${currentPage === totalPages ? 'bg-gradient-to-r from-cyan-500 to-blue-500  text-white cursor-not-allowed' : 'bg-gradient-to-r from-cyan-500 to-blue-500     hover:outline hover:outline-blue-500 text-white'}`}
+                                onClick={() => handlePageChange(currentPage + 1)}
+                                disabled={currentPage === totalPages}
+                            >
+                                Next
+                            </button>
+                        </section>
                     </section>
 
                 </section>

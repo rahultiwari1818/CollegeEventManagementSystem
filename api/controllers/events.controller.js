@@ -457,22 +457,39 @@ const approveOrRejectRegistrationRequest = async (req, res) => {
 const studentParticipatedEvents = async (req, res) => {
     try {
         const { studentId } = req.params;
+        const { page = 1, perPage = 10 } = req.query;
+
+        // Calculate the skip value to paginate results
+        const skip = (page - 1) * perPage;
 
         // Find registrations where studentData contains an object with the specified studentId
         const registrations = await Registration.find({
             studentData: { $in: [studentId] }
-        }).populate({
+        })
+        .populate({
             path: "studentData",
             populate: {
                 path: "course",
             },
             select: "-password" // Exclude the password field from the populated committeeMembers
-        });;
+        })
+        .sort({ createdAt: -1 }) // Sort by creation date in descending order
+        .skip(skip) // Skip records based on the pagination parameters
+        .limit(perPage); // Limit the number of records returned per page
+
+        const totalCount = await Registration.countDocuments({
+            studentData: { $in: [studentId] }
+        });
+
+        // Calculate the total number of pages
+        const totalPages = Math.ceil(totalCount / perPage);
 
         return res.status(200).json({
             message: "Registration documents fetched successfully",
             result: true,
-            data: registrations
+            data: registrations,
+            totalCount,
+            totalPages
         });
     } catch (error) {
         console.log(error);
@@ -482,6 +499,7 @@ const studentParticipatedEvents = async (req, res) => {
         });
     }
 };
+
 
 const resultDeclaration = async (req, res) => {
 
