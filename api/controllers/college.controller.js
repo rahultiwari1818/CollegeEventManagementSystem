@@ -7,6 +7,7 @@ const Faculties = require("../models/Faculties");
 const Events = require("../models/Events");
 const EventType = require("../models/EventType");
 const { deleteFromCloudinary, uploadToCloudinary } = require("../utils");
+const Registration = require("../models/Registration");
 
 const SECRET_KEY = process.env.SECRET_KEY;
 
@@ -90,15 +91,7 @@ const updateCollegeData = async(req,res)=>{
             newCollegePDFBannerName=oldCollegePDFBannerName,
             newCollegePDFBannerPath=oldCollegePDFBannerPath;
         }
-
-
-
         
-
-
-
-        
-
         const updatedCollegeName = await College.findOneAndUpdate(
             {_id:id},
             {
@@ -178,10 +171,72 @@ const getWholeCollegeData = async (req,res) =>{
 
 }
 
+const getAnalytics = async (req, res) => {
+    try {
+        let { eventType, fromDate, toDate } = req.query;
+
+        let query = {};
+        // Check if eventType is provided
+        if (eventType && eventType !== "") {
+            query.enature = eventType;
+        }
+
+        // Check if fromDate and toDate are provided
+        if (fromDate && toDate) {
+            // Convert fromDate and toDate strings to Date objects
+            const fromDateObj = new Date(fromDate);
+            const toDateObj = new Date(toDate);
+
+            // Add conditions to filter events based on updationLog generation date
+            query['edate'] = { $lte: fromDateObj, $gte: toDateObj };
+        }
+
+        // Fetch events based on the query
+        const eventData = await Events.find(query).populate("enature").populate("eligibleCourses");
+
+        const data = await Promise.all(eventData.map(async (event) => {
+            const approvedParticipation = await Registration.find({ eventId: event._id, status: "approved" }).populate({
+                path: "studentData",
+                populate: {
+                    path: "course"
+                },
+                select: "-password"
+            });;
+            const results = await Registration.find({ eventId: event._id, status: "approved",rank:{$gt:0} }).populate({
+                path: "studentData",
+                populate: {
+                    path: "course"
+                },
+                select: "-password"
+            });
+            results.sort((teamA,teamB)=>teamA.rank-teamB.rank);
+            return {
+                eventData: event,
+                approvedParticipation: approvedParticipation,
+                results:results
+            };
+        }));
+
+        return res.status(200).json({
+            message: "Analytics Fetched Successfully!",
+            data: data,
+            result: true
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: "Some Error Occurred",
+            result: false
+        });
+    }
+}
+
+
 
 module.exports = {
     checkSetUp,
     getCollegeData,
     getWholeCollegeData,
-    updateCollegeData
+    updateCollegeData,
+    getAnalytics
 };

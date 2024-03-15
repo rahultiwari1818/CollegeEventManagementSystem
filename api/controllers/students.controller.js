@@ -278,10 +278,61 @@ const registerStudentIndividually = async (req, res) => {
         const mailOptions = {
             from: process.env.EMAIL_ID,
             to: email,
-            subject: 'Successfull Registration in CEMS',
-            text: `Your Login Credentials are for CEMS are:
-                SID : ${sid} and Password : ${password}.
-                please change your password after login
+            subject: 'Successful Registration in CEMS',
+            html: `
+                <html>
+                    <head>
+                        <style>
+                            /* Define styles for your email */
+                            body {
+                                font-family: Arial, sans-serif;
+                                color: #333;
+                            }
+                            .container {
+                                max-width: 600px;
+                                margin: 0 auto;
+                                padding: 20px;
+                                border: 1px solid #ccc;
+                                border-radius: 10px;
+                                background-color: #f9f9f9;
+                            }
+                            .header {
+                                background-color: #4299e1; /* Tailwind bg-blue-500 */
+                                padding: 10px;
+                                border-radius: 5px;
+                                color: #ffd700; /* Golden color */
+                                text-align: center;
+                                font-size: 24px;
+                                font-weight: bold;
+                            }
+                            p {
+                                margin-bottom: 15px;
+                                font-size: 18px;
+                            }
+                            .credentials {
+                                background-color: #4299e1; /* Tailwind bg-blue-500 */
+                                padding: 10px;
+                                border-radius: 5px;
+                                color: #ffd700; /* Golden color */
+                                font-size: 18px;
+                                margin-top: 20px;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="container">
+                            <p>
+                                Your Login Credentials for CEMS are:
+                            </p>
+                            <div class="credentials">
+                                <p>SID : ${sid}</p>
+                                <p>Password : ${password}</p>
+                                <p>Please change your password after login.</p>
+                            </div>
+                            <p>From CEMS.</p>
+                        </div>
+                    </body>
+                </html>
             `
         };
 
@@ -566,9 +617,63 @@ const studentForgotPassword = async (req, res) => {
         const mailOptions = {
             from: process.env.EMAIL_ID,
             to: email,
-            subject: 'Verification',
-            text: `Your OTP for CEMS is ${otp}. Don't Share it with anyone.`
+            subject: 'OTP Verification',
+            html: `
+                <html>
+                    <head>
+                        <style>
+                            /* Define styles for your email */
+                            body {
+                                font-family: Arial, sans-serif;
+                                color: #333;
+                            }
+                            .container {
+                                max-width: 600px;
+                                margin: 0 auto;
+                                padding: 20px;
+                                border: 1px solid #ccc;
+                                border-radius: 10px;
+                                background-color: #f9f9f9;
+                            }
+                            .header {
+                                background-color: #4299e1; /* Tailwind bg-blue-500 */
+                                padding: 10px;
+                                border-radius: 5px;
+                                color: #ffd700; /* Golden color */
+                                text-align: center;
+                                font-size: 24px;
+                                font-weight: bold;
+                            }
+                            p {
+                                margin-bottom: 15px;
+                                font-size: 18px;
+                            }
+                            .credentials {
+                                background-color: #4299e1; /* Tailwind bg-blue-500 */
+                                padding: 10px;
+                                border-radius: 5px;
+                                color: #ffd700; /* Golden color */
+                                font-size: 18px;
+                                margin-top: 20px;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="container">
+                            
+                            <div class="credentials">
+    <p>                            Your OTP for CEMS is ${otp}. </p>
+
+                                <p>Don't Share it with anyone..</p>
+                            </div>
+                            <p>From CEMS.</p>
+                        </div>
+                    </body>
+                </html>
+            `
         };
+
+
 
         // Send email
         transporter.sendMail(mailOptions, function (error, info) {
@@ -618,7 +723,8 @@ const verifyOTP = async (req, res) => {
 
             const data = {
                 user: {
-                    _id: studentData._id
+                    _id: studentData._id,
+                    email:studentData.email
                 }
             };
             const token = jwtToken.sign(data, SECRET_KEY);
@@ -661,6 +767,95 @@ const resetPassword = async (req, res) => {
 
         // Update the password for the user with the specified userId
         await Student.updateOne({ _id: userId }, { password: hashedPassword });
+
+
+        const mailOptions = {
+            from: process.env.EMAIL_ID,
+            to: req.user.email,
+            subject: 'Password Reset',
+        
+            html: `
+                <html>
+                    <head>
+                        <style>
+                            /* Define styles for your email */
+                            body {
+                                font-family: Arial, sans-serif;
+                                color: #333;
+                            }
+                            .container {
+                                max-width: 600px;
+                                margin: 0 auto;
+                                padding: 20px;
+                                border: 1px solid #ccc;
+                                border-radius: 10px;
+                                background-color: #f9f9f9;
+                            }
+                            .header {
+                                background-color: #4299e1; /* Tailwind bg-blue-500 */
+                                padding: 10px;
+                                border-radius: 5px;
+                                color: #ffd700; /* Golden color */
+                                text-align: center;
+                                font-size: 24px;
+                                font-weight: bold;
+                            }
+                            p {
+                                margin-bottom: 15px;
+                                font-size: 18px;
+                            }
+                            .credentials {
+                                background-color: #4299e1; /* Tailwind bg-blue-500 */
+                                padding: 10px;
+                                border-radius: 5px;
+                                color: #ffd700; /* Golden color */
+                                font-size: 18px;
+                                margin-top: 20px;
+                            }
+                            .contact-support {
+                                margin-top: 20px;
+                                text-align: center;
+                            }
+                            .contact-support p {
+                                font-size: 16px;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="container">
+                            <p>
+                               Dear Student ,  Your Password has been Reset Recently.
+                            </p>
+                            <div class="credentials">
+                                <p> Your New Password: ${newPassword} .</p>
+                            </div>
+                            
+                            <div class="contact-support">
+                                <p>If you have any questions or need further assistance, please contact support.</p>
+                            </div>
+                            <p>Best regards,</p>
+                            <p>The CEMS Team</p>
+                        </div>
+                    </body>
+                </html>
+            `
+        };
+        
+        transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+                return res.status(500).json({
+                    message: "Unable to send Email",
+                    result: false
+                })
+            } else {
+                return res.status(200).json({
+                    message: "Mail Sent Successfully",
+                    result: true
+                });
+
+            }
+        });
+
 
         return res.status(200).json({
             message: "Password Reset Successfully",
@@ -707,7 +902,6 @@ const loginStudent = async (req, res) => {
                 token: user.token
             }
         };
-        console.log(data)
         const token = jwtToken.sign(data, SECRET_KEY);
 
         return res.status(200).json({ "message": "Logged in Successfully", data: user, result: true, token });
@@ -771,6 +965,97 @@ const updateStudentData = async (req, res) => {
             },
             { new: true } // To return the updated document
         ).populate('course');
+
+
+        const mailOptions = {
+            from: process.env.EMAIL_ID,
+            to: email,
+            subject: 'Account Updated',
+        
+            html: `
+                <html>
+                    <head>
+                        <style>
+                            /* Define styles for your email */
+                            body {
+                                font-family: Arial, sans-serif;
+                                color: #333;
+                            }
+                            .container {
+                                max-width: 600px;
+                                margin: 0 auto;
+                                padding: 20px;
+                                border: 1px solid #ccc;
+                                border-radius: 10px;
+                                background-color: #f9f9f9;
+                            }
+                            .header {
+                                background-color: #4299e1; /* Tailwind bg-blue-500 */
+                                padding: 10px;
+                                border-radius: 5px;
+                                color: #ffd700; /* Golden color */
+                                text-align: center;
+                                font-size: 24px;
+                                font-weight: bold;
+                            }
+                            p {
+                                margin-bottom: 15px;
+                                font-size: 18px;
+                            }
+                            .credentials {
+                                background-color: #4299e1; /* Tailwind bg-blue-500 */
+                                padding: 10px;
+                                border-radius: 5px;
+                                color: #ffd700; /* Golden color */
+                                font-size: 18px;
+                                margin-top: 20px;
+                            }
+                            .contact-support {
+                                margin-top: 20px;
+                                text-align: center;
+                            }
+                            .contact-support p {
+                                font-size: 16px;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="container">
+                            <p>
+                               Dear Student ,  Your Data Has Been Successfully Updated By the Admin.
+                            </p>
+                            <div class="credentials">
+                                <p>Your New Email Id and Phone Number.</p>
+                                <p>Email: ${email}</p>
+                                <p>Phone Number: ${phno}</p>
+                            </div>
+                            
+                            <div class="contact-support">
+                            <p>To check for updated data, please log in to your account.</p>
+                                <p>If you have any questions or need further assistance, please contact support.</p>
+                            </div>
+                            <p>Best regards,</p>
+                            <p>The CEMS Team</p>
+                        </div>
+                    </body>
+                </html>
+            `
+        };
+        
+        transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+                return res.status(500).json({
+                    message: "Unable to send Email",
+                    result: false
+                })
+            } else {
+                return res.status(200).json({
+                    message: "Mail Sent Successfully",
+                    result: true
+                });
+
+            }
+        });
 
         // Return success response with updated student data
         return res.status(200).json({
@@ -884,27 +1169,91 @@ const changePassword = async (req, res) => {
             }
         )
 
+
         const mailOptions = {
             from: process.env.EMAIL_ID,
             to: user.email,
-            subject: 'Password Changed in CEMS',
-            text: `Your Password has been changed in CEMS.`
+            subject: 'Password Changed',
+        
+            html: `
+                <html>
+                    <head>
+                        <style>
+                            /* Define styles for your email */
+                            body {
+                                font-family: Arial, sans-serif;
+                                color: #333;
+                            }
+                            .container {
+                                max-width: 600px;
+                                margin: 0 auto;
+                                padding: 20px;
+                                border: 1px solid #ccc;
+                                border-radius: 10px;
+                                background-color: #f9f9f9;
+                            }
+                            .header {
+                                background-color: #4299e1; /* Tailwind bg-blue-500 */
+                                padding: 10px;
+                                border-radius: 5px;
+                                color: #ffd700; /* Golden color */
+                                text-align: center;
+                                font-size: 24px;
+                                font-weight: bold;
+                            }
+                            p {
+                                margin-bottom: 15px;
+                                font-size: 18px;
+                            }
+                            .credentials {
+                                background-color: #4299e1; /* Tailwind bg-blue-500 */
+                                padding: 10px;
+                                border-radius: 5px;
+                                color: #ffd700; /* Golden color */
+                                font-size: 18px;
+                                margin-top: 20px;
+                            }
+                            .contact-support {
+                                margin-top: 20px;
+                                text-align: center;
+                            }
+                            .contact-support p {
+                                font-size: 16px;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="container">
+                            <p>
+                               Dear Student ,  Your Password has been Changed Recently.
+                            </p>
+                            <div class="credentials">
+                                <p> Your New Password: ${newPassword} .</p>
+                            </div>
+                            
+                            <div class="contact-support">
+                                <p>If you have any questions or need further assistance, please contact support.</p>
+                            </div>
+                            <p>Best regards,</p>
+                            <p>The CEMS Team</p>
+                        </div>
+                    </body>
+                </html>
+            `
         };
-
-        // Send email
+        
         transporter.sendMail(mailOptions, function (error, info) {
             if (error) {
-                // return res.status(500).json({
-                //     message:"Unable to send Email",
-                //     result:false
-                // })
-                console.log("error in sending mail", error)
+                return res.status(500).json({
+                    message: "Unable to send Email",
+                    result: false
+                })
             } else {
-                // return res.status(200).json({
-                //     message:"OTP Mailed Successfully",
-                //     result:true
-                // });
-                console.log("Mail Send Successfully.");
+                return res.status(200).json({
+                    message: "Mail Sent Successfully",
+                    result: true
+                });
+
             }
         });
 
@@ -987,7 +1336,7 @@ const promoteStudentsToNextSemester = async (req, res) => {
                 }
             ]
         );
-        
+
 
         // Now you can send a response back to the client
         res.status(200).json({ message: "Student Promoted  successfully", result: true, data: result, });

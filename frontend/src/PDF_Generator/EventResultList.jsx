@@ -1,17 +1,102 @@
-import React, { Fragment } from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
 import { Image, Text, View, Page, Document, StyleSheet } from '@react-pdf/renderer';
 import CollegeBanner from "../assets/images/DefaultPDFBanner.jpeg"
 import moment from "moment";
 
-export default function ParticipationListPdf({ eventData, registrationData, collegeData }) {
+export default function EventResultList({ collegeData, eventData, resultData }) {
 
+    const [filteredResultData, setFilteredData] = useState([]);
+
+    const [courseWiseResultData, setCourseWiseResultData] = useState([]);
+
+    useEffect(() => {
+        if (!eventData) return;
+        if (eventData?.hasSubEvents) {
+            if (eventData?.courseWiseResultDeclaration) {
+                let courseResults = {};
+                for (let team of resultData) {
+                    const course = team.studentData[0].course._id;
+                    const courseName = team.studentData[0].course.courseName;
+                    if (courseResults[course]) {
+                        courseResults[course].result.push(team)
+                    }
+                    else {
+                        courseResults[course] = {
+                            course: courseName,
+                            result: [team]
+                        };
+                    }
+                }
+                courseResults = Object.values(courseResults)
+                const groupedData = [];
+                courseResults.forEach((course) => {
+                    const subEventWise = {};
+                    course?.result.forEach((team) => {
+                        const sId = team.sId;
+                        if (subEventWise[sId]) {
+                            subEventWise[sId].push(team);
+                        }
+                        else {
+                            subEventWise[sId] = [team];
+                        }
+                    })
+
+                    groupedData.push({
+                        course: course.course,
+                        result: Object.values(subEventWise),
+                    })
+                })
+                setCourseWiseResultData(groupedData)
+            }
+            else {
+                const groupedData = resultData.reduce((acc, current) => {
+                    // Check if there's already an entry for the current sId
+                    if (acc[current.sId]) {
+                        // If yes, push the current element to the existing array
+                        acc[current.sId].push(current);
+                    } else {
+                        // If no, create a new array with the current element
+                        acc[current.sId] = [current];
+                    }
+                    return acc;
+                }, {});
+
+                setFilteredData(Object.values(groupedData));
+            }
+
+        }
+        else {
+            if (eventData?.courseWiseResultDeclaration) {
+
+                const courseResults = {};
+                for (let team of resultData) {
+                    const course = team.studentData[0].course._id;
+                    const courseName = team.studentData[0].course.courseName;
+                    if (courseResults[course]) {
+                        courseResults[course].result.push(team)
+                    }
+                    else {
+                        courseResults[course] = {
+                            course: courseName,
+                            result: [team]
+                        };
+                    }
+                }
+                setCourseWiseResultData(Object.values(courseResults));
+            }
+            else {
+                setFilteredData(resultData);
+            }
+        }
+
+    }, [collegeData, eventData, resultData])
 
     const currentProtocol = window.location.protocol;
 
     // Update the image URL with the current protocol
     let updatedImageUrl = collegeData?.collegePdfBannerPath?.includes("https:") ? collegeData?.collegePdfBannerPath
-    :
-    collegeData?.collegePdfBannerPath?.replace('http:', currentProtocol);
+        :
+        collegeData?.collegePdfBannerPath?.replace('http:', currentProtocol);
 
     const styles = StyleSheet.create({
         pageContainer: {
@@ -29,8 +114,8 @@ export default function ParticipationListPdf({ eventData, registrationData, coll
         subTitleContainer: {
             flexDirection: 'row',
             marginTop: 10,
-            border : "2px solid blue",
-            padding:5
+            border: "2px solid blue",
+            padding: 5
         },
         // spaceBetween: {
         //     flexDirection: 'row',
@@ -58,6 +143,7 @@ export default function ParticipationListPdf({ eventData, registrationData, coll
             width: "100%",
             textAlign: 'center',
             color: "#4f3f92",
+            textDecoration:"underline"
         },
         subEventHeading: {
             fontSize: 12,
@@ -65,7 +151,8 @@ export default function ParticipationListPdf({ eventData, registrationData, coll
             width: "100%",
             color: "#0a0b27",
             marginBottom: 5,
-            
+            marginTop: 10,
+            textDecoration:"underline"
         },
         theader: {
             marginTop: 5,
@@ -136,11 +223,11 @@ export default function ParticipationListPdf({ eventData, registrationData, coll
     });
 
     const CollegeHeader = ({ collegeData }) => (
-        
+
         <View>
             <Image style={styles.logo}
-            
-            src={collegeData.collegePdfBannerPath === "." ? CollegeBanner : updatedImageUrl} />
+                src={collegeData.collegePdfBannerPath === "." ? CollegeBanner : updatedImageUrl}
+            />
             <View style={{ paddingRight: 20, paddingTop: 10, }}>
                 <Text style={{ textAlign: "right", fontSize: 12, textDecoration: "underline" }}>
                     <Text style={{ paddingRight: 10, }}>
@@ -157,9 +244,10 @@ export default function ParticipationListPdf({ eventData, registrationData, coll
         </View>
     );
 
-    const ParticiPationListTitle = () => (
+
+    const ResultListTitle = () => (
         <View style={styles.subTitleContainer}>
-            <Text style={styles.reportTitle}>Participation List of {eventData?.ename}</Text>
+            <Text style={styles.reportTitle}>Results of {eventData?.ename}</Text>
         </View>
     );
 
@@ -170,11 +258,11 @@ export default function ParticipationListPdf({ eventData, registrationData, coll
                     subEvent[0]?.subEventName
                     &&
 
-                    <Text style={styles.subEventHeading}>Registration  of {subEvent[0]?.subEventName}</Text>
+                    <Text style={styles.subEventHeading}>Result  of {subEvent[0]?.subEventName}</Text>
                 }
                 <View style={{ flexDirection: 'row', width: "100%" }}>
                     <View style={[styles.theader, styles.srnoColumn, styles.theader2,]}>
-                        <Text>Sr No</Text>
+                        <Text>Rank</Text>
                     </View>
                     <View style={[styles.theader, styles.sidColumn]}>
                         <Text>SID</Text>
@@ -210,7 +298,7 @@ export default function ParticipationListPdf({ eventData, registrationData, coll
                                 <View style={[styles.tbody, styles.tbody2, styles.srnoColumn]}>
                                     {
                                         idx === 0 &&
-                                        <Text>{teamIdx + 1}</Text>
+                                        <Text>{studentTeam.rank}</Text>
                                     }
                                 </View>
 
@@ -240,29 +328,73 @@ export default function ParticipationListPdf({ eventData, registrationData, coll
         );
     };
 
+
     return (
         <Document>
             <Page size="A4" style={[styles.pageContainer]}>
                 <CollegeHeader collegeData={collegeData} />
                 <View style={{}}>
 
-                    <ParticiPationListTitle />
-                    {eventData.hasSubEvents ?
-                        (
-                            registrationData.map((subEvent, index) => (
-                                subEvent.length > 0 && (
-                                    <View key={index} >
-                                        <TableHead subEvent={subEvent} />
-                                        <TableBody subEvent={subEvent} />
-                                    </View>
-                                )
-                            ))
-                        ) : (
-                            <>
-                                <TableHead subEvent={registrationData} />
-                                <TableBody subEvent={registrationData} />
-                            </>
-                        )}
+                    <ResultListTitle />
+                    {eventData.hasSubEvents
+                        ?
+                        eventData?.courseWiseResultDeclaration
+                            ?
+                            (
+                                courseWiseResultData.map((course, courseIdx) => {
+                                    return (
+                                        <View style={{border:"2px solid blue",paddingHorizontal:"10px"}}>
+                                            <Text style={[styles.subEventHeading,{borderBottom:"1px solid blue"}]}>Results  of {course.course}</Text>
+                                            {
+                                                course.result.map((subEvent, index) => (
+                                                    subEvent.length > 0 && (
+                                                        <View key={index} >
+                                                            <TableHead subEvent={subEvent} />
+                                                            <TableBody subEvent={subEvent} />
+                                                        </View>
+                                                    )
+                                                ))
+                                            }
+                                        </View>
+                                    )
+                                })
+                            )
+                            :
+
+                            (
+                                filteredResultData.map((subEvent, index) => (
+                                    subEvent.length > 0 && (
+                                        <View key={index} >
+                                            <TableHead subEvent={subEvent} />
+                                            <TableBody subEvent={subEvent} />
+                                        </View>
+                                    )
+                                ))
+                            )
+                        :
+
+                        eventData?.courseWiseResultDeclaration
+                            ?
+                            (
+                                courseWiseResultData.map((course) => {
+                                    return (
+                                        <View style={{border:"2px solid blue",paddingHorizontal:"10px"}}>
+                                            <Text style={[styles.subEventHeading,{borderBottom:"1px solid blue"}]}>Results  of {course.course}</Text>
+                                            <TableHead subEvent={course.result} />
+                                            <TableBody subEvent={course.result} />
+                                        </View>
+                                    )
+                                })
+                            )
+                            :
+                            (
+                                <>
+                                    <TableHead subEvent={filteredResultData} />
+                                    <TableBody subEvent={filteredResultData} />
+                                </>
+                            )
+
+                    }
                 </View>
             </Page>
         </Document>

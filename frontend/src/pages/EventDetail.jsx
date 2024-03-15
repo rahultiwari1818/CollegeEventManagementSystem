@@ -150,6 +150,7 @@ export default function EventDetails() {
     }
 
 
+
     return (
         <>
             {
@@ -322,7 +323,7 @@ export default function EventDetails() {
                                                             <td className="py-2 px-4 border-b">{event.noOfParticipants}</td>
                                                             <td className="py-2 px-4 border-b"><View className="cursor-pointer" onClick={() => viewSubEventDetails(event)} /></td>
                                                             {
-                                                                !data?.isCanceled && curDate.toLocaleDateString('en-GB') <= new Date(data.rcdate).toLocaleDateString('en-GB') && userData?.role === "Student" && event?.eligibleSemesters?.includes(userData?.semester) &&
+                                                                !data?.isCanceled && curDate.toLocaleDateString('en-GB') <= new Date(data.rcdate).toLocaleDateString('en-GB') && userData?.role === "Student" && event?.eligibleSemester?.includes(userData?.semester) &&
                                                                 <td className="py-2 px-4 border-b">
 
                                                                     <button

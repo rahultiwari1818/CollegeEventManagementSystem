@@ -21,6 +21,7 @@ import EventResultDeclaration from '../pages/EventResultDeclaration';
 import MyEvents from '../pages/MyEvents';
 import AddEventType from '../pages/AddEventTypes';
 import ViewEventTypes from '../pages/ViewEventTypes';
+import Analytics from '../pages/Analytics';
 
 export default function Router() {
 	return (
@@ -47,6 +48,7 @@ export default function Router() {
 			<Route path='/faculties' element={<Faculties/>} />
 
 			<Route path="/addEventType" element={<AddEventType/>} />
+			<Route path="/analytics" element={<Analytics/>} />
 
 			<Route path="*" element={<ErrorPage/>}/>
 		</Routes>

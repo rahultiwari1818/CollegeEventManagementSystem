@@ -8,6 +8,7 @@ import StudentImage from "../assets/images/StudentIcon.png"
 import FacultyImage from "../assets/images/FacultyIcon.png"
 import CourseImage from "../assets/images/CourseIcon.png"
 import EventImage from "../assets/images/EventIcon.png"
+import AnalyticsImage from "../assets/images/AnalyticsIcon.png"
 
 export default function AdminDashboard() {
 
@@ -126,12 +127,51 @@ export default function AdminDashboard() {
 										collegeData[id + 1]?.label
 										}
 									</p>
-									<img src={imagesArr[id]} alt="" />
+									<img src={imagesArr[id]} alt="routes" />
 								</section>
 								</Link>
 							)
 						})
 					}
+													<Link  to="/analytics" className='cursor-pointer hover:transform hover:-translate-y-1 hover:translate-x-1  hover:transition-transform my-2'>
+								<section  className='bg-white rounded-lg shadow-lg px-5 py-4 mx-3 my-3'>
+									<p className="text-center text-blue-500 text-3xl">
+										{
+											isLoading ?
+												<Skeleton
+													count={1}
+													height="50%"
+													width="100%"
+													baseColor="#ffffff"
+													highlightColor="#4299e1"
+													duration={0.9}
+												/>
+												:
+												// collegeData[id + 1]?.data
+												<>&nbsp;</>
+										}
+
+									</p>
+									<p className="text-center text-blue-500 text-3xl">
+										{
+											isLoading ?
+											<Skeleton
+												count={1}
+												height="50%"
+												width="100%"
+												baseColor="#ffffff"
+												highlightColor="#4299e1"
+												duration={0.9}
+											/>
+
+											:
+										<>	View Analytics</>
+										}
+									</p>
+									<img src={AnalyticsImage} alt="routes" />
+
+								</section>
+								</Link>
 
 				</section>
 			</section>

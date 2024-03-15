@@ -5,6 +5,7 @@ const { uploadToCloudinary, deleteFromCloudinary, parseBoolean } = require("../u
 const Registration = require("../models/Registration.js");
 const { isValidObjectId } = require("mongoose");
 const Students = require("../models/Students.js");
+const transporter = require("../config/mailTransporter.js");
 // const messaging = require("../config/firebase.js");
 
 
@@ -456,22 +457,39 @@ const approveOrRejectRegistrationRequest = async (req, res) => {
 const studentParticipatedEvents = async (req, res) => {
     try {
         const { studentId } = req.params;
+        const { page = 1, perPage = 10 } = req.query;
+
+        // Calculate the skip value to paginate results
+        const skip = (page - 1) * perPage;
 
         // Find registrations where studentData contains an object with the specified studentId
         const registrations = await Registration.find({
             studentData: { $in: [studentId] }
-        }).populate({
+        })
+        .populate({
             path: "studentData",
             populate: {
                 path: "course",
             },
             select: "-password" // Exclude the password field from the populated committeeMembers
-        });;
+        })
+        .sort({ createdAt: -1 }) // Sort by creation date in descending order
+        .skip(skip) // Skip records based on the pagination parameters
+        .limit(perPage); // Limit the number of records returned per page
+
+        const totalCount = await Registration.countDocuments({
+            studentData: { $in: [studentId] }
+        });
+
+        // Calculate the total number of pages
+        const totalPages = Math.ceil(totalCount / perPage);
 
         return res.status(200).json({
             message: "Registration documents fetched successfully",
             result: true,
-            data: registrations
+            data: registrations,
+            totalCount,
+            totalPages
         });
     } catch (error) {
         console.log(error);
@@ -482,15 +500,97 @@ const studentParticipatedEvents = async (req, res) => {
     }
 };
 
+
 const resultDeclaration = async (req, res) => {
 
     try {
         const teamIds = req.body.teamIds;
+        const teamData = await Registration.findById(teamIds.at(0));
+        const eventName = teamData.ename;
+        let subEventName = "";
+        if(teamData?.subEventName?.length!==0){
+            subEventName = teamData.subEventName;
+        }
 
         // Iterate over the teamIds array and update the ranks accordingly
         for (let i = 0; i < teamIds.length; i++) {
             await Registration.updateOne({ _id: teamIds[i] }, { $set: { rank: i + 1 } });
+            const teamData = await Registration.findById(teamIds[i]).populate("studentData");
+            teamData.studentData.forEach((student)=>{
+                const mailOptions = {
+                    from: process.env.EMAIL_ID,
+                    to: student.email,
+                    subject: `Result of ${eventName}!`,
+                    html: `
+                        <html>
+                            <head>
+                                <style>
+                                    /* Define styles for your email */
+                                    body {
+                                        font-family: Arial, sans-serif;
+                                        color: #333;
+                                    }
+                                    .container {
+                                        max-width: 600px;
+                                        margin: 0 auto;
+                                        padding: 20px;
+                                        border: 1px solid #ccc;
+                                        border-radius: 10px;
+                                        background-color: #f9f9f9;
+                                    }
+                                    .header {
+                                        background-color: #4299e1; /* Tailwind bg-blue-500 */
+                                        padding: 10px;
+                                        border-radius: 5px;
+                                        color: #ffd700; /* Golden color */
+                                        text-align: center;
+                                        font-size: 24px;
+                                        font-weight: bold;
+                                    }
+                                    p {
+                                        margin-bottom: 15px;
+                                        font-size:18px;
+                                    }
+                                </style>
+                            </head>
+                            <body>
+                                <div class="container">
+                                    <div class="header">Congratulations!</div>
+                                    <p>
+                                        ${teamData.studentData.length === 1 ? 'You' : 'Your team'} secured Rank ${i+1} in ${eventName}${subEventName ? `'s ${subEventName} !` : '!'}
+                                    </p>
+                                    <p>Thank you for participating.</p>
+                                    <p>
+                                        From CEMS.
+                                    </p>
+                                </div>
+                            </body>
+                        </html>
+                    `
+                };
+                        
+        
+                // Send email
+                transporter.sendMail(mailOptions, function (error, info) {
+                    if (error) {
+                        // return res.status(500).json({
+                        //     message:"Unable to send Email",
+                        //     result:false
+                        // })
+                        console.log("error in sending mail", error)
+                    } else {
+                        // return res.status(200).json({
+                        //     message:"OTP Mailed Successfully",
+                        //     result:true
+                        // });
+                        console.log("Mail Send Successfully.");
+                    }
+                });
+            })
+
+
         }
+
 
         // Send a success response
         return res.status(200).json({ message: "Result Declared Successfully.!", result: true });

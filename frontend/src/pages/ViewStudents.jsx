@@ -461,7 +461,7 @@ export default function ViewStudents() {
                     </section>
                     <section className="flex justify-center gap-3 mt-4 md:w-[30vw] float-right pb-8">
                         <button
-                            className={`mx-1 px-3 py-1 rounded-md ${currentPage === 1 ? 'bg-gradient-to-r from-cyan-500 to-blue-500  text-white cursor-not-allowed' : 'bg-gradient-to-r from-cyan-500 to-blue-500  hover:text-blue-500 hover:bg-white hover:outline hover:outline-blue-500 text-white'}`}
+                            className={`mx-1 px-3 py-1 rounded-md ${currentPage === 1 ? 'bg-gradient-to-r from-cyan-500 to-blue-500  text-white cursor-not-allowed' : 'bg-gradient-to-r from-cyan-500 to-blue-500    hover:outline hover:outline-blue-500 text-white'}`}
                             onClick={() => handlePageChange(currentPage - 1)}
                             disabled={currentPage === 1}
                         >
@@ -477,7 +477,7 @@ export default function ViewStudents() {
                         />
 
                         <button
-                            className={`mx-1 px-3 py-1 rounded-md ${currentPage === totalPages ? 'bg-gradient-to-r from-cyan-500 to-blue-500  text-white cursor-not-allowed' : 'bg-gradient-to-r from-cyan-500 to-blue-500  hover:text-blue-500 hover:bg-white hover:outline hover:outline-blue-500 text-white'}`}
+                            className={`mx-1 px-3 py-1 rounded-md ${currentPage === totalPages ? 'bg-gradient-to-r from-cyan-500 to-blue-500  text-white cursor-not-allowed' : 'bg-gradient-to-r from-cyan-500 to-blue-500    hover:outline hover:outline-blue-500 text-white'}`}
                             onClick={() => handlePageChange(currentPage + 1)}
                             disabled={currentPage === totalPages}
                         >

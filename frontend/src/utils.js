@@ -105,11 +105,15 @@ export function transformCourseData(coursesData,requiresAll) {
 	return arr;
 }
 
-export function transformEventTypesData(eventTypes) {
+export function transformEventTypesData(eventTypes,requiresAll) {
 	const arr = [];
 	
+	if(requiresAll){
+		arr.push({ name: "All",_id:0,committeeMembers:[] });
+	}
 	for (let eventtype of eventTypes) {
 		const committeeMembers = [];
+		
 		eventtype.committeeMembers.forEach((member)=>{
 			committeeMembers.push(member._id);
 		})
