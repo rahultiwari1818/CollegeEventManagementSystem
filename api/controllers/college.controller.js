@@ -195,7 +195,13 @@ const getAnalytics = async (req, res) => {
         const eventData = await Events.find(query).populate("enature").populate("eligibleCourses");
 
         const data = await Promise.all(eventData.map(async (event) => {
-            const approvedParticipation = await Registration.find({ eventId: event._id, status: "approved" });
+            const approvedParticipation = await Registration.find({ eventId: event._id, status: "approved" }).populate({
+                path: "studentData",
+                populate: {
+                    path: "course"
+                },
+                select: "-password"
+            });;
             const results = await Registration.find({ eventId: event._id, status: "approved",rank:{$gt:0} }).populate({
                 path: "studentData",
                 populate: {

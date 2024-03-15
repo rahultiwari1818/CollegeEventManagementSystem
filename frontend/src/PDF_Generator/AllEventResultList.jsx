@@ -369,7 +369,7 @@ export default function AllEventResultList({ collegeData, eventAnalytics ,eventT
                     <ReportHeading />
                     {
                         reportData?.map((event, eIdx) => {
-                            return <View style={{ border: "2px solid blue", paddingHorizontal: "5px",marginVertical:"10px" }} key={eIdx}>
+                            return <View key={eIdx} style={{ border: "2px solid blue", paddingHorizontal: "5px",marginVertical:"10px" }} >
                                 <ResultListTitle ename={event.eventData.ename} />
                                 {event.eventData.hasSubEvents
                                     ?

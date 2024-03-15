@@ -143,6 +143,7 @@ export default function EventResultList({ collegeData, eventData, resultData }) 
             width: "100%",
             textAlign: 'center',
             color: "#4f3f92",
+            textDecoration:"underline"
         },
         subEventHeading: {
             fontSize: 12,
@@ -151,7 +152,7 @@ export default function EventResultList({ collegeData, eventData, resultData }) 
             color: "#0a0b27",
             marginBottom: 5,
             marginTop: 10,
-
+            textDecoration:"underline"
         },
         theader: {
             marginTop: 5,
