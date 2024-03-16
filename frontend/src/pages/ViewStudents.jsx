@@ -191,6 +191,7 @@ export default function ViewStudents() {
     };
 
     const closeChangeStatusModal = () =>{
+        fetchStudentData();
         setIsOpenChangeStatusModal((old)=>({isOpen:false,data:{}}))
     }
 
@@ -198,7 +199,7 @@ export default function ViewStudents() {
 
     const updateStateData = useCallback((data)=>{
         if(!data){
-            fetchStudentData();
+            closeChangeStatusModal();
             return;
         }
         setStudentData((old)=>{

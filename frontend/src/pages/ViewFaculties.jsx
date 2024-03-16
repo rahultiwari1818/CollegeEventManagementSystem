@@ -120,13 +120,14 @@ export default function ViewFaculties() {
     };
 
     const closeChangeStatusModal = () =>{
+        fetchFacultyData();
         setIsOpenChangeStatusModal((old)=>({isOpen:false,data:{}}))
     }
 
 
     const updateStateData = useCallback((data)=>{
         if(!data){
-            fetchFacultyData();
+            closeChangeStatusModal();
             return;
         }
         setFacultyData((old)=>{
