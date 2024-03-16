@@ -253,7 +253,7 @@ export default function Navbar() {
                           &&
                           <>
                             <PopoverComponent options={userRoutes} label=" Users" closeSideBar={closeSideBar} />
-                            <Link to="/courses" className='py-3 px-4 hover:border hover:border-white  hover:bg-gradient-to-r from-cyan-500 to-blue-500  hover:text-white bg-white text-blue-500  shadow-lg rounded-lg mx-3 my-3 block w-full' >  Courses </Link>
+                            <Link to="/courses" className='py-3 px-4 hover:border hover:border-white  hover:bg-gradient-to-r from-cyan-500 to-blue-500  hover:text-white bg-white text-blue-500  shadow-lg rounded-lg mx-3 my-3 block w-full' onClick={closeSideBar}>  Courses </Link>
 
                           </>
                         }
