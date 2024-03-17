@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAllEvents } from '../store/EventSlice';
@@ -14,7 +14,6 @@ export default function AllEvents() {
     const dispatch = useDispatch();
     const data = useSelector((state) => state.EventSlice.data);
     const isLoading = useSelector((state) => state.EventSlice.isLoading);
-    const totalEvents = useSelector((state)=>state.EventSlice.totalEvents);
     // const labels = useMemo(()=>{
     //   return data.length > 0 ? Object.keys(data[0]):[];
     // },[data]);
@@ -41,7 +40,7 @@ export default function AllEvents() {
                             return <EventCard key={idx} isLoading={isLoading} />
                         })
                         :
-                        data.length === 0
+                        data?.length === 0
                         ?
                         <p className="text-center text-4xl font-black text-blue-500 py-3 mt-10 w-full">
                             No Events Found
