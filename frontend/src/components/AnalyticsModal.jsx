@@ -39,6 +39,7 @@ export default function AnalyticsModal({ isOpen, close, data }) {
                         <PieChartComp data={data} courseWise={true} />
                     </section>
                     {
+                        data?.eventData.hasSubEvents &&
                         <section>
                             <p className="text-xl my-2 text-blue-500 text-wrap text-center">
                                 Overall Participation Analytics
