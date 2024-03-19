@@ -13,10 +13,5 @@
   "license": "ISC",
   "devDependencies": {
     "concurrently": "^8.2.2"
-  },
-  "dependencies": {
-    "express": "^4.18.2",
-    "html2canvas": "^1.4.1",
-    "scss": "^0.2.4"
   }
 }
