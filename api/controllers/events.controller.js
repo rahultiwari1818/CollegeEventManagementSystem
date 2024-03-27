@@ -161,7 +161,7 @@ const getAllEvents = async (req, res) => {
         // console.log(query)
         // Fetch events based on the query
         const totalEvents = await Event.countDocuments(query);
-        const data = await Event.find(query).sort({ edate: 1 }).populate("enature")
+        const data = await Event.find(query).sort({ edate: -1 }).populate("enature")
         
         // .skip(skip).limit(limit);
         return res.status(200).json({ "message": "Event Fetched Successfully", "data": data, totalEvents, "result": true });
