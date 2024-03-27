@@ -149,7 +149,9 @@ export default function AddIndividualFaculty() {
             }
 
         } catch (error) {
-            console.log(error)
+            console.log(error?.response?.data?.message)
+            toast.error(error?.response?.data?.message)
+
 
         }
         finally{
@@ -169,12 +171,12 @@ export default function AddIndividualFaculty() {
     }, [coursesData])
 
     const salutations = [
-        { name: "Mr." },
-        { name: "Mrs." },
-        { name: "Ms." },
-        { name: "Dr." },
-        { name: "Asst Prof." },
-        { name: "Prin." },
+        { name: "Mr" },
+        { name: "Mrs" },
+        { name: "Ms" },
+        { name: "Dr" },
+        { name: "Asst. Prof." },
+        { name: "Prin" },
         { name: "Prof.Dr." },
         { name: "I/c. Prin." },
         { name: "Prin. Dr." },

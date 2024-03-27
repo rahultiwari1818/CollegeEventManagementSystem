@@ -8,6 +8,7 @@ const Events = require("../models/Events");
 const EventType = require("../models/EventType");
 const { deleteFromCloudinary, uploadToCloudinary } = require("../utils");
 const Registration = require("../models/Registration");
+const fs = require("fs");
 
 const SECRET_KEY = process.env.SECRET_KEY;
 
@@ -55,7 +56,7 @@ const getCollegeData = async(req,res) =>{
 const updateCollegeData = async(req,res)=>{
 
     try {
-
+        const current_time = new Date();
         const {newCollegeName,id,oldCollegePDFBannerPath,oldCollegePDFBannerName} = req.body;
 
         if(!newCollegeName || newCollegeName.trim()===""){
@@ -72,17 +73,30 @@ const updateCollegeData = async(req,res)=>{
         if(collegePDFBanner){
              newCollegePDFBannerName = collegePDFBanner.originalname;
 
-            const result = await uploadToCloudinary(collegePDFBanner.path, "image");
-            if (result.message === "Fail") {
+             newCollegePDFBannerPath = `uploads/${current_time}-${newCollegePDFBannerName}`;
+             try{
+         
+                 fs.renameSync(collegePDFBanner.path,newFilePath);
+         
+             }catch(err){
                 return res.status(500).json({
                     message: "Some Error Occued...",
                     result: false
                 })
-            }
-            newCollegePDFBannerPath = result.url;
+             }
+             
+            // const result = await uploadToCloudinary(collegePDFBanner.path, "image");
+            // if (result.message === "Fail") {
+            //     return res.status(500).json({
+            //         message: "Some Error Occued...",
+            //         result: false
+            //     })
+            // }
+            // newCollegePDFBannerPath = result.url;
             if (oldCollegePDFBannerPath !== ".") {
-                const publicId = oldCollegePDFBannerPath.split('/').slice(-1)[0].split('.')[0];
-                await deleteFromCloudinary(publicId);
+                // const publicId = oldCollegePDFBannerPath.split('/').slice(-1)[0].split('.')[0];
+                // await deleteFromCloudinary(publicId);
+                fs.unlinkSync(oldCollegePDFBannerPath)
             }
         }
 
@@ -201,7 +215,7 @@ const getAnalytics = async (req, res) => {
                     path: "course"
                 },
                 select: "-password"
-            });;
+            });
             const results = await Registration.find({ eventId: event._id, status: "approved",rank:{$gt:0} }).populate({
                 path: "studentData",
                 populate: {

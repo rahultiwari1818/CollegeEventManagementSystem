@@ -2,7 +2,8 @@ const jwtToken = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const Faculties = require("../models/Faculties");
 const College = require("../models/College");
-const fs = require("fs").promises;
+const fs = require("fs");
+
 const path = require("path");
 const csvtojson = require("csvtojson");
 const transporter = require("../config/mailTransporter");
@@ -54,8 +55,21 @@ const registerIndividualFaculties = async (req, res) => {
         const profilePicName = profilePic ? profilePic.originalname : "";
 
         if (profilePic) {
-            const result = await uploadToCloudinary(profilePic.path, "image");
-            profilePicPath = result.url;
+            // const result = await uploadToCloudinary(profilePic.path, "image");
+            // profilePicPath = result.url;
+            profilePicPath = `uploads/${current_time}-${profilePicName}`;
+             try{
+         
+                 fs.renameSync(profilePic.path,profilePicPath);
+         
+             }catch(err){
+                console.log(err)
+                return res.status(500).json({
+                    message: "Some Error Occued...",
+                    result: false
+                })
+             }
+             
         }
 
 
@@ -402,6 +416,7 @@ const getIndividualFaculty = async (req, res) => {
 const setUpSystem = async (req, res) => {
 
     try {
+        const current_time = new Date();
 
         const { sadminsalutation, sadminemail, sadminname, sadminphno, sadminpassword, collegename } = req.body;
 
@@ -451,15 +466,29 @@ const setUpSystem = async (req, res) => {
         }
 
         const newCollegePDFBannerName = newCollegePdfBanner.originalname;
+           
+            // const result = await uploadToCloudinary(newCollegePdfBanner.path, "image");
+            // if (result.message === "Fail") {
+            //     return res.status(500).json({
+            //         message: "Some Error Occued...",
+            //         result: false
+            //     })
+            // }
+            // const newCollegePDFBannerPath = result.url;
+            const newCollegePDFBannerPath  = `uploads/${current_time}-${newCollegePDFBannerName}`;
+             try{
+         
+                 fs.renameSync(newCollegePdfBanner.path,newCollegePDFBannerPath);
+         
+             }catch(err){
+                console.log(err)
+                return res.status(500).json({
+                    message: "Some Error Occued...",
+                    result: false
+                })
+             }
+             
 
-        const result = await uploadToCloudinary(newCollegePdfBanner.path, "image");
-        if (result.message === "Fail") {
-            return res.status(500).json({
-                message: "Some Error Occued...",
-                result: false
-            })
-        }
-        const newCollegePDFBannerPath = result.url;
 
 
         const salt = await bcrypt.genSalt(10);
@@ -1015,7 +1044,7 @@ const updateFacultyData = async (req, res) => {
 
 const changeFacultyProfilePic = async (req, res) => {
     try {
-
+const current_time =  new Date();
         const profilePic = req.file;
         if (!profilePic) {
             return res.status(400).json({
@@ -1028,18 +1057,32 @@ const changeFacultyProfilePic = async (req, res) => {
 
 
         const profilePicName = profilePic.originalname;
-        const result = await uploadToCloudinary(profilePic.path, "image");
-        if (result.message === "Fail") {
-            return res.status(500).json({
-                message: "Some Error Occued...",
-                result: false
-            })
-        }
-        const newProfilePicPath = result.url;
+        // const result = await uploadToCloudinary(profilePic.path, "image");
+        // if (result.message === "Fail") {
+        //     return res.status(500).json({
+        //         message: "Some Error Occued...",
+        //         result: false
+        //     })
+        // }
+        // const newProfilePicPath = result.url;
 
+        const newProfilePicPath = `uploads/${current_time}-${profilePicName}`;
+        try{
+    
+            fs.renameSync(profilePic.path,newProfilePicPath);
+    
+        }catch(err){
+           console.log(err)
+           return res.status(500).json({
+               message: "Some Error Occued...",
+               result: false
+           })
+        }
+        
         if (userData.profilePicName !== ".") {
-            const publicId = userData.profilePicPath.split('/').slice(-1)[0].split('.')[0];
-            await deleteFromCloudinary(publicId);
+            // const publicId = userData.profilePicPath.split('/').slice(-1)[0].split('.')[0];
+            // await deleteFromCloudinary(publicId);
+            fs.unlinkSync(userData.profilePicPath)
         }
 
 

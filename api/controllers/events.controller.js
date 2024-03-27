@@ -1,5 +1,5 @@
 const Event = require("../models/Events.js");
-const fs = require("fs").promises;
+const fs = require("fs");
 const path = require("path");
 const { uploadToCloudinary, deleteFromCloudinary, parseBoolean } = require("../utils.js");
 const Registration = require("../models/Registration.js");
@@ -11,6 +11,7 @@ const transporter = require("../config/mailTransporter.js");
 
 
 const generateEvent = async (req, res) => {
+    const current_time = new Date();
     const { ename, etype, ptype, noOfParticipants, edate, edetails, rules, rcdate, hasSubEvents, enature, generator, courseWiseResult } = req.body;
     let brochure, poster;
     try {
@@ -61,13 +62,38 @@ const generateEvent = async (req, res) => {
         let newBrochurePath = "", newPosterPath = "";
 
         if (brochure) {
-            var result = await uploadToCloudinary(brochure.path, "pdf");
-            newBrochurePath = result.url;
+            // var result = await uploadToCloudinary(brochure.path, "pdf");
+            // newBrochurePath = result.url;
+            newBrochurePath = `uploads/${current_time}-${originalBrochureName}`;
+             try{
+         
+                 fs.renameSync(brochure.path,newBrochurePath);
+         
+             }catch(err){
+                console.log(err)
+                return res.status(500).json({
+                    message: "Some Error Occued...",
+                    result: false
+                })
+             }
+             
 
         }
         if (poster) {
-            var result = await uploadToCloudinary(poster.path, "image");
-            newPosterPath = result.url;
+            // var result = await uploadToCloudinary(poster.path, "image");
+            // newPosterPath = result.url;
+            newPosterPath = `uploads/${current_time}-${originalPosterName}`;
+             try{
+         
+                 fs.renameSync(poster.path,newPosterPath);
+         
+             }catch(err){
+                return res.status(500).json({
+                    message: "Some Error Occued...",
+                    result: false
+                })
+             }
+             
 
         }
         const eligibleSemesters = JSON.parse(req.body.eligibleSemester || "[]");
@@ -233,14 +259,28 @@ const updateEventDetails = async (req, res) => {
         // Upload new brochure file to Cloudinary
         if (req.files["ebrochure"]) {
             const brochure = req.files["ebrochure"][0];
-            const result = await uploadToCloudinary(brochure.path, "pdf");
+            // const result = await uploadToCloudinary(brochure.path, "pdf");
             originalBrochureName = brochure.originalname;
-            newBrochurePath = result.url;
+            // newBrochurePath = result.url;
+
+            newBrochurePath = `uploads/${current_time}-${originalBrochureName}`;
+             try{
+         
+                 fs.renameSync(brochure.path,newBrochurePath);
+         
+             }catch(err){
+                return res.status(500).json({
+                    message: "Some Error Occued...",
+                    result: false
+                })
+             }
+             
 
             // Delete previous brochure file from Cloudinary
             if (data?.ebrochurePath) {
-                const publicId = data.ebrochurePath.split('/').slice(-1)[0].split('.')[0];
-                await deleteFromCloudinary(publicId);
+                // const publicId = data.ebrochurePath.split('/').slice(-1)[0].split('.')[0];
+                // await deleteFromCloudinary(publicId);
+                fs.unlinkSync(data.ebrochurePath);
             }
         } else {
             originalBrochureName = data?.ebrochureName;
@@ -250,14 +290,27 @@ const updateEventDetails = async (req, res) => {
         // Upload new poster file to Cloudinary
         if (req.files["eposter"]) {
             const poster = req.files["eposter"][0];
-            const result = await uploadToCloudinary(poster.path, "image");
+            // const result = await uploadToCloudinary(poster.path, "image");
             originalPosterName = poster.originalname;
-            newPosterPath = result.url;
+            // newPosterPath = result.url;
 
+            newPosterPath = `uploads/${current_time}-${originalPosterName}`;
+             try{
+         
+                 fs.renameSync(poster.path,newPosterPath);
+         
+             }catch(err){
+                return res.status(500).json({
+                    message: "Some Error Occued...",
+                    result: false
+                })
+             }
+             
             // Delete previous poster file from Cloudinary
             if (data?.eposterPath) {
-                const publicId = data.eposterPath.split('/').slice(-1)[0].split('.')[0];
-                await deleteFromCloudinary(publicId);
+                // const publicId = data.eposterPath.split('/').slice(-1)[0].split('.')[0];
+                // await deleteFromCloudinary(publicId);
+                fs.unlinkSync(data.eposterPath)
             }
         } else {
             originalPosterName = data?.eposterName;

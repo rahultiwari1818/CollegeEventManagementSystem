@@ -369,7 +369,7 @@ export default function ViewFaculties() {
                 </section>
 
             </section>
-            <UpdateFaculty isOpen={openUpdateModal} close={closeOpenUpdateModal} heading={"Update Student Data"} dataToBeUpdated={dataToBeUpdated} updateStateData={updateStateData}/>
+            <UpdateFaculty isOpen={openUpdateModal} close={closeOpenUpdateModal} heading={"Update Faculty Data"} dataToBeUpdated={dataToBeUpdated} updateStateData={updateStateData}/>
             <LockingConfirmation isOpen={isOpenChangeStatusModal.isOpen} close={closeChangeStatusModal} user={"Faculty"} data={isOpenChangeStatusModal.data} updateStateData={updateStateData}/>
         </>
     );
