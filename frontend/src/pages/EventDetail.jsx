@@ -150,7 +150,6 @@ export default function EventDetails() {
     }
 
 
-
     return (
         <>
             {
@@ -198,11 +197,11 @@ export default function EventDetails() {
                                     data?.isCanceled ?
                                         <p className='text-red-500'>Event Canceled</p>
                                         :
-                                        curDate.toLocaleDateString('en-GB') > new Date(data.edate).toLocaleDateString('en-GB')
+                                        curDate > new Date(data.edate)
                                             ?
                                             <p className='text-red-500'>Event Expired</p>
                                             :
-                                            curDate.toLocaleDateString('en-GB') <= new Date(data.rcdate).toLocaleDateString('en-GB')
+                                            curDate <= new Date(data.rcdate)
                                                 ?
                                                 <p className='text-green-500'>Registration Open</p>
                                                 :
@@ -323,7 +322,7 @@ export default function EventDetails() {
                                                             <td className="py-2 px-4 border-b">{event.noOfParticipants}</td>
                                                             <td className="py-2 px-4 border-b"><View className="cursor-pointer" onClick={() => viewSubEventDetails(event)} /></td>
                                                             {
-                                                                !data?.isCanceled && curDate.toLocaleDateString('en-GB') <= new Date(data.rcdate).toLocaleDateString('en-GB') && userData?.role === "Student" && event?.eligibleSemester?.includes(userData?.semester) &&
+                                                                !data?.isCanceled && curDate <= new Date(data.rcdate) && userData?.role === "Student" && event?.eligibleSemester?.includes(userData?.semester) &&
                                                                 <td className="py-2 px-4 border-b">
 
                                                                     <button
@@ -453,7 +452,7 @@ export default function EventDetails() {
                                 </button>
                             }
                             {
-                                curDate.toLocaleDateString('en-GB') >= new Date(data.edate).toLocaleDateString('en-GB')
+                                curDate >= new Date(data.edate)
 
                                 &&
 
@@ -478,7 +477,7 @@ export default function EventDetails() {
 
                         {/* Conditional Rendering  for Participants -- where user is not admin */}
                         {
-                            (!data?.hasSubEvents && !data?.isCanceled && curDate.toLocaleDateString('en-GB') <= new Date(data.rcdate).toLocaleDateString('en-GB') && userData?.role === "Student" && data?.eligibleSemesters?.includes(userData?.semester)) &&
+                            (!data?.hasSubEvents && !data?.isCanceled && curDate <= new Date(data.rcdate) && userData?.role === "Student" && data?.eligibleSemesters?.includes(userData?.semester)) &&
                             <section className="my-2 py-2">
                                 <button
                                     className='px-5 py-3 bg-gradient-to-r from-cyan-500 to-blue-500  rounded-lg  text-white hover:shadow-lg'
@@ -516,7 +515,7 @@ export default function EventDetails() {
                                 </section>
 
                                 {
-                                    curDate.toLocaleDateString('en-GB') >= new Date(data.edate).toLocaleDateString('en-GB')
+                                    curDate >= new Date(data.edate)
 
                                     &&
                                     <section className='my-2'>
