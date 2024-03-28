@@ -299,7 +299,7 @@ export default function AddEventType() {
                         className="text-white w-full block bg-red-500 px-5 py-3 rounded-lg shadow-lg hover:text-red-500 hover:bg-white hover:border-red-500 hover:border"
                         onClick={addEventTypeHandler}
                     >
-                        Add Course
+                        Add Event Type
                     </button>
                 </section>
             </section>
