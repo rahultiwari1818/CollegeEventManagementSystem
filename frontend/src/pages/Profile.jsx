@@ -607,7 +607,7 @@ const ChangeCollegeNameModal = ({isOpen,close,heading,dataToBeUpdated,updateStat
             <section className='md:p-2 md:m-2 p-1 m-1'>
                             <label htmlFor="img">Existing College PDF Banner : </label>
                             <section className="w-full">
-                                <img src={formData.collegePdfBannerPath==="." ? DefaultBanner :formData.collegePdfBannerPath } alt="banner" srcSet=""  className='block border border-blue-500 w-full h-[20vh]'/>
+                                <img src={formData.collegePdfBannerPath==="." ? DefaultBanner :formData.collegePdfBannerPath } alt="banner"   className='block border border-blue-500 w-full h-[20vh]'/>
                             </section>
                             <section className="my-2 flex flex-col items-center">
                         {formData.newCollegePdfBanner && (
