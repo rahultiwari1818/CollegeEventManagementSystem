@@ -13,3 +13,4 @@ router.get("/getEventTypes",fetchUser,getAllEventTypes);
 router.patch("/updateEventType",checkIsSuperAdmin,upload.single("newEventTypeLogo"),updateEventType);
 
 module.exports = router;
+
