@@ -305,11 +305,10 @@ const registerInEvent = async (req, res) => {
 
     try {
 
-        const { eventId, ename, hasSubEvents } = req.body;
-        let sId, subEventName;
+        const { eventId, hasSubEvents } = req.body;
+        let sId;
         if (hasSubEvents) {
             sId = req.body.sId;
-            subEventName = req.body.subEventName;
         }
 
         const studentData = JSON.parse(req.body.studentData)
@@ -345,9 +344,7 @@ const registerInEvent = async (req, res) => {
 
         const registrationDetails = await Registration.create({
             eventId: eventId,
-            ename: ename,
             sId: sId,
-            subEventName: subEventName,
             studentData: studentData,
             createdAt: Date.now(),
             status: 'pending',
@@ -466,6 +463,7 @@ const studentParticipatedEvents = async (req, res) => {
         const registrations = await Registration.find({
             studentData: { $in: [studentId] }
         })
+        .populate("eventId")
         .populate({
             path: "studentData",
             populate: {
@@ -505,11 +503,11 @@ const resultDeclaration = async (req, res) => {
 
     try {
         const teamIds = req.body.teamIds;
-        const teamData = await Registration.findById(teamIds.at(0));
-        const eventName = teamData.ename;
+        const teamData = await Registration.findById(teamIds.at(0)).populate("eventId");
+        const eventName = teamData.eventId.ename;
         let subEventName = "";
-        if(teamData?.subEventName?.length!==0){
-            subEventName = teamData.subEventName;
+        if(teamData?.sId?.length!==0){
+            subEventName = teamData.eventId.subEvents.find((sub)=>sub.sId==teamData.sId);
         }
 
         // Iterate over the teamIds array and update the ranks accordingly

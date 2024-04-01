@@ -132,12 +132,12 @@ export default function ParticipantDetail({ noOfParticipants, studentData, event
             if (eventData.hasSubEvents) {
                 dataToPost["eventId"]=eventData.eventId;
                 dataToPost["sId"]=eventData.sId;
-                dataToPost["subEventName"]=eventData.subEventName;
+
             }
             else {
                 dataToPost["eventId"]=eventData._id;
             }
-            dataToPost["ename"]=eventData.ename;
+
             dataToPost["studentData"]= JSON.stringify(registeredStudents);
             const { data } = await axios.post(`${API_URL}/api/events/registerInEvent`, dataToPost, {
                 headers:{

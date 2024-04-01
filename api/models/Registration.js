@@ -5,17 +5,11 @@ const { Schema } = mongoose;
 
 const RegistrationSchema = new Schema({
     eventId: {
-        required: true,
-        type: ObjectId
-    },
-    ename: {
-        required: true,
-        type: String
+        type: Schema.Types.ObjectId,
+        ref: 'Events',
+        required: true
     },
     sId: {
-        type: String
-    },
-    subEventName: {
         type: String
     },
     studentData: [{
