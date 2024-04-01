@@ -10,6 +10,13 @@ const addCourse = async (req, res) => {
             })
         }
 
+        if(noOfSemesters == 0){
+            return res.status(400).json({
+                message: "No of Semester Should be Greater Than 0.",
+                result: false
+            })
+        }
+
         const existingCoursesObject = await Course.find();
 
         const existingCourses = existingCoursesObject.map(course => course.courseName.toLowerCase());
