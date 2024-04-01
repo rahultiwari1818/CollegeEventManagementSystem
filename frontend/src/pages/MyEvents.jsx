@@ -287,13 +287,13 @@ export default function MyEvents() {
                                                                             className='border px-2 py-2 md:px-4 '
                                                                             rowSpan={event.studentData.length}
                                                                         >
-                                                                            {event.ename}
+                                                                            {event.eventId.ename}
                                                                         </td>
                                                                         <td
                                                                             className='border px-2 py-2 md:px-4 '
                                                                             rowSpan={event.studentData.length}
                                                                         >
-                                                                            {event?.subEventName ? event?.subEventName : "-"}
+                                                                            {event?.sId ? event?.eventId.subEvents.find(sub=>sub.sId==event.sId).subEventName : "-"}
                                                                         </td>
                                                                     </>
                                                                 }
