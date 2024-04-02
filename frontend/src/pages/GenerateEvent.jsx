@@ -559,21 +559,25 @@ export default function GenerateEvent() {
                                     name='rcdate'
                                     selected={data.rcdate}
                                     onChange={(date) => {
-
-                                        if (date > data.edate) {
+                                        const fixedTime = new Date(date);
+                                        fixedTime.setHours(23);
+                                        fixedTime.setMinutes(59);
+                                        fixedTime.setSeconds(0);
+                                
+                                        if ( fixedTime >=  data.edate) {
                                             setErrors((old) => ({ ...old, "edateErr": "Event Date Should be Greater Than Registration Closing Date" }))
                                         }
                                         else {
                                             setErrors((old) => ({ ...old, "edateErr": "" }))
                                         }
 
-                                        setData({ ...data, rcdate: date })
+                                        setData({ ...data, rcdate: fixedTime })
 
 
                                     }
                                     }
                                     dateFormat="dd-MM-yyyy"
-                                    minDate={new Date().setDate(new Date().getDate() - 1)}
+                                    minDate={new Date()}
                                     className="w-full shadow-lg md:p-3 rounded-lg md:m-2 p-2 m-1"
                                     showIcon
                                     icon={
@@ -588,16 +592,22 @@ export default function GenerateEvent() {
                                     name='edate'
                                     selected={data.edate}
                                     onChange={(date) => {
-                                        if (date < data.rcdate) {
+
+                                        const fixedTime = new Date(date);
+                                        fixedTime.setHours(8);
+                                        fixedTime.setMinutes(0);
+                                        fixedTime.setSeconds(0);
+
+                                        if (fixedTime <= data.rcdate) {
                                             setErrors((old) => ({ edateErr: "Event Date Should be Greater Than Registration Closing Date" }))
                                         }
                                         else {
-                                            setData({ ...data, edate: date })
+                                            setData({ ...data, edate: fixedTime })
                                             setErrors((old) => ({ edateErr: "" }))
                                         }
                                     }}
                                     dateFormat="dd-MM-yyyy"
-                                    minDate={new Date()}
+                                    minDate={ new Date( new Date().setDate(new Date().getDate() + 1))}
                                     className=" w-full shadow-lg md:p-3 rounded-lg md:m-2 p-2 m-1"
                                     icon={
                                         <section className="m-2">

@@ -27,8 +27,23 @@ const generateEvent = async (req, res) => {
         const requiredFields = ['ename', 'etype', 'edetails', 'rules', 'enature'];
         for (const field of requiredFields) {
             if (!trimmedFields[field]) {
-                return res.status(400).json({ message: `${field} cannot be empty.` });
+                return res.status(400).json({result:false, message: `${field} cannot be empty.` });
             }
+        }
+
+
+        if(!["Intra-College","Inter-College"].includes(etype)){
+            return res.status(400).json({
+                result:false,
+                message:"Event Type Should Be Inter or Intra College Only"
+            })
+        }
+
+        if(new Date(edate)<= new Date(rcdate)){
+            return res.status(400).json({
+                result:false,
+                message:"Event Date Should be after Event Closing Date"
+            })
         }
 
         // Additional validation for specific fields if needed
@@ -214,6 +229,22 @@ const updateEventDetails = async (req, res) => {
             if (!trimmedFields[field]) {
                 return res.status(400).json({ message: `${field} cannot be empty.` });
             }
+        }
+
+
+        if(!["Intra-College","Inter-College"].includes(etype)){
+            return res.status(400).json({
+                result:false,
+                message:"Event Type Should Be Inter or Intra College Only"
+            })
+        }
+
+
+        if(new Date(edate)<= new Date(rcdate)){
+            return res.status(400).json({
+                result:false,
+                message:"Event Date Should be after Event Closing Date"
+            })
         }
 
         // Additional validation for specific fields if needed

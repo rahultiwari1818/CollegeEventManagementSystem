@@ -158,7 +158,7 @@ export default function EventDetails() {
                 <Overlay />
             }
             <section className='m-5'>
-                
+
                 <section className='flex justify-center items-center '>
 
                     <section className='shadow-xl overflow-auto rounded-xl w-[90vw] md:w-[70vw]  px-5 py-5'>
@@ -456,14 +456,14 @@ export default function EventDetails() {
 
                                 &&
 
-                                    <button
-                                        className='px-5 py-3 mx-4 my-2 bg-green-500 rounded-lg shadow-lg text-white hover:text-green-500 hover:bg-white hover:outline hover:outline-green-500'
-                                        onClick={() => {
-                                            setIsOpenViewResultsModal(true);
-                                        }}
-                                    >
-                                        View Results
-                                    </button>
+                                <button
+                                    className='px-5 py-3 mx-4 my-2 bg-green-500 rounded-lg shadow-lg text-white hover:text-green-500 hover:bg-white hover:outline hover:outline-green-500'
+                                    onClick={() => {
+                                        setIsOpenViewResultsModal(true);
+                                    }}
+                                >
+                                    View Results
+                                </button>
                             }
 
                         </section>
@@ -530,35 +530,41 @@ export default function EventDetails() {
                                     </section>
                                 }
 
-
-                                {/* to cancel event */}
-                                {(!data.isCanceled) &&
-
-                                    <section className='my-2'>
-                                        <button
-                                            className='px-5 py-3 bg-red-500 rounded-lg shadow-lg text-white hover:text-red-500 hover:bg-white hover:outline hover:outline-red-500'
-                                            onClick={setOpenCancelCnfModal}
-                                        >
-                                            Cancel  Event
-                                        </button>
-                                    </section>
-                                }
-                                {/* to activate event */}
                                 {
-                                    (data.isCanceled) &&
+                                    curDate <= new Date(data.edate)
+                                    &&
+                                    <>
+                                        {(!data.isCanceled) &&
+
+                                            <section className='my-2'>
+                                                <button
+                                                    className='px-5 py-3 bg-red-500 rounded-lg shadow-lg text-white hover:text-red-500 hover:bg-white hover:outline hover:outline-red-500'
+                                                    onClick={setOpenCancelCnfModal}
+                                                >
+                                                    Cancel  Event
+                                                </button>
+                                            </section>
+                                        }
+                                        {/* to activate event */}
+                                        {
+                                            (data.isCanceled) &&
 
 
-                                    <section className='my-2'>
-                                        <button
-                                            className='px-5 py-3 bg-green-500 rounded-lg shadow-lg text-white hover:text-green-500 hover:bg-white hover:outline hover:outline-green-500'
-                                            onClick={() => {
-                                                changeEventStatus("activate");
-                                            }}
-                                        >
-                                            Activate  Event
-                                        </button>
-                                    </section>
+                                            <section className='my-2'>
+                                                <button
+                                                    className='px-5 py-3 bg-green-500 rounded-lg shadow-lg text-white hover:text-green-500 hover:bg-white hover:outline hover:outline-green-500'
+                                                    onClick={() => {
+                                                        changeEventStatus("activate");
+                                                    }}
+                                                >
+                                                    Activate  Event
+                                                </button>
+                                            </section>
+                                        }
+
+                                    </>
                                 }
+                                {/* to cancel event */}
 
 
                                 <section className='my-2'>
