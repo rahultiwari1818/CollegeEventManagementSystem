@@ -1,15 +1,18 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import Modal from './Modal';
 import PieChartComp from './PieChartComp';
 import { ReactComponent as DownloadIcon } from "../assets/Icons/download_icon.svg";
 import html2canvas from "html2canvas";
 import SubEventChart from './SubEventChart';
+import Overlay from './Overlay';
 
 export default function AnalyticsModal({ isOpen, close, data }) {
 
+    const [isLoading,setIsLoading] = useState(false);
     const chartRef = useRef(null);
 
     const handleDownload = () => {
+        setIsLoading(true);
         html2canvas(chartRef.current).then((canvas) => {
             const url = canvas.toDataURL();
             const link = document.createElement('a');
@@ -18,10 +21,17 @@ export default function AnalyticsModal({ isOpen, close, data }) {
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+            setIsLoading(false);
         });
     };
 
     return (
+        <>
+        {
+            isLoading
+            &&
+            <Overlay/>
+        }
         <Modal isOpen={isOpen} close={close} heading={"View Analytics"}>
             <section className="relative w-full h-full border border-blue-500 py-5 px-3">
                 <section className='absolute top-2 right-2 '>
@@ -64,5 +74,6 @@ export default function AnalyticsModal({ isOpen, close, data }) {
                 }
             </section>
         </Modal>
+        </>
     );
 }

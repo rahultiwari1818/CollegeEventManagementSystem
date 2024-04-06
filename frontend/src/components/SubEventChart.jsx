@@ -1,15 +1,19 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { ReactComponent as DownloadIcon } from "../assets/Icons/download_icon.svg";
 import html2canvas from "html2canvas";
 import PieChartComp from './PieChartComp';
+import Overlay from './Overlay';
 
 
 export default function SubEventChart({data,subEvent}) {
 
+    const [isLoading,setIsLoading] = useState(false);
 
     const chartRef = useRef(null);
 
     const handleDownload = () => {
+        setIsLoading(true);
+
         html2canvas(chartRef.current).then((canvas) => {
             const url = canvas.toDataURL();
             const link = document.createElement('a');
@@ -18,10 +22,18 @@ export default function SubEventChart({data,subEvent}) {
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+            setIsLoading(false);
+
         });
     };
 
     return (
+        <>
+        {
+            isLoading
+            &&
+            <Overlay/>
+        }
         <section className='relative border my-2 border-blue-500 py-3 px-3 flex items-center justify-center'>
             <section className='relative'>
                 <section className='absolute top-0 right-4 mx-3 '>
@@ -39,5 +51,6 @@ export default function SubEventChart({data,subEvent}) {
                 </section>
             </section>
         </section>
+        </>
     )
 }
