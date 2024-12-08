@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "collegeeventmanagementsy-7b38e",
+  "private_key_id": "5882d76a5d641c98ae7d13a0f79468172a3c68fc",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCGw+IziG5DLpqk\nvc0JChE2A3YAEFGqYnBwJljT4CzqmnpGk2ukOavPpAjvSsKFcn6aCgwrL9+Ug+Xu\nv1TjVLeiweFNnKeDELdA64Z2+X2BEl+9Du5cfKadRNAoYvuKAxIHTMrYFJE9WIDi\nFwqoCvKLkXVIe4rtdEQ76RTAhpcnQC4i9McMTKeyA/Ttwy24lulYwThcdwBrN52z\necs+s82HjjeoMBReqDmROT99A0SVtv2uZxinnVTG1rQcvpmfmnyEL9S+a05t0Vyc\n9BaECwzPUyHvkO/sJzsRYXQL7TUcn8kxWdV5TZWPPlNTvIqub7R25pMnjZ209A2p\nE4x/+n5HAgMBAAECggEAKFwDo2FJfE85uvqoq/ta2i1BKpW4j2l5uOyTD6kEaqIm\n2noN85nd7Yp3ropaJTL73VADAvAMamLx+oVMe+SENncP7Xlr5WGdMBEZLQpc3snM\n6EbPdd1S3KieGmpCYLu4q30BBqNqN9AIkS1LYLYem1PNpw5wtdprEPIl596m5/bu\nV0DQvZpSe/7HSn33SlGjzAbSQpgIGfmW6+g7K+1YOnx488hjJTmlhsG2rfsYIXdX\nZxsDViBXi5vft+iqLN0S6gPMb6NebuOfrSmJVNWjtkCyPEgSBSStL6zv9v3Gf9b4\nklX2TBVxPO8S1qHo9Xv9Xfq0E+n75Ml5T1mEF1JGWQKBgQC8DNAQevz4GfM55Zdv\ncDGcOd/H4hRC8kVuPcuNLEYFcficn8Y8XQFU+hpwsuOcEauk5bkNcTBlpYn6/ydy\ngHMoyc0l5dMd0sJ7BlpkHErTEiklir02ae7gMBOkMayo5M0S64vJmpsTkxgfBayc\nccfKXlOgIOhTV0HDFdi9V163tQKBgQC3dg+9W5J+Cd1Fbi3H565Nh4FsmUte3p9L\n/epbmZAzYV6fX3kG7ZgXkjaDxMq7bytAmIt5MQehpAbb8aSIuwRtG+08UhGie6Yz\noha1x1UOFaTmMcw/Nln56XRR/8SXXK1dIYz6dOF46jydmAv/M3lgxujF8L7HjuQM\n0U4K0hMjiwKBgFg6OrRAv8c3haI4UeB65wvBK3kAXTk7qc+bNpE5oHCVlGsHm15e\n1G0mGpmdlKR4tetbzIK+BFLsY9xbMgrKsT0F0TZiqbZoV86YoHgvvfthneR7P2L0\nOJr+c3ipxbRIBN9HnAIug2ufq8WCSAXubCpKLzoFtnrDiZsZ+OJ8x3exAoGBAKAE\nP9I/rtR0MiU+5nt4HlXNHRvl0RGcR4D2pZTjqhzGjsufcGaUkZXtl9LysIkve6BJ\n7Uz1cNyRvtHUQFhqFoA8XX3Bb1QzWVGrzPccN5mjU0LcqHNyKqSJ9UUYOxZyZVvX\nyakijQ7z747dcYlUEkhQ9fK/+wcAIPT1EobpmHvlAoGAGru4fGABRG/TK/FwGksg\nfNqifBAddLXflXnsy4h99Yx+AlT3Lu7jutiY5yYcgOC9RaSxyx3O3zWETn2Ng8c/\nnirVhx8c1uuboVFEyVkItNclfngHeGUrUOEeWgVXX5GObkUldL49xPXGAUlFhJGv\nt515eu6YKYfdQKhKODaaHfM=\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-ltl46@collegeeventmanagementsy-7b38e.iam.gserviceaccount.com",
+  "client_id": "118068752924935803438",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-ltl46%40collegeeventmanagementsy-7b38e.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
